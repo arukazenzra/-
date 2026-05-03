@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Trip Manifest: ผังที่นั่ง</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: #fff;
+            color: #1e293b;
+            font-size: 13px;
+            line-height: 1.3;
+        }
+
+        .manifest-page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 8mm 5mm;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        /* ── Header ── */
+        .m-header {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 800;
+            background: #bfdbfe;
+            padding: 8px;
+            margin-bottom: 8px;
+            width: 100%;
+            color: #1e293b;
+        }
+
+        .m-info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+
+        .m-info-table td {
+            padding: 5px 8px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .m-info-table .lbl {
+            font-weight: 700;
+            background: #f1f5f9;
+            width: 15%;
+            color: #1e3a8a;
+        }
+
+        .m-info-table .val {
+            font-weight: 600;
+            color: #333;
+            width: 35%;
+        }
+
+        /* ── Seat Grid ── */
+        .m-seat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 20px 1fr 1fr;
+            gap: 4px;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        .m-col-group.left {
+            grid-column: 1 / 3;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+        }
+
+        .m-col-group.right {
+            grid-column: 4 / 6;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+        }
+
+        .m-seat {
+            border: 1px solid #cbd5e1;
+            padding: 2px 4px;
+            height: 58px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: #fff;
+            position: relative;
+        }
+
+        .m-seat.empty {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+        }
+
+
+        .s-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 2;
+        }
+
+        .s-id {
+            font-weight: 800;
+            font-size: 11px;
+            color: #1e3a8a;
+            width: 20px;
+        }
+
+        .s-name {
+            font-weight: 700;
+            flex: 1;
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: left;
+            padding-left: 4px;
+            color: #1e3a8a;
+        }
+
+        .s-qty {
+            font-weight: 700;
+            color: #64748b;
+            font-size: 11px;
+            width: 15px;
+            text-align: right;
+        }
+
+        .s-mid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            font-size: 11px;
+            color: #0284c7;
+            white-space: nowrap;
+            overflow: hidden;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .s-mid .s-phone {
+            text-align: center;
+        }
+
+        .s-mid .s-phone-normal {
+            text-align: center;
+            color: #000;
+        }
+
+        .s-mid .s-agent-net {
+            position: absolute;
+            right: 0;
+            color: #0284c7;
+            font-weight: 700;
+            text-align: right;
+            width: 35px;
+        }
+
+        .s-bot {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-size: 11px;
+            color: #475569;
+            z-index: 2;
+        }
+
+        .s-dest {
+            font-weight: 700;
+            flex: 1;
+            text-align: left;
+        }
+
+        .s-price {
+            color: #000;
+            font-weight: 800;
+            font-size: 12px;
+            width: 35px;
+            text-align: right;
+        }
+
+        .stair-box {
+            grid-column: span 2;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #1e3a8a;
+            border: 1px solid #cbd5e1;
+        }
+
+        /* ── Financial Summary ── */
+        .summary-container {
+            display: grid;
+            grid-template-columns: 1fr 20px 1fr;
+            /* Align with Seat Grid (Left, Aisle, Right) */
+            margin-top: 15px;
+            width: 100%;
+            align-items: flex-start;
+        }
+
+        .finance-wrapper {
+            grid-column: 1;
+            width: 100%;
+        }
+
+        .finance-summary {
+            width: 100%;
+            border: 1.5px solid #1e3a8a;
+            border-collapse: collapse;
+        }
+
+        .finance-row {
+            display: flex;
+            width: 100%;
+            border-bottom: 1px solid #1e3a8a;
+            background: #eff6ff;
+            height: 34px;
+            align-items: stretch;
+        }
+
+        .finance-row:last-child {
+            border-bottom: none;
+        }
+
+        .finance-row .label {
+            flex: 1;
+            color: #1e3a8a;
+            padding-left: 10px;
+            display: flex;
+            align-items: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .finance-row .value-group {
+            width: 130px;
+            display: flex;
+            border-left: 1.5px solid #1e3a8a;
+            background: #fff;
+            /* White background for values like Image 1 */
+        }
+
+        .finance-row .value {
+            flex: 1;
+            text-align: right;
+            padding-right: 5px;
+            color: #1e293b;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            font-size: 15px;
+        }
+
+        .finance-row .unit {
+            width: 40px;
+            text-align: center;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .finance-row.red-label .label {
+            color: #ef4444 !important;
+        }
+
+        .row-highlight-red {
+            outline: 2px solid #ef4444;
+            outline-offset: -2px;
+            z-index: 10;
+            background: #fff !important;
+        }
+
+        .row-highlight-red .label {
+            color: #1e3a8a !important;
+        }
+
+        .blue-text .value,
+        .blue-text .unit {
+            color: #2563eb !important;
+        }
+
+        .red-text .value,
+        .red-text .unit {
+            color: #ef4444 !important;
+        }
+
+        .receives-section {
+            grid-column: 3;
+            width: 100%;
+        }
+
+        .receives-header {
+            background: #fee2e2;
+            border: 1.5px solid #1e3a8a;
+            border-bottom: none;
+            text-align: center;
+            font-weight: 800;
+            color: #991b1b;
+            padding: 6px;
+            font-size: 15px;
+        }
+
+        .receives-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1.5px solid #1e3a8a;
+        }
+
+        .receives-table th {
+            background: #f1f5f9;
+            padding: 5px;
+            border: 1px solid #1e3a8a;
+            color: #1e3a8a;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .receives-table td {
+            height: 34px;
+            border: 1px solid #1e3a8a;
+            padding: 0 10px;
+            background: #fff;
+        }
+
+        .sign-wrapper {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 5px;
+        }
+
+        .sign-box {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 2px;
+        }
+
+        .sign-label {
+            font-size: 13px;
+            font-weight: 800;
+            color: #1e293b;
+        }
+
+        .sign-line {
+            border-bottom: 1px dotted #000;
+            width: 140px;
+            margin-top: 12px;
+        }
+
+        /* ── Editable Print Fields ── */
+        .editable-input {
+            width: 70px;
+            text-align: right;
+            border: 1px dashed #cbd5e1;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 13px;
+            color: red;
+            padding: 2px 4px;
+            font-weight: 700;
+            background: #fff;
+            outline: none;
+        }
+
+        .editable-input:focus {
+            border: 1px solid #3b82f6;
+            background: #eff6ff;
+        }
+
+        .editable-cell {
+            background: #f8fafc;
+            outline: none;
+            cursor: text;
+        }
+
+        .editable-cell:focus {
+            background: #fff;
+            box-shadow: inset 0 0 0 2px #bfdbfe;
+        }
+
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            body {
+                padding: 5mm 10mm;
+                background: #fff;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            .manifest-page {
+                padding: 0;
+                margin: 0;
+                max-width: none;
+            }
+
+            .editable-cell {
+                background: transparent !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+            }
+        }
+
+        .no-print-bar {
+            background: #1e293b;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            gap: 10px;
+        }
+
+        .btn-p {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-print {
+            background: #facc15;
+            color: #000;
+        }
+
+        .btn-img {
+            background: #3b82f6;
+            color: #fff;
+        }
+
+        .btn-close {
+            background: #64748b;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="no-print-bar no-print">
+        <button class="btn-p btn-print" onclick="window.print()">🖨️ พิมพ์ใบรายงานผล</button>
+        <button class="btn-p btn-img" onclick="saveAsImage()">🖼️ บันทึกเป็นรูปภาพ</button>
+        <button class="btn-p btn-close" onclick="window.close()">✖️ ปิด</button>
+    </div>
+
+    <div class="manifest-page">
+        <div class="m-header" id="m-header">ผังที่นั่งกิจรุ่งเรืองทัวร์</div>
+
+        <table class="m-info-table">
+            <tr>
+                <td class="lbl">ประจำวันที่</td>
+                <td class="val" id="m-date">-</td>
+                <td class="lbl">หมายเลขรถ</td>
+                <td class="val" id="m-bus">-</td>
+            </tr>
+            <tr>
+                <td class="lbl">เวลาออก</td>
+                <td class="val" id="m-time">-</td>
+                <td class="lbl">พขร.</td>
+                <td class="val" id="m-driver">-</td>
+            </tr>
+        </table>
+
+        <!-- Seat Grid container dynamically generated via JS -->
+        <div id="m-grid" class="m-seat-grid"></div>
+
+        <div class="summary-container">
+            <!-- Finance Summary (Left) -->
+            <div class="finance-wrapper">
+                <div class="finance-summary">
+                    <div class="finance-row">
+                        <span class="label">จำนวนผู้โดยสาร</span>
+                        <div class="value-group">
+                            <span class="value" id="sum-count">0</span>
+                            <span class="unit">คน</span>
+                        </div>
+                    </div>
+                    <div class="finance-row">
+                        <span class="label">ยอดขายรวม</span>
+                        <div class="value-group">
+                            <span class="value" id="sum-gross">0</span>
+                            <span class="unit">บาท</span>
+                        </div>
+                    </div>
+                    <div class="finance-row red-label red-text">
+                        <span class="label">หัก % การขาย (4%)</span>
+                        <div class="value-group">
+                            <span class="value" id="sum-tax">0</span>
+                            <span class="unit">บาท</span>
+                        </div>
+                    </div>
+                    <div class="finance-row red-label red-text">
+                        <span class="label">หัก % เอเย่นต์ (15%)</span>
+                        <div class="value-group">
+                            <span class="value" id="sum-agent">0</span>
+                            <span class="unit">บาท</span>
+                        </div>
+                    </div>
+                    <div class="finance-row row-highlight-red">
+                        <span class="label">คงเหลือ</span>
+                        <div class="value-group">
+                            <span class="value" id="sum-net1">0</span>
+                            <span class="unit">บาท</span>
+                        </div>
+                    </div>
+                    <div class="finance-row">
+                        <span class="label">หักเบี้ยเลี้ยง/ใบเวลา/ลานจอด</span>
+                        <div class="value-group">
+                            <span class="value">
+                                <input type="number" id="sum-expense"
+                                    style="width: 70px; text-align: right; border: none; font-family: inherit; font-size: 14px; font-weight: 800; color: #1e293b; outline: none; background: transparent;"
+                                    value="0">
+                            </span>
+                            <span class="unit">บาท</span>
+                        </div>
+                    </div>
+                    <div class="finance-row">
+                        <span class="label">ยอดเหลือส่งสุทธิ</span>
+                        <div class="value-group">
+                            <span class="value" id="sum-final">0</span>
+                            <span class="unit">บาท</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Receives Section (Right) -->
+            <div class="receives-section">
+                <div class="receives-header">ยอดรับระหว่างทาง</div>
+                <table class="receives-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 65%;">จุดจอด</th>
+                            <th>จำนวนเงิน</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="r-stop-1" contenteditable="true" class="editable-cell"></td>
+                            <td id="r-amt-1" contenteditable="true" class="editable-cell"
+                                style="text-align:right; font-weight:bold;"></td>
+                        </tr>
+                        <tr>
+                            <td id="r-stop-2" contenteditable="true" class="editable-cell"></td>
+                            <td id="r-amt-2" contenteditable="true" class="editable-cell"
+                                style="text-align:right; font-weight:bold;"></td>
+                        </tr>
+                        <tr>
+                            <td id="r-stop-3" contenteditable="true" class="editable-cell"></td>
+                            <td id="r-amt-3" contenteditable="true" class="editable-cell"
+                                style="text-align:right; font-weight:bold;"></td>
+                        </tr>
+                        <tr>
+                            <td id="r-stop-4" contenteditable="true" class="editable-cell"></td>
+                            <td id="r-amt-4" contenteditable="true" class="editable-cell"
+                                style="text-align:right; font-weight:bold;"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="sign-wrapper">
+                    <div class="sign-box">
+                        <span class="sign-label">ผู้จัดทำ</span>
+                        <div class="sign-line"></div>
+                    </div>
+                    <div class="sign-box">
+                        <span class="sign-label">ผู้รับเงิน</span>
+                        <div class="sign-line"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function renderManifest(data) {
+            if (!data) return;
+
+            // Fill Header
+            document.getElementById('m-header').textContent = `ผังที่นั่งกิจรุ่งเรืองทัวร์ สถานีเดินรถ${data.station === 'phuket' ? 'ภูเก็ต' : 'หาดใหญ่'}`;
+
+            // Format Date YYYY-MM-DD -> DD/MM/YYYY
+            let displayDate = data.date || '-';
+            if (displayDate.includes('-')) {
+                const parts = displayDate.split('-');
+                if (parts.length === 3) {
+                    displayDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                }
+            }
+            document.getElementById('m-date').textContent = displayDate;
+
+            document.getElementById('m-bus').textContent = data.header.busNo || '-';
+            document.getElementById('m-time').textContent = data.header.time || '-';
+            document.getElementById('m-driver').textContent = `${data.header.driver || ''} ${data.header.phone || ''}`;
+
+            // Build Grid Map
+            const grid = document.getElementById('m-grid');
+            grid.innerHTML = '';
+
+            let html = '';
+            let leftGroup = '';
+            let rightGroup = '';
+
+            const seats = data.seats || {};
+            const rows = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+            let countPax = 0;
+            let sumGross = 0;
+            let sumAgentBase = 0;
+
+            const buildCell = (r, col) => {
+                const sId = r + col;
+                const s = seats[sId] || { status: 'vacant', name: '' };
+                const isConf = s.status === 'confirmed';
+
+                let qty = isConf ? '1' : '';
+                let name = s.name || '';
+                let phone = '';
+                let dest = '';
+                let priceStr = '';
+                let priceNum = 0;
+                let boarding = '';
+                let agentLabel = '';
+                let isAgent = false;
+                let isInspector = false;
+
+                if (isConf && s.metadata) {
+                    countPax++;
+                    priceNum = parseFloat(s.metadata.price) || 0;
+                    sumGross += priceNum;
+
+                    phone = s.metadata.phone || '';
+                    dest = (s.metadata.dest && s.metadata.dest.split(' ')[0]) || '';
+                    boarding = s.metadata.boarding || '';
+                    priceStr = priceNum === 0 ? '' : priceNum.toLocaleString();
+
+                    isAgent = !!s.metadata.isAgent;
+                    isInspector = !!s.metadata.isInspector;
+                    agentLabel = s.metadata.agentName || (isInspector ? 'Inspector' : (isAgent ? 'Agency' : ''));
+                }
+
+                const nameColor = isConf ? '#1e3a8a' : '#cbd5e1';
+                let displayName = name;
+                if (isConf && boarding.trim() !== '') {
+                    displayName = `${name}/<span style="color:#ef4444; font-weight:800;">${boarding}</span>`;
+                }
+
+                // Calculate prices for agent display
+                let agentNetPrice = 0;
+                let agentComm = 0;
+                if (isConf && s.metadata && isAgent) {
+                    const priceList = data.priceList || [];
+                    const route = priceList.find(p => (p.origin === origin || p.origin === 'สงขลา') && p.destination === dest);
+                    if (route && Number(route.agentPrice) > 0) {
+                        agentComm = priceNum - Number(route.agentPrice);
+                    } else {
+                        agentComm = Math.round(priceNum * 0.15);
+                    }
+                    if (agentComm < 0) agentComm = 0;
+                    agentNetPrice = priceNum - agentComm;
+                }
+
+                // Middle row: phone (center) and agent commission (right, blue)
+                let midContent = '';
+                if (isAgent) {
+                    midContent = `<span class="s-phone">Ag: ${phone}</span><span class="s-agent-net">${agentComm > 0 ? agentComm.toLocaleString() : ''}</span>`;
+                } else {
+                    midContent = `<span class="s-phone-normal">${phone}</span>`;
+                }
+
+                // Bottom row: destination (left) + full price (right, black)
+                let botContent = `<span class="s-dest">${dest}</span><span class="s-price">${priceStr}</span>`;
+
+                return `
+                    <div class="m-seat ${isConf ? '' : 'empty'}">
+                        <div class="s-top">
+                            <span class="s-id">${sId}</span>
+                            <span class="s-name" style="color: ${nameColor};">${displayName}</span>
+                            <span class="s-qty">${qty}</span>
+                        </div>
+                        <div class="s-mid">${midContent}</div>
+                        <div class="s-bot">${botContent}</div>
+                    </div>
+                `;
+            };
+
+            // Loop rows to assemble groups
+            html += `<div class="m-col-group left">`;
+            rows.forEach(r => {
+                const isStair = (r === 5 || r === 6);
+                if (isStair) {
+                    if (r === 5) html += `<div class="stair-box" style="height:114px; grid-row: span 2;">บันไดกลาง</div>`;
+                } else {
+                    html += buildCell(r, 'A') + buildCell(r, 'B');
+                }
+            });
+            html += `</div>`;
+
+            html += `<div style="width:20px;"></div>`; // Aisle
+
+            html += `<div class="m-col-group right">`;
+            rows.forEach(r => {
+                html += buildCell(r, 'C') + buildCell(r, 'D');
+            });
+            html += `</div>`;
+
+            grid.innerHTML = html;
+
+            // Finance Calculations
+            let totalAgentFee = 0;
+
+            Object.values(data.seats).forEach(s => {
+                if (s.status === 'confirmed' && s.metadata) {
+                    const pType = (s.metadata.paymentType || '').toLowerCase();
+                    const isAgent = !!s.metadata.isAgent || pType === 'agent' || pType === 'เอเย่นต์';
+                    let comm = parseFloat(s.metadata.commission) || 0;
+                    // ถ้าเป็น Agent แต่ไม่มี commission ให้คำนวณ 15% จากราคา
+                    if (isAgent && comm === 0) {
+                        const price = parseFloat(s.metadata.price) || 0;
+                        comm = Math.round(price * 0.15);
+                    }
+                    totalAgentFee += comm;
+                }
+            });
+
+            const gross = sumGross;
+            const tax4 = Math.round(gross * 0.04);
+            const net1 = gross - tax4 - totalAgentFee;
+            const exp = parseFloat(data.expenses) || 0;
+
+            document.getElementById('sum-count').textContent = countPax;
+            document.getElementById('sum-gross').textContent = gross.toLocaleString();
+            document.getElementById('sum-tax').textContent = tax4.toLocaleString();
+            document.getElementById('sum-agent').textContent = totalAgentFee.toLocaleString();
+            document.getElementById('sum-net1').textContent = net1.toLocaleString();
+
+            const expInput = document.getElementById('sum-expense');
+            expInput.value = exp;
+
+            // Interactive Recalculation
+            function updateFinal() {
+                const currentExp = parseFloat(expInput.value) || 0;
+                const netFinal = net1 - currentExp;
+                document.getElementById('sum-final').textContent = netFinal.toLocaleString();
+            }
+
+            expInput.addEventListener('input', updateFinal);
+            updateFinal(); // Call once to set initial value
+
+            // Populate Receives
+            if (data.receives && Array.isArray(data.receives)) {
+                data.receives.forEach((r, idx) => {
+                    const row = idx + 1;
+                    const stopCell = document.getElementById(`r-stop-${row}`);
+                    const amtCell = document.getElementById(`r-amt-${row}`);
+                    if (stopCell) stopCell.textContent = r.stop || '';
+                    if (amtCell) amtCell.textContent = r.amount ? parseFloat(r.amount).toLocaleString() : '';
+                });
+            }
+
+            // Populate Signers
+            if (data.signerPrep) document.getElementById('m-signer-prep').textContent = data.signerPrep;
+            if (data.signerRcv) document.getElementById('m-signer-rcv').textContent = data.signerRcv;
+        }
+
+        function saveAsImage() {
+            const el = document.querySelector('.manifest-page');
+            const btn = document.querySelector('.btn-img');
+            const oldText = btn.innerText;
+            btn.innerText = "⏳ กำลังสร้างรูปภาพ...";
+
+            // Temporary styling for image capture
+            const originalMinHeight = el.style.minHeight;
+            const originalPadding = el.style.padding;
+            el.style.minHeight = 'auto';
+            el.style.padding = '20mm';
+
+            // ใช้ html2canvas แปลงหน้าจอเป็นรูปภาพ
+            html2canvas(el, { scale: 2, useCORS: true }).then(canvas => {
+                // Restore original styling
+                el.style.minHeight = originalMinHeight;
+                el.style.padding = originalPadding;
+
+                const dateStr = (document.getElementById('m-date').innerText || 'manifest').replace(/\//g, '-');
+                const busStr = document.getElementById('m-bus').innerText || '';
+                const link = document.createElement('a');
+                link.download = `ผังที่นั่ง_${dateStr}_${busStr}.png`.replace(/ /g, '_');
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+                btn.innerText = oldText;
+            }).catch(err => {
+                console.error(err);
+                btn.innerText = "❌ เกิดข้อผิดพลาด";
+                setTimeout(() => btn.innerText = oldText, 2000);
+            });
+        }
+
+        window.onload = () => {
+            // Priority 0: localStorage
+            const localDataStr = localStorage.getItem('printManifestData');
+            if (localDataStr) {
+                try {
+                    const data = JSON.parse(localDataStr);
+                    renderManifest(data);
+                    setTimeout(() => window.print(), 500);
+                    return;
+                } catch (e) {
+                    console.error("Local Data Error", e);
+                }
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // Priority 1: ?d= URL parameter (works in iframe, no google.script.run needed)
+            const urlB64 = urlParams.get('d');
+            if (urlB64) {
+                try {
+                    const data = JSON.parse(decodeURIComponent(atob(urlB64)));
+                    renderManifest(data);
+                    setTimeout(() => window.print(), 500);
+                    return;
+                } catch (e) {
+                    console.error("URL Payload Error:", e);
+                }
+            }
+
+            // Priority 2: server-side template payload (<?= payload ?>)
+            const b64Data = "<?= payload ?>";
+            if (b64Data && b64Data !== "") {
+                try {
+                    const data = JSON.parse(decodeURIComponent(atob(b64Data)));
+                    renderManifest(data);
+                    setTimeout(() => window.print(), 500);
+                } catch (e) {
+                    console.error("Payload Decoding Error: ", e);
+                    document.body.innerHTML = "<h3 style='text-align:center; margin-top:50px; color:red;'>ไม่สามารถอ่านข้อมูลผังที่นั่งได้</h3>";
+                }
+            } else {
+                document.body.innerHTML = "<h3 style='text-align:center; margin-top:50px; color:gray;'>กำลังรอข้อมูล...</h3>";
+            }
+        };
+    </script>
+</body>
+
+</html>

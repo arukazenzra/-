@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ออกตั๋วแมนนวลเสมือนจริง (WYSIWYG Ticket)</title>
+    <!-- ใช้ฟอนต์ Sarabun -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: radial-gradient(circle at top, #e2e8f0, #cbd5e1);
+            color: #000;
+            padding-bottom: 120px;
+            min-height: 100vh;
+        }
+
+        .ticket-page {
+            max-width: 1000px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 15px 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            position: relative;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            animation: cardEntry 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(0.95);
+            transform-origin: top center;
+        }
+
+        @keyframes cardEntry {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ── Header ── */
+        .header-outer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .logo-box {
+            width: 70px;
+            height: 70px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: url('https://lh3.googleusercontent.com/d/1Sxwik4laagC2e6xZYYQ0gJaKZQ2IUWeM');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 8px;
+            background-color: transparent;
+        }
+
+        .title-box {
+            padding-top: 5px;
+        }
+
+        .title-box h1 {
+            font-size: 17px;
+            font-weight: 800;
+            margin: 0;
+            color: #000;
+        }
+
+        .title-box p {
+            font-size: 15px;
+            margin: 0;
+            color: #000;
+            font-weight: 500;
+        }
+
+        .title-main {
+            font-size: 18px;
+            font-weight: 900;
+            margin-top: 2px;
+            color: #000;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .copy-info {
+            font-size: 14px;
+            font-style: italic;
+            color: #444;
+            font-weight: 600;
+        }
+
+        .no-box {
+            font-size: 16px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 5px;
+            color: #000;
+            font-weight: 700;
+        }
+
+        .no-val {
+            background: #f1f5f9;
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-weight: 800;
+            min-width: 120px;
+            text-align: left;
+            border: none;
+            color: #000;
+        }
+
+        .boarding-top {
+            color: #000;
+            font-weight: 900;
+            font-size: 14px;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 5px;
+        }
+
+        .boarding-val-manual {
+            color: #ef4444;
+            margin-left: 5px;
+            font-weight: 900;
+        }
+
+        /* ── Table Structure ── */
+        .ticket-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid #000;
+            table-layout: fixed;
+            margin-top: 10px;
+        }
+
+        .ticket-table td {
+            border: 1px solid #000;
+            padding: 2px 6px;
+            vertical-align: middle;
+            height: 26px;
+            /* Reduced from 40px */
+        }
+
+        .td-lbl {
+            background: #f1f5f9;
+        }
+
+        .lbl {
+            font-size: 14px;
+            font-weight: 800;
+            color: #000;
+            display: block;
+            line-height: 1.1;
+        }
+
+        .lbl-en {
+            font-size: 10px;
+            font-weight: 400;
+            color: #333;
+            display: block;
+            margin-top: 0px;
+        }
+
+        .val-manual {
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        /* ── Payment Section ── */
+        .payment-cell {
+            padding: 0 !important;
+        }
+
+        .payment-inner {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .payment-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 12px;
+            border-bottom: 1px solid #000;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .payment-row:last-child {
+            border-bottom: none;
+        }
+
+        .check-box {
+            width: 18px;
+            height: 18px;
+            border: 1.5px solid #000;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .check-box.checked {
+            background: #334155;
+        }
+
+        .check-box.checked::after {
+            content: '✔';
+            font-size: 12px;
+            color: #fff;
+        }
+
+        /* ── Coupon Section ── */
+        .coupon-section {
+            margin-top: 6px;
+            border: 1.5px dashed #000;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .coupon-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .coupon-table td {
+            padding: 2px 4px;
+            vertical-align: middle;
+            border: none !important;
+        }
+
+        .c-header-row {
+            background: #f1f5f9;
+        }
+
+        .c-label {
+            font-size: 13px;
+            font-weight: 800;
+            color: #1f2937;
+            display: inline-block;
+        }
+
+        .c-val {
+            font-size: 14px;
+            font-weight: 600;
+            /* ปรับให้ไม่หนาตามที่ผู้ใช้ต้องการ */
+            color: #000;
+            display: inline-block;
+        }
+
+        .c-seat-val {
+            font-size: 16px;
+            font-weight: 900;
+            color: #000;
+        }
+
+        .c-warning {
+            font-size: 13px;
+            color: #dc2626;
+            font-weight: 800;
+            text-align: center;
+            padding: 4px;
+            background: #f3f4f6;
+            border-top: 1px dashed #000;
+        }
+
+        /* ── Row Table (for date/platform rows) ── */
+        .row-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .row-table td {
+            border: none;
+            border-right: 1px solid #000;
+            padding: 5px 10px;
+        }
+
+        .row-table td:last-child {
+            border-right: none;
+        }
+
+        /* ── WYSIWYG Inputs ── */
+        .wg-input {
+            width: 100%;
+            border: none;
+            padding: 4px 0;
+            font-family: 'Sarabun', sans-serif;
+            font-size: 16px;
+            background: transparent;
+            outline: none;
+            font-weight: 500;
+            color: #000;
+        }
+
+        .wg-input:focus {
+            background: #f1f5f9;
+        }
+
+        .bold-val {
+            font-weight: 900 !important;
+            font-size: 18px !important;
+        }
+
+
+        .wg-input.center {
+            text-align: center;
+        }
+
+        .wg-input::placeholder {
+            color: #94a3b8;
+            font-weight: normal;
+        }
+
+
+        /* ── Footer Actions ── */
+        .footer-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0 -15px 50px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+        }
+
+        .footer-container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 24px;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            text-decoration: none;
+            font-family: inherit;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-add {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px dashed rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-add:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #fff;
+        }
+
+        .btn-download {
+            background: #475569;
+        }
+
+        .btn-download:hover {
+            background: #334155;
+        }
+
+        .btn-print {
+            background: #0284c7;
+        }
+
+        .btn-print:hover {
+            background: #0369a1;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #10b981, #059669);
+            font-size: 16px;
+            padding: 12px 35px;
+        }
+
+        .btn-save:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            font-weight: 700;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .toast.error {
+            background: #ef4444;
+        }
+
+        .toast.success {
+            background: #10b981;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 5px solid #e2e8f0;
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── Controls inside Ticket — Hidden by default, show on hover ── */
+        .btn-remove,
+        .btn-fetch-inner {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .ticket-page:hover .btn-remove,
+        .ticket-page:hover .btn-fetch-inner,
+        .ticket-page:hover .btn-save-mini {
+            opacity: 1;
+        }
+
+        /* ── Action Buttons ── */
+        .btn-save-mini {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            opacity: 0;
+            transition: 0.3s;
+            margin-left: auto;
+        }
+
+        .btn-save-mini:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        /* ── Remove Button ── */
+        .btn-remove {
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            width: 32px;
+            height: 32px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+            z-index: 20;
+        }
+
+        .btn-remove:hover {
+            background: #b91c1c;
+            transform: scale(1.1);
+        }
+
+        .no-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+            color: #475569;
+            font-size: 14px;
+        }
+
+        .no-val {
+            background: #fff;
+            padding: 4px;
+            border-radius: 12px;
+            font-weight: 700;
+            border: 2px solid #e2e8f0;
+            color: #1e40af;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: 0.3s;
+        }
+
+        .wg-input {
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 18px;
+            /* ปรับขนาดฟอนต์พื้นฐานให้เท่ากับวันที่ */
+            font-family: 'Sarabun', sans-serif;
+            transition: 0.2s;
+            outline: none;
+            background: white;
+        }
+
+        .wg-input[readonly] {
+            border: none !important;
+            background: transparent !important;
+            padding: 2px 0 !important;
+            font-weight: 600;
+            /* ปรับให้ไม่หนาเกินไปตามที่ผู้ใช้ต้องการ */
+            color: #000;
+            box-shadow: none !important;
+            cursor: default;
+            font-size: 18px;
+        }
+
+        .center {
+            text-align: center !important;
+        }
+
+        .wg-input.center {
+            text-align: center;
+        }
+
+        .lbl {
+            font-size: 14px;
+            /* ปรับหัวข้อให้ใหญ่ขึ้นตามที่ผู้ใช้ต้องการ */
+            font-weight: 800;
+            /* ปรับหัวข้อให้หนาขึ้น */
+            color: #1e293b;
+            /* ปรับสีให้เข้มขึ้นเล็กน้อยเพื่อให้ดูเด่น */
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .no-val:focus-within {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-fetch-inner {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-fetch-inner:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        /* ── Custom Confirmation Modal ── */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+
+        .modal-card {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            animation: modalPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-card h3 {
+            font-size: 20px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+
+        .modal-card p {
+            color: #64748b;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .modal-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            border: none;
+            font-size: 14px;
+        }
+
+        .btn-cancel {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .btn-cancel:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-confirm-red {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-confirm-red:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        /* Print Hiding */
+        @page {
+            size: 210mm 148.5mm;
+            margin: 0;
+        }
+
+        @media print {
+            body {
+                background: white !important;
+                padding: 0 !important;
+                /* เว้นขอบกระดาษไม่ให้เนื้อหาตกขอบ */
+            }
+
+            .ticket-page {
+                page-break-after: avoid;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                width: 100% !important;
+                max-width: none !important;
+                margin: 0 auto !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                transform: none !important;
+                zoom: 85%;
+                /* Apply zoom for manual tickets too */
+            }
+
+            .ticket-page * {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            .footer-actions,
+            .btn-remove,
+            .btn-fetch-inner,
+            .toast,
+            .overlay,
+            .modal-overlay {
+                display: none !important;
+            }
+
+            .wg-input {
+                border: none !important;
+                background: transparent !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                color: black !important;
+                font-size: 14px !important;
+                font-weight: 900 !important;
+            }
+
+            /* Hide date picker icon in Chrome/Edge */
+            input::-webkit-calendar-picker-indicator {
+                display: none !important;
+            }
+
+            select.wg-input {
+                -webkit-appearance: none;
+                appearance: none;
+            }
+
+            .no-val {
+                border: none !important;
+                box-shadow: none !important;
+                background: transparent !important;
+            }
+
+            /* Make print borders softer and elegant */
+            .ticket-table {
+                border: 1px solid #94a3b8 !important;
+            }
+
+            .ticket-table td {
+                border: 1px solid #cbd5e1 !important;
+            }
+
+            .row-table td {
+                border-right: 1px solid #cbd5e1 !important;
+            }
+
+            .ticket-page.print-hidden,
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        /* ── Export Mode (For Image Download) ── */
+        body.export-mode {
+            background: white !important;
+        }
+
+        body.export-mode .ticket-page {
+            width: 210mm !important;
+            height: 148mm !important;
+            margin: 0 auto !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 10px !important;
+            transform: none !important;
+        }
+
+        body.export-mode .btn-remove,
+        body.export-mode .btn-card-action,
+        body.export-mode .btn-fetch-inner,
+        body.export-mode .toast,
+        body.export-mode .footer-actions {
+            display: none !important;
+        }
+
+        body.export-mode .wg-input {
+            border: none !important;
+            background: transparent !important;
+            padding: 2px 0 !important;
+            box-shadow: none !important;
+            color: black !important;
+            font-weight: 700 !important;
+            -webkit-text-fill-color: black !important;
+            opacity: 1 !important;
+            filter: none !important;
+            /* ปิด filter ที่อาจทำให้จาง */
+        }
+
+        /* สำหรับฟิลด์ที่เป็นตัวหนังสือสีแดงให้แดงจัดตอนเซฟ */
+        body.export-mode [id^="f-date-display-"],
+        body.export-mode [id^="f-seat-"] {
+            color: #ff0000 !important;
+            -webkit-text-fill-color: #ff0000 !important;
+        }
+
+        body.export-mode .no-val span {
+            color: #1e293b !important;
+            /* online00 ให้เข้มขึ้น */
+        }
+
+        body.export-mode .no-val {
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        body.export-mode .ticket-table {
+            border: 2px solid #1e293b !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="tickets-wrapper" style="padding-top: 20px;">
+        <!-- Multiple .ticket-page elements will be injected here -->
+    </div>
+
+    <!-- Custom Confirmation Modal -->
+    <div class="modal-overlay" id="confirm-modal">
+        <div class="modal-card">
+            <h3 id="confirm-title">ยืนยันการดำเนินการ</h3>
+            <p id="confirm-msg">คุณต้องการดำเนินการนี้ใช่หรือไม่?</p>
+            <div class="modal-btns">
+                <button class="modal-btn btn-cancel" onclick="closeConfirmModal()">ยกเลิก</button>
+                <button class="modal-btn btn-confirm-red" id="confirm-ok-btn">ตกลง</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="loading-overlay"
+        style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.8); z-index:9999; display:none; align-items:center; justify-content:center; flex-direction:column; gap:10px;">
+        <div class="spinner"></div>
+        <div style="font-size: 20px; font-weight:800; color:#3b82f6;">กำลังประมวลผล...</div>
+    </div>
+
+    <div class="footer-actions">
+        <div class="footer-container">
+            <div class="footer-left" style="display:flex; gap:10px; align-items:center;">
+                <button class="btn btn-add" onclick="addBlankTicket()"
+                    style="background: white; border: 1px solid #e2e8f0; color: #475569;">➕ เพิ่มตั๋วว่าง</button>
+                <div
+                    style="background:rgba(255,255,255,0.1); padding:5px 15px; border-radius:15px; border:1px solid rgba(255,255,255,0.2); display:flex; gap:8px; align-items:center;">
+                    <span style="color:white; font-size:13px; font-weight:700;">🔍 ค้นหาและเพิ่ม: online00</span>
+                    <input type="text" id="master-search-id" placeholder="เลข 4 ตัว" maxlength="4"
+                        style="width:80px; background:white; border:none; padding:5px 10px; border-radius:8px; font-weight:700; outline:none;"
+                        onkeydown="if(event.key==='Enter') fetchTicketMaster()">
+                    <button class="btn-fetch-inner" onclick="fetchTicketMaster()"
+                        style="background:#10b981; width:35px; height:35px;">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="footer-right" style="gap: 12px;">
+                <button class="btn btn-download" onclick="downloadCombinedImage()"
+                    style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">
+                    <i class="fas fa-layer-group" style="margin-right: 8px;"></i> เซฟรวมทุกใบเป็นภาพเดียว
+                </button>
+                <button class="btn btn-download" onclick="downloadImage()"
+                    style="background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); color: white; border: none; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);">
+                    <i class="fas fa-images" style="margin-right: 8px;"></i> เซฟแยกทุกใบ
+                </button>
+                <button class="btn btn-print" onclick="window.print()"
+                    style="background: #1e293b; color: white; border: none; box-shadow: 0 4px 12px rgba(30, 41, 59, 0.3);">
+                    <i class="fas fa-print" style="margin-right: 8px;"></i> พิมพ์ตั๋วทั้งหมด
+                </button>
+                <button class="btn" onclick="clearAllTickets()"
+                    style="background: #ef4444; color: white; border: none; padding: 12px 20px;">
+                    <i class="fas fa-trash-alt"></i> ล้างทั้งหมด
+                </button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        const WEBAPP_URL = "<?= getWebAppUrl() ?>";
+        let currentPayType = 'cash';
+        let isEditing = false;
+        let ticketCounter = 0;
+
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            if (!t) return;
+            t.innerText = msg;
+            t.className = `toast show ${type}`;
+            setTimeout(() => t.className = 'toast', 4000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // ใช้ค่า ID ที่ส่งมาจากฝั่ง Server (Code.gs) เพื่อความแม่นยำ 100%
+            const ticketIdFromServer = "<?= id ?>";
+            if (ticketIdFromServer) {
+                fetchTicketData(ticketIdFromServer);
+            } else {
+                // ถ้าไม่มี ID ให้แสดงตั๋วว่าง
+                addBlankTicket();
+            }
+        });
+
+        function fetchTicketData(id) {
+            const ticketId = id || document.getElementById('f-ticket-no-master')?.value.trim();
+            if (!ticketId) return;
+
+            const overlay = document.getElementById('loading-overlay');
+            overlay.style.display = 'flex';
+
+            google.script.run.withSuccessHandler(res => {
+                overlay.style.display = 'none';
+                if (res && res.success) {
+                    const tickets = res.isGroup ? res.tickets : [res];
+                    renderTickets(tickets);
+                } else {
+                    showToast(res ? res.error : 'ไม่พบข้อมูล', 'error');
+                }
+            }).getTicketData(ticketId);
+        }
+
+        function fetchTicketMaster() {
+            const num = document.getElementById('master-search-id').value.trim();
+            if (!num) return;
+            const id = "online00" + num;
+            fetchTicketData(id);
+            document.getElementById('master-search-id').value = '';
+        }
+
+        function clearAllTickets() {
+            showConfirm('ยืนยันการล้างทั้งหมด', 'คุณต้องการล้างรายการตั๋วทั้งหมดออกจากหน้าจอใช่หรือไม่?', () => {
+                document.getElementById('tickets-wrapper').innerHTML = '';
+                showToast('ล้างรายการทั้งหมดแล้ว');
+            });
+        }
+
+        function fetchTicketDataMaster() {
+            fetchTicketData();
+        }
+
+
+        function addBlankTicket() {
+            const blank = {
+                ticketNo: '',
+                name: '', phone: '', origin: '', destination: '', boarding: '',
+                platform: '', busNo: '', seatId: '', price: '0',
+                issuedBy: localStorage.getItem('lastSeller') || localStorage.getItem('manualAgent') || '',
+                priceType: 'cash',
+                day: new Date().getDate(), month: new Date().getMonth() + 1, year: new Date().getFullYear(),
+                issuedDate: new Date().toLocaleDateString('th-TH'),
+                time: ''
+            };
+            const wrapper = document.getElementById('tickets-wrapper');
+            const idx = ticketCounter++;
+
+            const temp = document.createElement('div');
+            temp.innerHTML = generateTicketHTML(blank, idx);
+            wrapper.appendChild(temp.firstElementChild);
+
+            fillTicketValues(blank, idx);
+            // Focus the new ID field
+            setTimeout(() => {
+                const el = document.getElementById(`f-no-${idx}`);
+                if (el) el.focus();
+            }, 100);
+
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            showToast('เพิ่มตั๋วว่างแล้ว');
+        }
+
+        function renderTickets(tickets) {
+            const wrapper = document.getElementById('tickets-wrapper');
+            const splitTickets = [];
+
+            tickets.forEach(t => {
+                // Split seatId if it contains multiple seats (comma or space)
+                const seats = t.seatId ? t.seatId.toString().split(/[\s,]+/).filter(s => s.trim() !== "") : [];
+                if (seats.length > 1) {
+                    // Split into multiple individual tickets for printing
+                    const totalBasePrice = parseFloat(t.price) || 0;
+                    const pricePerSeat = Math.floor(totalBasePrice / seats.length);
+
+                    seats.forEach(s => {
+                        splitTickets.push({
+                            ...t,
+                            seatId: s,
+                            price: pricePerSeat
+                        });
+                    });
+                } else {
+                    splitTickets.push(t);
+                }
+            });
+
+            // แทนที่จะล้างหน้าจอ ให้ใช้วิธีต่อท้าย (Append)
+            splitTickets.forEach(t => {
+                // ตรวจสอบว่ามีรหัสนี้อยู่บนหน้าจอแล้วหรือยัง
+                const existingIds = Array.from(document.querySelectorAll('.wg-input[id^="f-no-"]')).map(el => el.value.trim());
+                let tNo = t.ticketNo || '';
+                if (tNo.startsWith('online00')) tNo = tNo.replace('online00', '');
+
+                if (existingIds.includes(tNo)) {
+                    console.log('Ticket already exists:', tNo);
+                    return; // ข้ามใบที่ซ้ำ
+                }
+
+                const idx = ticketCounter++;
+                const temp = document.createElement('div');
+                temp.innerHTML = generateTicketHTML(t, idx);
+                wrapper.appendChild(temp.firstElementChild);
+                fillTicketValues(t, idx);
+            });
+
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function generateTicketHTML(t, idx) {
+            const now = new Date();
+            const thaiYear = now.getFullYear() + 543;
+            const yy = thaiYear.toString().slice(-2);
+            const currentDate = `${now.getDate()}/${now.getMonth() + 1}/${yy}`;
+            const hh = now.getHours().toString().padStart(2, '0');
+            const mm = now.getMinutes().toString().padStart(2, '0');
+            const ss = now.getSeconds().toString().padStart(2, '0');
+            const currentTime = `${now.getDate()}/${now.getMonth() + 1}/${thaiYear}, ${hh}:${mm}:${ss}`;
+
+            return `
+            <div class="ticket-page" id="ticket-card-${idx}" data-index="${idx}"
+                 data-station="${t.station || ''}" data-slot="${t.slotIndex !== undefined ? t.slotIndex : ''}"
+                 style="transition: 0.3s; transform-origin: top center;">
+
+                <button class="btn-remove" onclick="removeTicketCard(${idx})" title="ลบใบนี้">
+                    <i class="fas fa-times"></i>
+                </button>
+
+                <div class="ticket-selector no-print"
+                     onclick="const chk=this.querySelector('input'); chk.checked=!chk.checked; togglePrintSelection(${idx}, chk.checked); event.stopPropagation();"
+                     style="position:absolute; top:-40px; left:0; width:100%; display:flex; align-items:center; gap:10px; background:#1e293b; color:white; padding:8px 18px; border-radius:12px 12px 0 0; cursor:pointer; border:1px solid rgba(255,255,255,0.1); border-bottom:none;">
+                    <input type="checkbox" id="chk-${idx}" class="ticket-chk" checked
+                           style="width:18px; height:18px; cursor:pointer;"
+                           onclick="togglePrintSelection(${idx}, this.checked); event.stopPropagation();">
+                    <label style="font-size:14px; font-weight:800; color:white; cursor:pointer;">พิมพ์ตั๋วใบนี้</label>
+
+                    <button class="btn-save-mini" onclick="saveTicketToSheet(${idx}); event.stopPropagation();" title="บันทึกลงฐานข้อมูล">
+                        <i class="fas fa-save"></i> บันทึกลง Sheet
+                    </button>
+                </div>
+
+                <!-- Header -->
+                <div class="header-outer">
+                    <div class="logo-section">
+                        <div class="logo-box"></div>
+                        <div class="title-box">
+                            <div class="subtitle">บัตรโดยสารอิเล็กทรอนิกส์ [กิจรุ่งเรืองทัวร์]</div>
+                            <div class="subtitle-en">Passenger ticket</div>
+                            <div class="title-main">Kitrungrueng E-Ticket</div>
+                        </div>
+                    </div>
+                    <div class="header-right">
+                        <div class="copy-info">สำหรับผู้โดยสาร/สำเนา</div>
+                        <div class="no-box">
+                            No.
+                            <div class="no-val" style="display:inline-flex; align-items:center;">
+                                <span style="font-weight:900; font-size:16px; color:#000;">online00</span>
+                                <input type="text" id="f-no-${idx}"
+                                       maxlength="4"
+                                       value="${(t.ticketNo || '').replace('online00', '')}"
+                                       placeholder="0000"
+                                       autocomplete="off" spellcheck="false" data-lpignore="true"
+                                       style="width:55px; border:none; background:transparent; font-weight:900; font-size:16px; padding:0; outline:none; font-family:'Sarabun',sans-serif;"
+                                       onkeydown="if(event.key==='Enter') fetchTicketForCard(${idx})">
+                                <button class="btn-fetch-inner no-print" onclick="fetchTicketForCard(${idx})">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="boarding-top">
+                            <span style="color:#000; font-weight:900; margin-right:5px;">จุดขึ้นรถ</span>
+                            <span id="f-boarding-disp-${idx}" style="color:#ef4444; font-weight:900;">-</span>
+                            <input type="hidden" id="f-boarding-${idx}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Table (6-Column Grid) -->
+                <table class="ticket-table">
+                    <colgroup>
+                        <col style="width: 15%;">
+                        <col style="width: 18%;">
+                        <col style="width: 15%;">
+                        <col style="width: 18%;">
+                        <col style="width: 15%;">
+                        <col style="width: 19%;">
+                    </colgroup>
+
+                    <!-- Row 1: Name & Phone -->
+                    <tr>
+                        <td class="td-lbl"><span class="lbl">ชื่อผู้โดยสาร</span><span class="lbl-en">Name</span></td>
+                        <td colspan="2"><input type="text" class="wg-input" id="f-name-${idx}" placeholder="ชื่อผู้โดยสาร" autocomplete="off" spellcheck="false" data-lpignore="true" readonly></td>
+                        <td class="td-lbl"><span class="lbl">เบอร์โทร</span><span class="lbl-en">Mobile Phone</span></td>
+                        <td colspan="2"><input type="tel" class="wg-input" id="f-phone-${idx}" placeholder="0XX-XXX-XXXX" autocomplete="off" spellcheck="false" data-lpignore="true" oninput="formatPhone(this)"></td>
+                    </tr>
+
+                    <!-- Row 2: From & To -->
+                    <tr>
+                        <td class="td-lbl"><span class="lbl">จาก</span><span class="lbl-en">From</span></td>
+                        <td colspan="2"><input type="text" class="wg-input" id="f-from-${idx}" placeholder="ต้นทาง" autocomplete="off" spellcheck="false" data-lpignore="true" readonly></td>
+                        <td class="td-lbl"><span class="lbl">ถึง</span><span class="lbl-en">To</span></td>
+                        <td colspan="2"><input type="text" class="wg-input" id="f-to-${idx}" placeholder="ปลายทาง" autocomplete="off" spellcheck="false" data-lpignore="true" readonly></td>
+                    </tr>
+
+                    <!-- Row 3: Issued Date, Departure Date, Time -->
+                    <tr>
+                        <td class="td-lbl"><span class="lbl">วันที่ออกบัตร</span><span class="lbl-en">Date of Issued</span></td>
+                        <td><input type="text" class="wg-input center" id="f-issued-date-${idx}" value="${currentDate}" autocomplete="off" spellcheck="false" data-lpignore="true" readonly></td>
+                        <td class="td-lbl"><span class="lbl">วันเดินทาง</span><span class="lbl-en">Departure Date</span></td>
+                        <td>
+                            <input type="text" class="wg-input center" id="f-date-display-${idx}" placeholder="DD/MM/YY" autocomplete="off" spellcheck="false" data-lpignore="true" readonly>
+                            <input type="date" id="f-date-${idx}" style="display:none;">
+                        </td>
+                        <td class="td-lbl"><span class="lbl">เวลา</span><span class="lbl-en">Time</span></td>
+                        <td><input type="text" class="wg-input center" id="f-time-${idx}" placeholder="7:45" readonly></td>
+                    </tr>
+
+                    <!-- Row 4: Platform, Bus, Seat -->
+                    <tr>
+                        <td class="td-lbl"><span class="lbl">ชานชาลาที่</span><span class="lbl-en">P/F No.</span></td>
+                        <td><input type="text" class="wg-input center bold-val" id="f-platform-${idx}" placeholder="18" readonly></td>
+                        <td class="td-lbl"><span class="lbl">หมายเลขรถ</span><span class="lbl-en">Bus No.</span></td>
+                        <td><input type="text" class="wg-input center" id="f-bus-${idx}" placeholder="443-" readonly></td>
+                        <td class="td-lbl"><span class="lbl">เลขที่นั่ง</span><span class="lbl-en">Seat No.</span></td>
+                        <td><input type="text" class="wg-input center" id="f-seat-${idx}" placeholder="1A" readonly></td>
+                    </tr>
+
+                    <!-- Row 5: Price, Payment, Issuer -->
+                    <tr>
+                        <td class="td-lbl"><span class="lbl">ราคา</span><span class="lbl-en">Price</span></td>
+                        <td><input type="text" class="wg-input center" id="f-price-${idx}" placeholder="462" style="font-size:20px;" readonly></td>
+                        <td class="payment-cell" style="padding:0; border:1px solid #000;" colspan="2">
+                            <table style="width:100%; height:100%; border-collapse:collapse; table-layout: fixed; border:none;">
+                                <tr>
+                                    <td style="border:none; border-bottom:1px solid #000; padding:2px 4px; font-size:10px; font-weight:800; width:35%;">วิธีชำระ</td>
+                                    <td id="m-pay-method-val-${idx}" style="border:none; border-bottom:1px solid #000; padding:2px 4px; font-size:11px; font-weight:900; width:65%;">-</td>
+                                </tr>
+                                <tr>
+                                    <td style="border:none; padding:2px 4px; font-size:10px; font-weight:800; width:35%;">ประเภท</td>
+                                    <td id="m-pay-type-val-${idx}" style="border:none; padding:2px 4px; font-size:11px; font-weight:900; width:65%;">-</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="td-lbl"><span class="lbl">ผู้ขาย</span><span class="lbl-en">Issued by</span></td>
+                        <td><input type="text" class="wg-input center" id="f-issuer-${idx}" placeholder="Care" readonly></td>
+                    </tr>
+
+                    <!-- Row 6: Remark -->
+                    <tr>
+                        <td class="td-lbl"><span class="lbl">หมายเหตุ</span></td>
+                        <td colspan="5"><input type="text" class="wg-input" id="f-remark-${idx}" placeholder="หมายเหตุ (ถ้ามี)" style="font-size:14px; padding-left:10px;"></td>
+                    </tr>
+                </table>
+
+                <!-- Footer -->
+                <div style="margin-top:8px;">
+                    <div style="text-align:right; font-size:11px; font-weight:600; color:#555;">เวลาออกบัตรโดยสาร ${currentTime}</div>
+                    <div style="text-align:center; font-size:14px; font-weight:800; margin-top:5px;">กรุณาตรวจสอบรายละเอียดภายในตั๋วโดยสาร มิเช่นนั้นจะยึดถือรายละเอียดตามที่ระบุภายในบัตรโดยสารนี้</div>
+                    <div style="text-align:center; font-size:13px; font-weight:600; margin-top:3px; color:#666;">กรุณามารับตั๋วก่อนเวลาเดินทางอย่างน้อย 15 นาที เพื่อความสะดวกในการเดินทาง</div>
+                </div>
+
+                <div style="border-top:2px dashed #000; margin:10px 0;"></div>
+
+                <!-- Coupon Section -->
+                <div class="coupon-section">
+                    <table class="coupon-table">
+                        <colgroup>
+                            <col style="width: 24%;">
+                            <col style="width: 20%;">
+                            <col style="width: 16%;">
+                            <col style="width: 14%;">
+                            <col style="width: 26%;">
+                        </colgroup>
+                        <tr style="background: #f8fafc;">
+                            <td><span class="c-label">ต้นทาง [Form]</span></td>
+                            <td><span class="c-val" id="cp-from-${idx}">-</span></td>
+                            <td><span class="c-label">ปลายทาง [To]</span></td>
+                            <td><span class="c-val" id="cp-to-${idx}">-</span></td>
+                            <td style="background: #e5e7eb; text-align: center;"><span class="c-label" style="font-size: 11px; font-weight: 700; color: #000;">(คูปองแลกอาหารและเครื่องดื่ม มูลค่า 35 บาท)</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="c-label">วันที่เดินทาง [Departure Date.]</span></td>
+                            <td><span class="c-val" id="cp-date-${idx}">-</span></td>
+                            <td><span class="c-val" id="cp-time-${idx}">-</span></td>
+                            <td><span class="c-label">เลขที่ตั๋ว</span></td>
+                            <td><span class="c-val" id="cp-no-${idx}" style="font-weight: 500; font-style: italic;">-</span></td>
+                        </tr>
+                        <tr style="background: #f8fafc;">
+                            <td><span class="c-label">ชื่อผู้โดยสาร</span></td>
+                            <td><span class="c-val" id="cp-name-${idx}">-</span></td>
+                            <td><span class="c-val" id="cp-phone-${idx}">-</span></td>
+                            <td><span class="c-val" id="cp-price-${idx}" style="font-size: 15px;">-</span></td>
+                            <td><span class="c-seat-val" id="cp-seat-${idx}">-</span></td>
+                        </tr>
+                    </table>
+                    <div class="c-warning">สงวนสิทธิ์ใช้ได้เฉพาะผู้โดยสารที่ถือตั๋วเดินทางราคา 468 บาทต่อที่นั่งขึ้นไป</div>
+                </div>
+            </div>
+        `;
+        }
+
+
+        function fillTicketValues(t, idx) {
+            // Populate Ticket ID
+            let idDisp = t.ticketId || t.ticketNo || '';
+            if (idDisp.startsWith('online00')) {
+                idDisp = idDisp.replace('online00', '');
+            }
+
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val || '';
+            };
+
+            const setText = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = val || '-';
+            };
+
+            setVal(`f-no-${idx}`, idDisp);
+            setVal(`f-name-${idx}`, t.name);
+            setVal(`f-phone-${idx}`, t.phone);
+            setVal(`f-from-${idx}`, t.origin || t.from);
+            setVal(`f-to-${idx}`, t.destination || t.to);
+            setVal(`f-boarding-${idx}`, t.boarding);
+            setVal(`f-platform-${idx}`, t.platform);
+            setVal(`f-bus-${idx}`, t.busNo);
+            setVal(`f-seat-${idx}`, t.seatId);
+            setVal(`f-price-${idx}`, t.price);
+            setVal(`f-issuer-${idx}`, t.issuedBy);
+            setVal(`f-remark-${idx}`, t.remarks || t.remark || '');
+            setText(`f-boarding-disp-${idx}`, t.boarding);
+
+            // Fill Coupon Values
+            setText(`cp-no-${idx}`, t.ticketNo || (idDisp ? "online00" + idDisp : '-'));
+            setText(`cp-name-${idx}`, t.name);
+            setText(`cp-phone-${idx}`, t.phone);
+            setText(`cp-from-${idx}`, t.origin || t.from);
+            setText(`cp-to-${idx}`, t.destination || t.to);
+            setText(`cp-date-${idx}`, t.date || (t.day ? `${t.day}/${t.month}/${t.year}` : '-'));
+
+            let timeStr = t.time || '-';
+            if (timeStr !== '-' && !timeStr.includes('(เวลาต้นทาง)')) {
+                timeStr += ' (เวลาต้นทาง)';
+            }
+            setText(`cp-time-${idx}`, timeStr);
+
+            setText(`cp-seat-${idx}`, t.seatId);
+            setText(`cp-price-${idx}`, t.price);
+
+            // Payment Logic
+            let payMethod = '-';
+            if (t.isCash) payMethod = '💵 เงินสด';
+            else if (t.isQR) payMethod = '📱 QR-code';
+            else if (t.isCard) payMethod = '💳 บัตร';
+            else if (t.isInspector) payMethod = '🎫 บัตรตรวจฯ';
+
+            let payType = '👤 ทั่วไป';
+            let typeText = 'ปกติ';
+            const pType = (t.paymentType || '').toLowerCase();
+            const isAgentData = t.isAgent || pType === 'agent' || pType === 'เอเย่นต์' || (t.agentName && t.agentName !== '');
+
+            if (isAgentData) {
+                typeText = '👤 เอเย่นต์';
+            } else if (t.isCard || pType === 'ราคาบัตร') {
+                typeText = '💳 ราคาบัตร';
+            } else if (t.isInspector || pType === 'ตรวจการ' || pType === 'inspector') {
+                typeText = '👮 ตรวจการ';
+            }
+            const typeEl = document.getElementById(`m-pay-type-val-${idx}`);
+            if (typeEl) {
+                typeEl.textContent = typeText;
+                if (isAgentData) typeEl.style.color = '#2563eb';
+                else typeEl.style.color = '#1e293b';
+            }
+
+            const methodEl = document.getElementById(`m-pay-method-val-${idx}`);
+            if (methodEl) methodEl.textContent = payMethod;
+
+            // Handle Date from t.day / t.month / t.year fields
+            if (t.day && t.month && t.year) {
+                const y = toGregorian(t.year);
+                const mm = t.month.toString().padStart(2, '0');
+                const dd = t.day.toString().padStart(2, '0');
+                const yy = (y + 543).toString().slice(-2);
+                const dateInp = document.getElementById(`f-date-${idx}`);
+                if (dateInp) dateInp.value = `${y}-${mm}-${dd}`;
+
+                const dateDisp = document.getElementById(`f-date-display-${idx}`);
+                if (dateDisp) dateDisp.value = `${dd}/${mm}/${yy}`;
+            } else if (t.date && t.date.includes('/')) {
+                const parts = t.date.split('/');
+                if (parts.length === 3) {
+                    const y = toGregorian(parts[2]);
+                    const mm = parts[1].padStart(2, '0');
+                    const dd = parts[0].padStart(2, '0');
+                    const yy = (y + 543).toString().slice(-2);
+                    const dateInp = document.getElementById(`f-date-${idx}`);
+                    if (dateInp) dateInp.value = `${y}-${mm}-${dd}`;
+
+                    const dateDisp = document.getElementById(`f-date-display-${idx}`);
+                    if (dateDisp) dateDisp.value = `${dd}/${mm}/${yy}`;
+                }
+            }
+            const timeEl = document.getElementById(`f-time-${idx}`);
+            if (timeEl) timeEl.value = t.time || '';
+
+        }
+
+        function updateOtherPayment(idx) {
+            const sel = document.getElementById(`f-pay-other-selector-${idx}`);
+            const cb = document.getElementById(`m-pay-other-cb-${idx}`);
+            if (sel.value !== "" && cb) {
+                cb.classList.add('checked');
+            } else if (cb) {
+                cb.classList.remove('checked');
+            }
+        }
+
+
+
+
+
+        // Date Conversion Logic
+        function toGregorian(y) {
+            let yr = parseInt(y);
+            if (yr < 100) yr += 2500;   // ย่อ พ.ศ. เช่น 69 → 2569
+            if (yr > 2400) yr -= 543;   // พ.ศ. → ค.ศ.
+            return yr;
+        }
+
+
+
+
+        function togglePayment(idx, type) {
+            const el = document.getElementById(`m-pay-${type}-${idx}`);
+            if (el) {
+                el.classList.toggle('checked');
+            }
+
+            // Show/Hide Agent name input if Agent or Inspector is checked
+            const isAgent = document.getElementById(`m-pay-agent-${idx}`).classList.contains('checked');
+            const isInsp = document.getElementById(`m-pay-inspector-${idx}`).classList.contains('checked');
+
+            const agentLbl = document.getElementById(`agent-label-cell-${idx}`);
+            const agentInp = document.getElementById(`agent-input-cell-${idx}`);
+            const issuerLbl = document.getElementById(`issuer-label-cell-${idx}`);
+            const issuerInp = document.getElementById(`issuer-input-cell-${idx}`);
+
+            if (isAgent || isInsp) {
+                agentLbl.style.display = 'table-cell';
+                agentInp.style.display = 'table-cell';
+                issuerLbl.style.display = 'none';
+                issuerInp.style.display = 'none';
+            } else {
+                agentLbl.style.display = 'none';
+                agentInp.style.display = 'none';
+                issuerLbl.style.display = 'table-cell';
+                issuerInp.style.display = 'table-cell';
+            }
+        }
+
+
+        // ฟังก์ชันเตรียม DOM ให้พร้อมสำหรับ Export แบบ "กริบ" 100%
+        function prepareTicketForExport(originalCard) {
+            const clone = originalCard.cloneNode(true);
+
+            // 1. ล้างปุ่มและขยะ UI
+            clone.querySelectorAll('.btn-remove, .btn-fetch-inner, .btn-card-action, .btn-remove-inner, .ticket-selector').forEach(el => el.remove());
+
+            // 2. แปลง Input/Select เป็น Text Span (ป้องกัน Ghosting และความเพี้ยน)
+            const inputs = clone.querySelectorAll('input, select');
+            inputs.forEach(inp => {
+                const originalInp = originalCard.querySelector(`#${inp.id}`);
+                if (!originalInp) return;
+
+                const val = originalInp.value || '';
+                const isHidden = window.getComputedStyle(originalInp).display === 'none' || originalInp.type === 'hidden' || originalInp.style.display === 'none';
+
+                if (isHidden) {
+                    inp.remove();
+                    return;
+                }
+
+                const span = document.createElement('span');
+                span.textContent = val;
+
+                // คัดลอกสไตล์สำคัญ
+                const computedStyle = window.getComputedStyle(originalInp);
+                span.style.cssText = inp.style.cssText;
+                span.style.display = 'block';
+                span.style.width = '100%';
+                span.style.textAlign = computedStyle.textAlign || 'center';
+                span.style.fontWeight = '900';
+                span.style.fontFamily = "'Sarabun', sans-serif";
+                span.style.fontSize = computedStyle.fontSize || '18px';
+                span.style.color = computedStyle.color || 'black';
+                span.style.lineHeight = '1.2';
+                span.style.padding = '2px 0';
+
+                // กรณีราคา
+                if (inp.id.includes('f-price')) {
+                    span.style.fontSize = '26px';
+                    span.style.color = '#1e3a8a';
+                }
+
+                // กรณีชานชาลา
+                if (inp.id.includes('f-platform')) {
+                    span.style.fontSize = '28px';
+                }
+
+                inp.parentNode.replaceChild(span, inp);
+            });
+
+            // 3. ปรับสไตล์พื้นฐานให้คมชัด
+            clone.style.transform = 'none';
+            clone.style.transition = 'none';
+            clone.style.animation = 'none';
+            clone.style.boxShadow = 'none';
+            clone.style.border = '2px solid #000';
+            clone.style.background = '#ffffff';
+            clone.style.margin = '0';
+            clone.style.borderRadius = '0';
+
+            return clone;
+        }
+
+        async function downloadCombinedImage() {
+            let cards = Array.from(document.querySelectorAll('.ticket-page'));
+            const selectedCards = cards.filter(c => {
+                const idx = c.dataset.index;
+                return document.getElementById(`chk-${idx}`).checked;
+            });
+
+            if (selectedCards.length === 0) {
+                showToast('กรุณาเลือกตั๋วอย่างน้อย 1 ใบ', 'error');
+                return;
+            }
+
+            showToast(`กำลังรวมรูปภาพ ${selectedCards.length} ใบ...`, 'info');
+
+            const captureArea = document.createElement('div');
+            captureArea.style.position = 'fixed';
+            captureArea.style.top = '-20000px';
+            captureArea.style.left = '0';
+            captureArea.style.width = '900px';
+            captureArea.style.display = 'flex';
+            captureArea.style.flexDirection = 'column';
+            captureArea.style.gap = '20px';
+            captureArea.style.padding = '20px';
+            captureArea.style.background = '#f1f5f9';
+            document.body.appendChild(captureArea);
+
+            for (let card of selectedCards) {
+                const exportNode = prepareTicketForExport(card);
+                captureArea.appendChild(exportNode);
+            }
+
+            try {
+                const canvas = await html2canvas(captureArea, {
+                    scale: 4,
+                    useCORS: true,
+                    backgroundColor: '#f1f5f9',
+                    logging: false
+                });
+
+                const link = document.createElement('a');
+                const name = selectedCards[0].querySelector('[id^="f-name-"]').value || 'Group';
+                link.download = `Tickets_Group_${name}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showToast('ดาวน์โหลดรูปภาพรวมสำเร็จ');
+            } catch (err) {
+                console.error(err);
+                showToast('เกิดข้อผิดพลาดในการรวมรูป', 'error');
+            } finally {
+                captureArea.remove();
+            }
+        }
+
+        async function downloadImage() {
+            let cards = Array.from(document.querySelectorAll('.ticket-page'));
+            const selectedCards = cards.filter(c => {
+                const idx = c.dataset.index;
+                return document.getElementById(`chk-${idx}`).checked;
+            });
+
+            if (selectedCards.length === 0) {
+                showToast('กรุณาเลือกตั๋วอย่างน้อย 1 ใบ', 'error');
+                return;
+            }
+
+            showToast(`กำลังเตรียมไฟล์ภาพ ${selectedCards.length} ใบ...`, 'info');
+
+            const captureArea = document.createElement('div');
+            captureArea.style.position = 'fixed';
+            captureArea.style.top = '-9999px';
+            captureArea.style.left = '-9999px';
+            document.body.appendChild(captureArea);
+
+            for (let i = 0; i < selectedCards.length; i++) {
+                const card = selectedCards[i];
+                const exportNode = prepareTicketForExport(card);
+                captureArea.appendChild(exportNode);
+
+                try {
+                    const canvas = await html2canvas(exportNode, {
+                        scale: 4,
+                        useCORS: true,
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        imageTimeout: 0
+                    });
+
+                    const link = document.createElement('a');
+                    const tNo = card.querySelector('[id^="f-no-"]').value || `00${i + 1}`;
+                    link.download = `Ticket_${tNo}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+
+                    // หน่วงเวลานิดนึงกัน Browser block
+                    await new Promise(r => setTimeout(r, 500));
+                } catch (err) {
+                    console.error('Export failed:', err);
+                }
+
+                exportNode.remove();
+            }
+
+            captureArea.remove();
+            showToast('ดาวน์โหลดรูปภาพทั้งหมดที่เลือกสำเร็จ', 'success');
+        }
+
+        async function downloadSingleTicket(idx) {
+            const card = document.getElementById(`ticket-card-${idx}`);
+            if (!card) return;
+
+            showToast('กำลังเตรียมไฟล์ภาพ...', 'info');
+
+            const captureArea = document.createElement('div');
+            captureArea.style.position = 'fixed';
+            captureArea.style.top = '-10000px';
+            document.body.appendChild(captureArea);
+
+            const exportNode = prepareTicketForExport(card);
+            captureArea.appendChild(exportNode);
+
+            try {
+                const canvas = await html2canvas(exportNode, {
+                    scale: 4,
+                    useCORS: true,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    imageTimeout: 0
+                });
+
+                const link = document.createElement('a');
+                const tNo = "online00" + (document.getElementById(`f-no-${idx}`).value || `00${idx + 1}`);
+                link.download = `Ticket_${tNo}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showToast('ดาวน์โหลดรูปภาพสำเร็จ');
+            } catch (err) {
+                showToast('เกิดข้อผิดพลาดในการเซฟรูป', 'error');
+            }
+
+            captureArea.remove();
+        }
+
+        function printSingleTicket(idx) {
+            const card = document.getElementById(`ticket-card-${idx}`);
+            if (!card) return;
+
+            // ซ่อนใบอื่นๆ ชั่วคราวเพื่อปริ้นใบเดียว
+            const allCards = document.querySelectorAll('.ticket-page');
+            allCards.forEach(c => {
+                if (c.id !== `ticket-card-${idx}`) c.style.display = 'none';
+            });
+
+            window.print();
+
+            // แสดงกลับมาเหมือนเดิม
+            allCards.forEach(c => c.style.display = 'block');
+        }
+
+
+        function fetchTicketForCard(idx) {
+            let num = document.getElementById(`f-no-${idx}`).value.trim();
+            if (!num) return;
+            // เติม Prefix online00 เข้าไปข้างหน้า
+            const id = "online00" + num;
+
+            const overlay = document.getElementById('loading-overlay');
+            overlay.style.display = 'flex';
+
+            google.script.run.withSuccessHandler(res => {
+                overlay.style.display = 'none';
+                if (res && res.success) {
+                    // If it's a group booking, we use the main renderTickets to handle splitting
+                    if (res.isGroup && res.tickets.length > 1) {
+                        renderTickets(res.tickets);
+                        showToast(`ดึงข้อมูลกลุ่มรหัส ${id} เรียบร้อย`);
+                    } else {
+                        const data = res.isGroup ? res.tickets[0] : res;
+                        fillTicketValues(data, idx);
+                        // Update data-station/slot if available
+                        const card = document.getElementById(`ticket-card-${idx}`);
+                        card.dataset.station = data.station || '';
+                        card.dataset.slot = data.slotIndex !== undefined ? data.slotIndex : '';
+                        showToast(`ดึงข้อมูลรหัส ${id} สำเร็จ`);
+                    }
+                } else {
+                    showToast('ไม่พบรหัสนี้ในฐานข้อมูล (สามารถกรอกข้อมูลเองเพื่อสร้างตั๋วใหม่ได้)', 'info');
+                }
+            }).getTicketData(id);
+        }
+
+        function togglePrintSelection(idx, checked) {
+            const card = document.getElementById(`ticket-card-${idx}`);
+            if (card) {
+                if (checked) {
+                    card.classList.remove('print-hidden');
+                    card.style.opacity = '1';
+                } else {
+                    card.classList.add('print-hidden');
+                    card.style.opacity = '0.4';
+                }
+            }
+        }
+
+        function removeTicketCard(idx) {
+            showConfirm('ยืนยันการลบ', 'คุณต้องการลบใบตั๋วใบนี้ใช่หรือไม่? ข้อมูลที่ยังไม่ได้บันทึกจะหายไป', () => {
+                const card = document.getElementById(`ticket-card-${idx}`);
+                if (card) {
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.9) translateY(20px)';
+                    setTimeout(() => {
+                        card.remove();
+                        if (document.querySelectorAll('.ticket-page').length === 0) {
+                            showToast('ไม่มีใบตั๋วเหลืออยู่ สามารถกด "เพิ่มตั๋วว่าง" ได้ครับ', 'info');
+                        }
+                    }, 300);
+                }
+            });
+        }
+
+        async function saveTicketToSheet(idx) {
+            const getV = (id) => document.getElementById(`${id}-${idx}`)?.value || '';
+            const isChecked = (id) => document.getElementById(`${id}-${idx}`)?.classList.contains('checked');
+
+            const otherVal = getV('f-pay-other-selector');
+            const data = {
+                name: getV('f-name'),
+                phone: getV('f-phone'),
+                from: getV('f-from'),
+                to: getV('f-to'),
+                date: document.getElementById(`f-date-${idx}`).value,
+                time: getV('f-time'),
+                seatNo: getV('f-seat'),
+                boarding: getV('f-boarding'),
+                platform: getV('f-platform'),
+                busNo: getV('f-bus'),
+                price: getV('f-price'),
+                isCash: isChecked('m-pay-cash'),
+                isQR: isChecked('m-pay-qr'),
+                isAgent: otherVal !== "" && otherVal !== "ราคาบัตร" && !otherVal.includes("บัตรตรวจ"),
+                isCard: otherVal === "ราคาบัตร",
+                isInspector: otherVal.includes("บัตรตรวจ"),
+                agentName: (otherVal !== "ราคาบัตร") ? otherVal : "",
+                issuer: getV('f-issuer'),
+                remarks: getV('f-remark')
+            };
+
+            const overlay = document.getElementById('loading-overlay');
+            overlay.style.display = 'flex';
+
+            google.script.run.withSuccessHandler(res => {
+                overlay.style.display = 'none';
+                if (res.success) {
+                    showToast('บันทึกข้อมูลลงฐานข้อมูลเรียบร้อยแล้ว', 'success');
+                    if (res.printData && res.printData.ticketNo) {
+                        document.getElementById(`f-no-${idx}`).value = res.printData.ticketNo.replace('online00', '');
+                        showToast(`รหัสตั๋วใหม่: ${res.printData.ticketNo}`, 'info');
+                    }
+                } else {
+                    showToast('บันทึกไม่สำเร็จ: ' + res.error, 'error');
+                }
+            }).processManualTicket(data);
+        }
+
+        // Custom Modal Helpers
+        let confirmCallback = null;
+        function showConfirm(title, msg, onConfirm) {
+            document.getElementById('confirm-title').innerText = title;
+            document.getElementById('confirm-msg').innerText = msg;
+            confirmCallback = onConfirm;
+            document.getElementById('confirm-modal').style.display = 'flex';
+        }
+        function closeConfirmModal() {
+            document.getElementById('confirm-modal').style.display = 'none';
+            confirmCallback = null;
+        }
+        document.getElementById('confirm-ok-btn').onclick = () => {
+            if (confirmCallback) confirmCallback();
+            closeConfirmModal();
+        };
+        // Smart Phone Formatting
+        function formatPhone(input) {
+            let val = input.value;
+            if (val.startsWith('0')) {
+                let digits = val.replace(/\D/g, '');
+                if (digits.length > 3) {
+                    input.value = digits.substring(0, 3) + '-' + digits.substring(3, 10);
+                } else {
+                    input.value = digits;
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

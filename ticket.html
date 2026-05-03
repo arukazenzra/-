@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <title>KRR E-Ticket: บัตรโดยสารอิเล็กทรอนิกส์</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        @media print {
+            @page {
+                size: 210mm 148.5mm;
+                margin: 0;
+                /* Changed back to 0 for maximum space */
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                background: #fff;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                zoom: 85%;
+                /* Reduced further to ensure fit */
+            }
+
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            .ticket-page {
+                width: 100%;
+                height: 100%;
+                padding: 0;
+                border: none;
+                margin: 0;
+                box-shadow: none;
+                overflow: visible;
+                display: block;
+                page-break-after: avoid;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            .ticket-page * {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: #f4f4f5;
+            color: #000;
+            line-height: 1.2;
+        }
+
+        .no-print-bar {
+            background: #1e293b;
+            padding: 10px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .btn-p {
+            padding: 8px 20px;
+            border-radius: 6px;
+            border: none;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .btn-print {
+            background: #facc15;
+            color: #000;
+        }
+
+        .btn-close {
+            background: #64748b;
+            color: #fff;
+        }
+
+        .ticket-page {
+            width: 210mm;
+            height: auto;
+            margin: 2px auto;
+            background: #fff;
+            padding: 1mm 4mm;
+            border: 1px dashed #ccc;
+            position: relative;
+            display: block;
+            overflow: hidden;
+        }
+
+        /* Header Section */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+        }
+
+        .title-group h2 {
+            font-size: 9px;
+            font-weight: 700;
+            margin-bottom: -4px;
+        }
+
+        .title-group p {
+            font-size: 8px;
+            font-weight: 500;
+            color: #444;
+        }
+
+        .title-group h1 {
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin-top: -2px;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .copy-tag {
+            font-size: 11px;
+            font-weight: 700;
+            font-style: italic;
+            margin-bottom: 2px;
+        }
+
+        .no-box {
+            font-size: 11px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 3px;
+        }
+
+        .no-val {
+            border: 1.5px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 0px 6px;
+            font-size: 12px;
+            min-width: 80px;
+            text-align: center;
+            background: #f8fafc;
+            font-weight: 900;
+            color: #000;
+        }
+
+        .boarding-top {
+            font-weight: 900;
+            font-size: 12px;
+            margin-top: 1px;
+            color: #000;
+        }
+
+        .boarding-val {
+            color: #ef4444;
+            margin-left: 5px;
+        }
+
+        /* Excel-Style Table */
+        .excel-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1.5px solid #000;
+            table-layout: fixed;
+        }
+
+        .excel-table td {
+            border: 1px solid #000;
+            padding: 2px 8px;
+            vertical-align: middle;
+        }
+
+        .td-lbl {
+            background: #f8fafc;
+        }
+
+        .lbl {
+            font-size: 11px;
+            font-weight: 800;
+            display: block;
+            line-height: 1.0;
+            color: #000;
+        }
+
+        .lbl span {
+            font-size: 9px;
+            font-weight: 500;
+            color: #444;
+            display: block;
+        }
+
+        .val {
+            font-size: 15px;
+            font-weight: 900;
+            color: #000;
+            padding-left: 2px;
+        }
+
+        .val-lg {
+            font-size: 26px;
+            font-weight: 900;
+            text-align: center;
+            display: block;
+            width: 100%;
+            color: #000;
+        }
+
+        /* Payment Section inside Table */
+        .pay-table {
+            width: 100%;
+            border-collapse: collapse;
+            height: 100%;
+        }
+
+        .pay-table td {
+            border: 1px solid #000;
+            padding: 0px 4px;
+            font-size: 9px;
+            font-weight: 800;
+            color: #000;
+            height: 16px;
+        }
+
+        .pay-table td:first-child {
+            border-left: none;
+            border-top: none;
+            width: 78%;
+        }
+
+        .pay-table td:last-child {
+            border-right: none;
+            border-top: none;
+            width: 22%;
+            text-align: center;
+        }
+
+        .pay-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .check-box {
+            width: 18px;
+            height: 18px;
+            border: 1.5px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            float: right;
+            background: #fff;
+        }
+
+        .check-box.checked {
+            background: #334155;
+        }
+
+        .check-box.checked::after {
+            content: '✔';
+            font-size: 10px;
+            color: #fff;
+        }
+
+        /* Adjustments for A5 fit */
+        .excel-table td {
+            height: 21px;
+            font-size: 10px;
+        }
+
+        .title-group h1 {
+            font-size: 18px;
+        }
+
+        .val-lg {
+            font-size: 20px;
+        }
+
+        .footer-warning {
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .footer-note {
+            font-size: 11px;
+        }
+
+        .divider {
+            margin: 2px 0;
+        }
+
+        .coupon-section {
+            margin-top: 0;
+        }
+
+        .c-seat-tag {
+            font-size: 20px;
+        }
+
+        .header-section {
+            margin-bottom: 5px;
+        }
+
+        /* Footer */
+        .issued-time-row {
+            text-align: right;
+            font-size: 9px;
+            margin-top: 2px;
+            font-weight: 700;
+            color: #000;
+        }
+
+        .footer-warning {
+            text-align: center;
+            font-size: 10px;
+            font-weight: 900;
+            margin-top: 0px;
+            color: #000;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 9px;
+            font-weight: 600;
+            margin-top: 0px;
+            color: #000;
+        }
+
+        .divider {
+            border-bottom: 1px dashed #000;
+            margin: 1px 0;
+            page-break-before: avoid;
+        }
+
+        /* Coupon Section */
+        .coupon-section {
+            margin-top: 5px;
+            border: 1.5px dashed #000;
+            padding: 0;
+            background: #fff;
+        }
+
+        .coupon-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        .coupon-table td {
+            padding: 2px 8px;
+            vertical-align: middle;
+            border: none !important;
+        }
+
+        .c-header-row {
+            background: #f1f5f9;
+        }
+
+        .c-label {
+            font-size: 9px;
+            font-weight: 800;
+            color: #000;
+        }
+
+        .c-value {
+            font-size: 11px;
+            font-weight: 900;
+            color: #000;
+        }
+
+        .c-seat-tag {
+            color: #000;
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        .c-warning {
+            font-size: 11px;
+            color: #ef4444;
+            font-weight: 900;
+            text-align: center;
+            width: 100%;
+            padding: 2px;
+            background: #fff;
+            border-top: 1px dashed #000;
+        }
+
+        /* ── Cancelled Stamp ── */
+        .cancelled-stamp {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-12deg);
+            border: 8px solid #ef4444;
+            color: #ef4444;
+            font-size: 100px;
+            font-weight: 900;
+            padding: 10px 40px;
+            border-radius: 20px;
+            opacity: 0.3;
+            /* Subtle for printing but clear */
+            pointer-events: none;
+            z-index: 1000;
+            text-transform: uppercase;
+            letter-spacing: 10px;
+            display: none;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .cancelled-stamp.show {
+            display: block;
+        }
+
+        @media print {
+            .cancelled-stamp {
+                opacity: 0.5;
+                /* More visible when printing */
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="no-print-bar no-print">
+        <button class="btn-p btn-print" onclick="window.print()">🖨️ สั่งพิมพ์ตั๋วโดยสาร</button>
+        <button class="btn-p btn-close" onclick="window.close()">✖️ ปิด</button>
+    </div>
+
+    <div class="ticket-page" id="ticket-container"
+        style="page-break-inside: avoid; break-inside: avoid; position: relative;">
+        <!-- Cancelled Stamp -->
+        <div class="cancelled-stamp" id="cancel-stamp">CANCELLED</div>
+
+        <div style="page-break-inside: avoid; break-inside: avoid; width: 100%;">
+            <!-- Header -->
+            <div class="header-section">
+                <div class="header-left">
+                    <img src="https://drive.google.com/thumbnail?id=1Sxwik4laagC2e6xZYYQ0gJaKZQ2IUWeM&sz=w200"
+                        class="logo-img">
+                    <div class="title-group">
+                        <h2>บัตรโดยสารอิเล็กทรอนิกส์ [กิจรุ่งเรืองทัวร์]</h2>
+                        <p>Passenger ticket</p>
+                        <h1>Kitrungrueng E-Ticket</h1>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="copy-tag">สำหรับผู้โดยสาร/สำเนา</div>
+                    <div class="no-box">
+                        No.
+                        <div class="no-val" id="tk-no" autocomplete="off" spellcheck="false" data-lpignore="true">
+                            online000000</div>
+                    </div>
+                    <div class="boarding-top">
+                        จุดขึ้นรถ <span class="boarding-val" id="tk-boarding-top"
+                            style="color:#ef4444; font-weight: 900;">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Body -->
+            <table class="excel-table">
+                <colgroup>
+                    <col style="width: 14%;">
+                    <col style="width: 32%;">
+                    <col style="width: 14%;">
+                    <col style="width: 14%;">
+                    <col style="width: 12%;">
+                    <col style="width: 14%;">
+                </colgroup>
+
+                <tr>
+                    <td class="td-lbl"><span class="lbl">ชื่อผู้โดยสาร <span>Name</span></span></td>
+                    <td class="val" id="tk-name" style="font-weight: 900;">-</td>
+                    <td class="td-lbl"><span class="lbl">เบอร์โทร <span>Mobile Phone</span></span></td>
+                    <td colspan="3" class="val" id="tk-phone" style="font-weight: 900;">-</td>
+                </tr>
+
+                <tr>
+                    <td class="td-lbl"><span class="lbl">จาก <span>From</span></span></td>
+                    <td class="val" id="tk-from" style="font-weight: 900;">-</td>
+                    <td class="td-lbl"><span class="lbl">ถึง <span>To</span></span></td>
+                    <td colspan="3" class="val" id="tk-to" style="font-weight: 900;">-</td>
+                </tr>
+
+                <tr>
+                    <td class="td-lbl"><span class="lbl">วันที่ออกบัตร <span>Date of Issued</span></span></td>
+                    <td class="val" id="tk-issued-date" style="text-align: center; font-weight: 900;">-</td>
+                    <td class="td-lbl"><span class="lbl">วันเดินทาง <span>Departure Date</span></span></td>
+                    <td class="val" id="tk-date" style="text-align: center; font-weight: 900;">-</td>
+                    <td class="td-lbl"><span class="lbl">เวลา <span>Time</span></span></td>
+                    <td class="val" id="tk-time" style="text-align: center; font-weight: 900;">-</td>
+                </tr>
+
+                <tr>
+                    <td class="td-lbl"><span class="lbl">ชานชาลาที่ <span>P/F No.</span></span></td>
+                    <td class="val-lg" id="tk-platform" style="font-size: 20px; font-weight: 900; text-align: center;">-
+                    </td>
+                    <td class="td-lbl"><span class="lbl">หมายเลขรถ <span>Bus No.</span></span></td>
+                    <td class="val" id="tk-bus" style="text-align: center; font-weight: 900;">-</td>
+                    <td class="td-lbl"><span class="lbl">เลขที่นั่ง <span>Seat No.</span></span></td>
+                    <td class="val" id="tk-seat" style="text-align: center; font-size: 18px; font-weight: 900;">-</td>
+                </tr>
+
+                <tr>
+                    <td class="td-lbl"><span class="lbl">ราคา <span>Price</span></span></td>
+                    <td class="val" id="tk-price" style="text-align: center; font-size: 18px; font-weight: 900;">-</td>
+                    <td colspan="2" style="padding: 0;">
+                        <table class="pay-table">
+                            <tr>
+                                <td
+                                    style="font-size: 9px; font-weight: 800; color: #64748b; width: 40%; padding-left: 8px;">
+                                    วิธีชำระ</td>
+                                <td style="font-size: 12px; font-weight: 900; color: #1e293b;" id="pay-method-display">-
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 9px; font-weight: 800; color: #64748b; padding-left: 8px;">ประเภท
+                                </td>
+                                <td style="font-size: 12px; font-weight: 900; color: #1e293b;" id="pay-type-display">-
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="td-lbl"><span class="lbl">ผู้ขาย <span>Issued by</span></span></td>
+                    <td class="val" id="tk-issuer" style="text-align: center; font-weight: 900;">-</td>
+                </tr>
+
+                <tr>
+                    <td class="td-lbl"><span class="lbl">หมายเหตุ <span>Remark</span></span></td>
+                    <td colspan="5" class="val" id="tk-remark" style="font-size:14px; min-height: 20px;"></td>
+                </tr>
+            </table>
+
+            <!-- Summary Footer -->
+            <div class="issued-time-row">
+                <span>เวลาออกบัตรโดยสาร <span id="tk-issued-full">-</span></span>
+            </div>
+            <div class="footer-warning">กรุณาตรวจสอบรายละเอียดภายในตั๋วโดยสาร
+                มิเช่นนั้นจะยึดถือรายละเอียดตามที่ระบุภายในบัตรโดยสารนี้</div>
+            <div class="footer-note">กรุณามารับตั๋วก่อนเวลาเดินทางอย่างน้อย 15 นาที เพื่อความสะดวกในการเดินทาง</div>
+
+            <div class="divider"></div>
+
+            <!-- Coupon Section -->
+            <div class="coupon-section">
+                <table class="coupon-table">
+                    <colgroup>
+                        <col style="width: 25%;">
+                        <col style="width: 20%;">
+                        <col style="width: 20%;">
+                        <col style="width: 35%;">
+                    </colgroup>
+                    <tr class="c-header-row">
+                        <td><span class="c-label">ต้นทาง [Form]</span></td>
+                        <td><span class="c-label">ปลายทาง [To]</span></td>
+                        <td colspan="2" style="text-align: right;"><span class="c-label">(คูปองแลกอาหารและเครื่องดื่ม
+                                มูลค่า 35 บาท)</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="c-value" id="cp-from" style="font-weight: 900;">-</span></td>
+                        <td><span class="c-value" id="cp-to" style="font-weight: 900;">-</span></td>
+                        <td colspan="2"></td>
+                    </tr>
+                    <tr class="c-header-row">
+                        <td><span class="c-label">วันที่เดินทาง [Departure Date.]</span></td>
+                        <td><span class="c-label">เวลา</span></td>
+                        <td colspan="2" style="text-align: right;"><span class="c-label">เลขที่ตั๋ว</span></td>
+                    </tr>
+                    <tr>
+                        <td><span class="c-value" id="cp-date" style="font-weight: 900;">-</span></td>
+                        <td><span class="c-value" id="cp-time" style="font-weight: 900;">-</span></td>
+                        <td colspan="2" style="text-align: right;"><span class="c-value"
+                                style="font-weight: 900; font-style: italic;" id="cp-no">-</span></td>
+                    </tr>
+                    <tr class="c-header-row">
+                        <td><span class="c-label">ชื่อผู้โดยสาร</span></td>
+                        <td style="text-align: center;"><span class="c-label">ราคา</span></td>
+                        <td colspan="2" style="text-align: right;"><span class="c-label">เลขที่นั่ง</span></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div style="display: flex; gap: 10px;">
+                                <span class="c-value" id="cp-name" style="font-weight: 900;">-</span>
+                                <span class="c-value" style="font-size: 12px; font-weight: 900;" id="cp-phone">-</span>
+                            </div>
+                        </td>
+                        <td class="c-value" id="cp-price" style="text-align: center; font-weight: 900;">-</td>
+                        <td colspan="2" style="text-align: right;"><span class="c-seat-tag" id="cp-seat"
+                                style="font-size: 24px; font-weight: 900;">-</span></td>
+                    </tr>
+                </table>
+                <div class="c-warning" id="cp-warning">
+                    สงวนสิทธิ์ใช้ได้เฉพาะผู้โดยสารที่ถือตั๋วเดินทางราคา 468 บาทต่อที่นั่งขึ้นไป
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function fillData(data) {
+            if (!data) return;
+
+            // Basic Info
+            document.getElementById('tk-no').textContent = data.ticketNo || '-';
+            document.getElementById('tk-boarding-top').textContent = data.boarding || '-';
+            document.getElementById('tk-name').textContent = data.name || '-';
+            document.getElementById('tk-phone').textContent = data.phone || '-';
+            document.getElementById('tk-from').textContent = data.from || data.origin || '-';
+            document.getElementById('tk-to').textContent = data.to || data.destination || '-';
+            document.getElementById('tk-date').textContent = data.date || '-';
+            document.getElementById('tk-time').textContent = data.time || '-';
+            document.getElementById('tk-platform').textContent = data.platform || '-';
+            document.getElementById('tk-bus').textContent = data.busNo || '-';
+            document.getElementById('tk-seat').textContent = data.seatId || '-';
+            document.getElementById('tk-price').textContent = (data.price || '0') + (data.isAgent ? '(A)' : '');
+            document.getElementById('tk-issuer').textContent = data.issuedBy || '-';
+            const rMark = document.getElementById('tk-remark');
+            if (rMark) {
+                rMark.textContent = data.remark || '';
+                rMark.style.color = data.remark ? 'red' : 'black';
+                rMark.style.fontWeight = '500'; // ไม่หนามากแต่ชัดเจน
+
+                // เอากล่องและพื้นหลังออก (ทำให้เป็นตัวอักษรลอยๆ)
+                const rRow = rMark.closest('tr');
+                if (rRow) {
+                    const cells = rRow.querySelectorAll('td');
+                    cells.forEach(c => {
+                        c.style.background = 'transparent';
+                    });
+                }
+            }
+
+            // Coupon
+            document.getElementById('cp-no').textContent = data.ticketNo || '-';
+            document.getElementById('cp-name').textContent = data.name || '-';
+            document.getElementById('cp-phone').textContent = data.phone || '-';
+            document.getElementById('cp-from').textContent = data.from || data.origin || '-';
+            document.getElementById('cp-to').textContent = data.to || data.destination || '-';
+            document.getElementById('cp-date').textContent = data.date || '-';
+            document.getElementById('cp-time').textContent = data.time || '-';
+            document.getElementById('cp-seat').textContent = data.seatId || '-';
+            document.getElementById('cp-price').textContent = (data.price || '0') + (data.isAgent ? '(A)' : '');
+
+            // Show Cancelled Stamp
+            if (data.status === 'CANCELLED' || data.status === 'EXPIRED') {
+                document.getElementById('cancel-stamp').classList.add('show');
+            } else {
+                document.getElementById('cancel-stamp').classList.remove('show');
+            }
+
+            // Payment Display — pull directly from data
+            let methodText = '-';
+            if (data.isCash) methodText = '💵 เงินสด';
+            else if (data.isQR) methodText = '📱 โอน (QR)';
+            document.getElementById('pay-method-display').textContent = methodText;
+
+            let typeText = 'ปกติ';
+            if (data.isAgent) typeText = '👤 เอเย่น';
+            else if (data.isCard) typeText = '💳 ราคาบัตร';
+            else if (data.isInspector) typeText = '👮 ตรวจการขนส่ง';
+            document.getElementById('pay-type-display').textContent = typeText;
+
+            const now = new Date();
+            const year = now.getFullYear() + 543;
+            document.getElementById('tk-issued-date').textContent = `${now.getDate()}/${now.getMonth() + 1}/${year.toString().slice(-2)}`;
+            document.getElementById('tk-issued-full').textContent = `${now.getDate()}/${now.getMonth() + 1}/${year.toString()}, ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+
+            document.getElementById('cp-warning').textContent = `สงวนสิทธิ์ใช้ได้เฉพาะผู้โดยสารที่ถือตั๋วเดินทางราคา 468 บาทต่อที่นั่งขึ้นไป`;
+        }
+
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+
+            // Priority 1: URL 'd' parameter (Base64)
+            const urlB64 = urlParams.get('d');
+            if (urlB64) {
+                try {
+                    const data = JSON.parse(decodeURIComponent(atob(urlB64)));
+                    fillData(data);
+                    setTimeout(() => window.print(), 500);
+                    return;
+                } catch (e) {
+                    console.error("Payload Decoding Error (URL): ", e);
+                }
+            }
+
+            // Priority 2: Template payload (<?= payload ?>)
+            const b64Data = "<?= payload ?>";
+            if (b64Data && b64Data !== "") {
+                try {
+                    const data = JSON.parse(decodeURIComponent(atob(b64Data)));
+                    fillData(data);
+                    setTimeout(() => window.print(), 500);
+                } catch (e) {
+                    console.error("Payload Decoding Error (Template): ", e);
+                    document.body.innerHTML = "<h3 style='text-align:center; margin-top:50px; color:red;'>ไม่สามารถอ่านข้อมูลตั๋วได้</h3>";
+                }
+            } else {
+                document.body.innerHTML = "<h3 style='text-align:center; margin-top:50px; color:gray;'>กำลังรอข้อมูล...</h3>";
+            }
+        };
+    </script>
+</body>
+
+</html>
