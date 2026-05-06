@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Trip Manifest: ผังที่นั่ง</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Sriracha&display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&family=Sriracha&display=swap"
         rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -18,7 +19,8 @@
             font-family: 'Sarabun', sans-serif;
             background: #fff;
             color: #1e293b;
-            font-size: 12px; /* Reduced */
+            font-size: 12px;
+            /* Reduced */
             line-height: 1.5;
         }
 
@@ -26,7 +28,8 @@
             width: 210mm;
             min-height: 297mm;
             margin: 0 auto;
-            padding: 0.7cm 1.5cm; /* ลดขอบบน-ล่างลงเพื่อคืนพื้นที่ */
+            padding: 0.7cm 1.5cm;
+            /* ลดขอบบน-ล่างลงเพื่อคืนพื้นที่ */
             background: #fff;
             display: flex;
             flex-direction: column;
@@ -37,10 +40,12 @@
         /* ── Header ── */
         .m-header {
             text-align: center;
-            font-size: 16px; /* Reduced */
+            font-size: 16px;
+            /* Reduced */
             font-weight: 800;
             background: #bfdbfe;
-            padding: 4px; /* Reduced */
+            padding: 4px;
+            /* Reduced */
             margin-bottom: 4px;
             width: 100%;
             color: #1e293b;
@@ -50,11 +55,13 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 6px;
-            font-size: 14px; /* Reduced */
+            font-size: 14px;
+            /* Reduced */
         }
 
         .m-info-table td {
-            padding: 3px 6px; /* Reduced */
+            padding: 3px 6px;
+            /* Reduced */
             border: 1px solid #cbd5e1;
         }
 
@@ -74,7 +81,8 @@
         /* ── Seat Grid ── */
         .m-seat-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 10px 1fr 1fr; /* Reduced aisle to 10px */
+            grid-template-columns: 1fr 1fr 10px 1fr 1fr;
+            /* Reduced aisle to 10px */
             gap: 2px;
             margin-bottom: 8px;
             width: 100%;
@@ -97,13 +105,14 @@
         .m-seat {
             border: 1px solid #cbd5e1;
             padding: 4px 8px;
-            height: 78px; /* Adjusted to ensure A4 fit while remaining large */
+            height: 78px;
+            /* Adjusted to ensure A4 fit while remaining large */
             display: flex;
             flex-direction: column;
             justify-content: space-around;
             background: #fff;
             position: relative;
-            overflow: visible; 
+            overflow: visible;
             min-width: 0;
         }
 
@@ -158,13 +167,14 @@
             overflow: hidden;
             font-weight: 800;
             z-index: 2;
-            padding-left: 25px; 
+            padding-left: 25px;
             width: 100%;
         }
 
         .s-mid .s-phone {
             text-align: left;
-            color: #0284c7; /* Original Blue Color for AG */
+            color: #0284c7;
+            /* Original Blue Color for AG */
         }
 
         .s-mid .s-phone-normal {
@@ -179,7 +189,8 @@
             font-weight: 800;
             text-align: right;
             padding-right: 2px;
-            padding-left: 8px; /* Gap from phone */
+            padding-left: 8px;
+            /* Gap from phone */
             min-width: 40px;
         }
 
@@ -190,7 +201,7 @@
             font-size: 12px;
             color: #000;
             z-index: 2;
-            padding-left: 25px; 
+            padding-left: 25px;
         }
 
         .s-dest {
@@ -204,9 +215,11 @@
             color: #000;
             font-weight: 900;
             font-size: 12px;
-            width: 55px; /* Increased */
+            width: 55px;
+            /* Increased */
             text-align: right;
-            padding-left: 5px; /* Gap from destination */
+            padding-left: 5px;
+            /* Gap from destination */
         }
 
         .stair-box {
@@ -223,8 +236,9 @@
         /* ── Financial Summary ── */
         .summary-container {
             display: grid;
-            grid-template-columns: 1fr 20px 1fr; 
-            margin-top: 5px; /* Reduced gap from grid */
+            grid-template-columns: 1fr 20px 1fr;
+            margin-top: 5px;
+            /* Reduced gap from grid */
             width: 100%;
             align-items: flex-start;
         }
@@ -245,7 +259,8 @@
             width: 100%;
             border-bottom: 1px solid #1e3a8a;
             background: #eff6ff;
-            height: 28px; /* Slightly increased for clarity */
+            height: 28px;
+            /* Slightly increased for clarity */
             align-items: stretch;
         }
 
@@ -267,7 +282,8 @@
             width: 130px;
             display: flex;
             border-left: 1.5px solid #1e3a8a;
-            background: #fff; /* White background for values like Image 1 */
+            background: #fff;
+            /* White background for values like Image 1 */
         }
 
         .finance-row .value {
@@ -303,16 +319,18 @@
             z-index: 10;
             background: #fff !important;
         }
-        
+
         .row-highlight-red .label {
             color: #1e3a8a !important;
         }
 
-        .blue-text .value, .blue-text .unit {
+        .blue-text .value,
+        .blue-text .unit {
             color: #2563eb !important;
         }
 
-        .red-text .value, .red-text .unit {
+        .red-text .value,
+        .red-text .unit {
             color: #ef4444 !important;
         }
 
@@ -337,7 +355,7 @@
             border-collapse: collapse;
             border: 1.5px solid #1e3a8a;
         }
-        
+
         .receives-table th {
             background: #f1f5f9;
             padding: 5px;
@@ -346,9 +364,10 @@
             font-weight: 800;
             font-size: 14px;
         }
-        
+
         .receives-table td {
-            height: 26px; /* Slightly reduced to save space */
+            height: 26px;
+            /* Slightly reduced to save space */
             border: 1px solid #1e3a8a;
             padding: 0 10px;
             background: #fff;
@@ -378,7 +397,8 @@
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            margin-bottom: -5px; /* Pull down to touch the line */
+            margin-bottom: -5px;
+            /* Pull down to touch the line */
             width: 100%;
             text-align: center;
             white-space: nowrap;
@@ -436,7 +456,8 @@
 
             @page {
                 size: A4 portrait;
-                margin: 0; /* Set to 0 to hide browser headers/footers (URL) */
+                margin: 0;
+                /* Set to 0 to hide browser headers/footers (URL) */
             }
 
             body {
@@ -546,7 +567,7 @@
                         </div>
                     </div>
                     <div class="finance-row red-label red-text">
-                        <span class="label">หัก % การขาย (4%)</span>
+                        <span class="label">หัก % ขาย (4%)</span>
                         <div class="value-group">
                             <span class="value" id="sum-tax">0</span>
                             <span class="unit">บาท</span>
@@ -570,9 +591,9 @@
                         <span class="label">หักเบี้ยเลี้ยง/ใบเวลา/ลานจอด</span>
                         <div class="value-group">
                             <span class="value">
-                                <input type="number" id="sum-expense" 
-                                       style="width: 70px; text-align: right; border: none; font-family: inherit; font-size: 14px; font-weight: 800; color: #ef4444; outline: none; background: transparent;"
-                                       value="0">
+                                <input type="number" id="sum-expense"
+                                    style="width: 70px; text-align: right; border: none; font-family: inherit; font-size: 14px; font-weight: 800; color: #ef4444; outline: none; background: transparent;"
+                                    value="0">
                             </span>
                             <span class="unit">บาท</span>
                         </div>
@@ -598,10 +619,26 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr><td id="r-stop-1" contenteditable="true" class="editable-cell"></td><td id="r-amt-1" contenteditable="true" class="editable-cell" style="text-align:right; font-weight:bold;"></td></tr>
-                        <tr><td id="r-stop-2" contenteditable="true" class="editable-cell"></td><td id="r-amt-2" contenteditable="true" class="editable-cell" style="text-align:right; font-weight:bold;"></td></tr>
-                        <tr><td id="r-stop-3" contenteditable="true" class="editable-cell"></td><td id="r-amt-3" contenteditable="true" class="editable-cell" style="text-align:right; font-weight:bold;"></td></tr>
-                        <tr><td id="r-stop-4" contenteditable="true" class="editable-cell"></td><td id="r-amt-4" contenteditable="true" class="editable-cell" style="text-align:right; font-weight:bold;"></td></tr>
+                        <tr>
+                            <td id="r-stop-1" contenteditable="true" class="editable-cell"></td>
+                            <td id="r-amt-1" contenteditable="true" class="editable-cell"
+                                style="text-align:right; font-weight:bold;"></td>
+                        </tr>
+                        <tr>
+                            <td id="r-stop-2" contenteditable="true" class="editable-cell"></td>
+                            <td id="r-amt-2" contenteditable="true" class="editable-cell"
+                                style="text-align:right; font-weight:bold;"></td>
+                        </tr>
+                        <tr>
+                            <td id="r-stop-3" contenteditable="true" class="editable-cell"></td>
+                            <td id="r-amt-3" contenteditable="true" class="editable-cell"
+                                style="text-align:right; font-weight:bold;"></td>
+                        </tr>
+                        <tr>
+                            <td id="r-stop-4" contenteditable="true" class="editable-cell"></td>
+                            <td id="r-amt-4" contenteditable="true" class="editable-cell"
+                                style="text-align:right; font-weight:bold;"></td>
+                        </tr>
                     </tbody>
                 </table>
                 <div class="sign-wrapper">
@@ -695,7 +732,7 @@
                 if (isConf && boarding.trim() !== '') {
                     displayName = `${name}/<span style="color:#b91c1c; font-weight:800;">${boarding}</span>`;
                 }
-                
+
                 // Middle row: phone (center)
                 let midContent = '';
                 if (isAgent) {

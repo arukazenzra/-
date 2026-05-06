@@ -118,13 +118,6 @@ function getSlotStartCol(station, slotIndex, sheet) {
 // ── doGet ────────────────────────────────────────────────────
 function doGet(e) {
   const page = (e && e.parameter && e.parameter.page) || 'dashboard';
-  if (page === 'ticket') {
-    const template = HtmlService.createTemplateFromFile('ticket');
-    template.payload = (e && e.parameter && e.parameter.d) || '';
-    return template.evaluate()
-      .setTitle('พิมพ์ตั๋วโดยสาร')
-      .addMetaTag('viewport', 'width=device-width, initial-scale=1');
-  }
   if (page === 'manifest') {
     const template = HtmlService.createTemplateFromFile('manifest');
     template.payload = (e && e.parameter && e.parameter.d) || '';
@@ -369,7 +362,11 @@ function getSlotSummary(day, month, year, station) {
     const times   = (station === 'phuket') ? PHUKET_TIMES : HATYAI_TIMES;
     const results = [];
 
-    for (let i = 0; i < times.length; i++) {
+    const maxCols = sheet.getMaxColumns();
+    const hCount = Math.max(6, Math.floor((maxCols - 2 - 36) / 6));
+    const loopLimit = (station === 'hatyai') ? Math.min(times.length, hCount) : times.length;
+
+    for (let i = 0; i < loopLimit; i++) {
       const startRow = getDayStartRow(day);
       const startCol = getSlotStartCol(station, i, sheet);
 
@@ -389,18 +386,21 @@ function getSlotSummary(day, month, year, station) {
       const busNo = sheet.getRange(startRow + OFF_BUS_INFO, startCol + 1).getDisplayValue();
       const timeInSheet = sheet.getRange(startRow + 1, startCol + 4).getDisplayValue();
       
+      // ตรวจสอบว่ารอบนี้มีการ "วาดผัง" หรือยัง (เช็คจากที่นั่ง 1A)
+      const firstSeatVal = sheet.getRange(startRow + OFF_SEATS_START, startCol).getDisplayValue();
+      const hasData = (firstSeatVal !== "");
+
       results.push({
         slotIndex: i,
         time:      timeInSheet || times[i], // ใช้เวลาจาก Sheet ถ้ามีการพิมพ์ทับ
         busNo:     busNo || '-',
         vacant, prebooked, confirmed,
-        total:     vacant + prebooked + confirmed
+        total:     vacant + prebooked + confirmed,
+        hasData:   hasData // ส่งสถานะไปบอกหน้าเว็บว่ามีข้อมูลผังหรือยัง
       });
     }
 
     // ตรวจสอบว่ามีการเพิ่มรอบเสริมหาดใหญ่หรือไม่ (ถ้าเกิน 6 รอบปกติถือว่าขยาย)
-    const maxCols = sheet.getMaxColumns();
-    const hCount = Math.floor((maxCols - 2 - 36) / 6);
     const isExpanded = hCount > 6;
     
     return { 
@@ -696,18 +696,16 @@ function _processSingleBooking(ss, params) {
       seatList.forEach(s => {
         const pos = _getSeatCellPos(s, startRow, startCol);
         if (pos) {
-          const range = sheet.getRange(pos.row, pos.col);
-          range.clearDataValidations(); // เพิ่มเพื่อป้องกัน Error ตอนคืนที่นั่ง
-          range.setValue(s).setBackground(COLOR_VACANT).setFontColor('#94a3b8').setFontWeight('normal');
+          sheet.getRange(pos.row, pos.col).clearDataValidations()
+               .setValue(s).setBackground(COLOR_VACANT).setFontColor('#94a3b8').setFontWeight('normal');
         }
       });
     } else {
       seatList.forEach(s => {
         const pos = _getSeatCellPos(s, startRow, startCol);
         if (pos) {
-          const range = sheet.getRange(pos.row, pos.col);
-          range.clearDataValidations(); // เพิ่มเพื่อป้องกัน Error ตอนจองที่นั่ง
-          range.setValue(passengerName).setBackground(COLOR_CONFIRM).setFontColor('#ffffff').setFontWeight('bold');
+          sheet.getRange(pos.row, pos.col).clearDataValidations()
+               .setValue(passengerName).setBackground(COLOR_CONFIRM).setFontColor('#ffffff').setFontWeight('bold');
         }
       });
     }
@@ -736,8 +734,17 @@ function _processSingleBooking(ss, params) {
       // ดึงค่า label มาตรฐานสำหรับเปรียบเทียบ
       let timeLabelComp = time || "";
       if (!timeLabelComp) {
-        const raw = (station === 'phuket' ? PHUKET_TIMES : HATYAI_TIMES)[slotIndex];
-        timeLabelComp = normalizeTime(raw);
+        let raw = sheet.getRange(startRow + 1, startCol + 4).getDisplayValue();
+        const baseSlotName = (station === 'phuket' ? PHUKET_TIMES : HATYAI_TIMES)[slotIndex];
+        if (!raw || raw === '-') {
+          timeLabelComp = normalizeTime(baseSlotName);
+        } else {
+          if (slotIndex >= 5 && !raw.includes("รอบเสริม")) {
+            timeLabelComp = `${baseSlotName} (${raw})`;
+          } else {
+            timeLabelComp = normalizeTime(raw);
+          }
+        }
       }
       const originComp = (origin || (station === 'phuket' ? 'ภูเก็ต (Phuket)' : 'หาดใหญ่ (Hatyai)')).toString().trim();
 
@@ -796,9 +803,20 @@ function _processSingleBooking(ss, params) {
     
     let timeLabel = time || "";
     if (!timeLabel) {
-      const rawTimeLabel = (station === 'phuket' ? PHUKET_TIMES : HATYAI_TIMES)[slotIndex];
-      timeLabel = normalizeTime(rawTimeLabel);
+      let rawTimeLabel = sheet.getRange(startRow + 1, startCol + 4).getDisplayValue();
+      const baseSlotName = (station === 'phuket' ? PHUKET_TIMES : HATYAI_TIMES)[slotIndex];
+      if (!rawTimeLabel || rawTimeLabel === '-') {
+        timeLabel = normalizeTime(baseSlotName);
+      } else {
+        if (slotIndex >= 5 && !rawTimeLabel.includes("รอบเสริม")) {
+          timeLabel = `${baseSlotName} (${rawTimeLabel})`;
+        } else {
+          timeLabel = normalizeTime(rawTimeLabel);
+        }
+      }
     }
+
+    const finalRemarks = params.remarks || "";
 
     const originLabel = origin || (station === 'phuket' ? 'ภูเก็ต (Phuket)' : 'หาดใหญ่ (Hatyai)');
     const normalizedDest = normalizeLocation(destination);
@@ -823,7 +841,7 @@ function _processSingleBooking(ss, params) {
     // มีทั้งหมด 24 คอลัมน์ ไม่รวม AgentName แล้ว
     const rowData = [
       finalTicketId, passengerName, phone, dateStr, travelDate, originLabel, normalizedDest, boardingPoint, timeLabel, seatId,
-      platform, busNo, price, isCash, isQR, isAgent, isCard, isInsp, issuedBy, timestampStr, (gender || ""), finalStatus, (params.remarks || ""), expireTimeStr
+      platform, busNo, price, isCash, isQR, isAgent, isCard, isInsp, issuedBy, timestampStr, (gender || ""), finalStatus, finalRemarks, expireTimeStr
     ];
 
     if (targetRow > 0) {
@@ -843,6 +861,7 @@ function _processSingleBooking(ss, params) {
       custSheet.getRange(1, 22).setValue("สถานะ");
       custSheet.getRange(1, 23).setValue("หมายเหตุ");
       custSheet.getRange(1, 24).setValue("เวลาหมดอายุ");
+      
       custSheet.getRange(targetRow, 1, 1, rowData.length).setValues([rowData]);
     }
 
@@ -854,9 +873,8 @@ function _processSingleBooking(ss, params) {
       seatList.forEach(s => {
         const seatPos = _getSeatCellPos(s, startRowLoc, startColLoc);
         if (seatPos) {
-          const range = planSheetObj.getRange(seatPos.row, seatPos.col);
-          range.clearDataValidations(); // เพิ่มเพื่อป้องกัน Error ตอนล็อคที่นั่ง
-          range.setBackground('#f59e0b')
+          planSheetObj.getRange(seatPos.row, seatPos.col)
+            .setBackground('#f59e0b')
             .setFontColor('#ffffff')
             .setFontWeight('bold')
             .setValue(passengerName || 'ล็อคชั่วคราว');
@@ -1283,8 +1301,8 @@ function normalizeTime(time) {
   let t = time.toString().trim();
   // ตัด 0 นำหน้า (เช่น 09:00 -> 9:00)
   t = t.replace(/^0/, '');
-  // เติมสร้อยถ้ายังไม่มี
-  if (t && !t.includes("(เวลาต้นทาง)")) {
+  // เติมสร้อยถ้ายังไม่มี (ยกเว้นรอบเสริม)
+  if (t && !t.includes("(เวลาต้นทาง)") && !t.includes("รอบเสริม")) {
     t += " (เวลาต้นทาง)";
   }
   return t;
@@ -1452,10 +1470,7 @@ function setupExtraSlots(targetSheet, targetDay) {
     }
     
     // ใส่เวลาให้ Slot ใหม่
-    const newTimeValue = HATYAI_TIMES[useSlotIdx] || "รอบเสริม " + (useSlotIdx - 4);
-    const timeCell = sheet.getRange(startRow + 1, insertPos + 4);
-    timeCell.clearDataValidations(); // ล้าง Data Validation เก่าออกก่อนเพื่อป้องกัน Error
-    timeCell.setValue(newTimeValue);
+    sheet.getRange(startRow + 1, insertPos + 4).setValue(HATYAI_TIMES[useSlotIdx] || "รอบเสริม " + (useSlotIdx - 4));
     
     // ใส่สูตรวันที่
     sheet.getRange(startRow + 1, insertPos + 1).setFormula(`=$C${startRow + 1}`);

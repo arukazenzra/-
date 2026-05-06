@@ -23,13 +23,11 @@
         }
 
         .ticket-page {
-            width: 205mm;
-            /* ขยายความกว้างเพิ่มอีกเป็น 205mm เพื่อให้เกือบเต็มหน้า A5 */
+            width: 210mm;
             min-height: 125mm;
-            margin: 5px auto;
+            margin: 90px auto;
             background: #fff;
-            padding: 5mm 8mm;
-            /* ลด padding ซ้ายขวาลงนิดนึงเพื่อให้เนื้อที่ตารางกว้างขึ้น */
+            padding: 5mm;
             position: relative;
             border-radius: 0;
             border: 1.2px solid #000;
@@ -55,7 +53,6 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2px;
-            /* ลดระยะห่างด้านบน */
         }
 
         .logo-section {
@@ -164,7 +161,6 @@
             border: 1.5px solid #000;
             table-layout: fixed;
             margin-top: 2px;
-            /* ลดระยะห่างจาก 5px */
         }
 
         .ticket-table td {
@@ -172,7 +168,6 @@
             padding: 2px 6px;
             vertical-align: middle;
             height: 26px;
-            /* เพิ่มความสูงแถวให้ดูไม่บีบเหมือนต้นฉบับ */
         }
 
         .td-lbl {
@@ -273,7 +268,6 @@
 
         .payment-row span:first-child {
             width: 95px;
-            /* ขยับความกว้างเพื่อให้ข้อมูลด้านหลังตรงกับคอลัมน์ด้านบน */
             flex-shrink: 0;
             color: #1e3a8a;
             font-size: 13px;
@@ -311,7 +305,6 @@
             border-top: 1px dashed #000;
             background: #fff;
             padding-top: 0px;
-            /* ลดระยะห่าง */
         }
 
         .coupon-table {
@@ -322,7 +315,6 @@
 
         .coupon-table td {
             padding: 0px 8px;
-            /* บีบ padding แนวตั้งให้ชิดกันมากที่สุดตามภาพที่ 2 */
             vertical-align: middle;
             border: none !important;
             line-height: 1.1;
@@ -335,7 +327,6 @@
 
         .c-label {
             font-size: 10px;
-            /* ลดขนาดหัวข้อคูปอง */
             font-weight: 400;
             color: #1f2937;
             display: inline-block;
@@ -343,9 +334,7 @@
 
         .c-val {
             font-size: 10px;
-            /* ลดขนาดค่าในคูปอง */
             font-weight: 800;
-            /* ปรับให้ไม่หนาตามที่ผู้ใช้ต้องการ */
             color: #000;
             display: inline-block;
             line-height: 1;
@@ -400,7 +389,6 @@
             font-weight: 800;
             text-align: center;
             padding: 0px;
-            /* ลด padding เหลือ 0 เพื่อให้ชิดขอบล่างตามภาพที่ 2 */
             background: #f3f4f6;
             border-top: 1px dashed #000;
         }
@@ -451,7 +439,6 @@
             background: #f1f5f9;
         }
 
-
         .center {
             text-align: center !important;
             padding-left: 0 !important;
@@ -486,7 +473,6 @@
             -moz-osx-font-smoothing: grayscale;
             text-rendering: optimizeLegibility;
         }
-
 
         /* ── Footer Actions ── */
         .footer-actions {
@@ -698,8 +684,6 @@
             transform: scale(1.1);
         }
 
-
-
         .btn-fetch-inner {
             background: #3b82f6;
             color: white;
@@ -813,8 +797,9 @@
 
         /* ── Print Settings ── */
         @page {
-            size: A4 portrait;
-            margin: 0;
+            size: A5 landscape;
+            margin: 2mm;
+            /* ลดขอบกระดาษลงเพื่อให้มีพื้นที่แนวตั้งมากขึ้น */
         }
 
         @media print {
@@ -828,20 +813,51 @@
                 background: white !important;
                 padding: 0 !important;
                 margin: 0 !important;
+                min-height: auto !important;
+                height: auto !important;
             }
 
             .ticket-page {
-                page-break-after: always;
-                width: 100% !important;
-                max-width: none !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                page-break-after: always !important;
+                margin: 0 auto !important;
+                width: 188mm !important;
+                /* ลดความกว้างลง เพื่อให้สัดส่วนตั๋วเล็กลง (ลดการขยาย) */
+                min-height: auto !important;
+                /* ปลดล็อคความสูงขั้นต่ำ จะได้ไม่โดนดันตกขอบ */
                 height: auto !important;
-                margin: 0 !important;
+                padding: 2mm !important;
+                /* ลด Padding ให้ประหยัดพื้นที่แนวตั้ง */
                 border: none !important;
+                /* ❌ เอากรอบสีดำที่หุ้มตั๋วออกตามที่ต้องการ */
                 box-shadow: none !important;
-                padding: 10mm !important;
                 transform: none !important;
-                display: flex !important;
-                flex-direction: column !important;
+                display: block !important;
+            }
+
+            /* ย่อความสูงของตารางลงนิดหน่อยเฉพาะตอนปริ้น เพื่อให้อัดพอดี 1 หน้าเป๊ะๆ */
+            .ticket-table {
+                margin-top: 0px !important;
+            }
+
+            .ticket-table td {
+                height: 22px !important;
+                padding: 1px 4px !important;
+            }
+
+            .coupon-section {
+                margin-top: 0px !important;
+                padding-top: 0px !important;
+            }
+
+            .coupon-table td {
+                height: 20px !important;
+                padding: 0px 4px !important;
+            }
+
+            .print-hidden {
+                display: none !important;
             }
 
             /* ซ่อนสิ่งที่ไม่เกี่ยวข้องกับการพิมพ์ */
@@ -921,7 +937,6 @@
             -webkit-text-fill-color: black !important;
             opacity: 1 !important;
             filter: none !important;
-            /* ปิด filter ที่อาจทำให้จาง */
         }
 
         /* สำหรับฟิลด์ที่เป็นตัวหนังสือสีแดงให้แดงจัดตอนเซฟ */
@@ -933,7 +948,6 @@
 
         body.export-mode .no-val span {
             color: #1e293b !important;
-            /* online00 ให้เข้มขึ้น */
         }
 
         body.export-mode .no-val {
@@ -1017,7 +1031,6 @@
             </div>
         </div>
     </div>
-    </div>
 
     <div id="toast" class="toast"></div>
 
@@ -1037,18 +1050,15 @@
         }
 
         // Guard: ถ้าเปิดไฟล์ HTML ตรงๆ นอก Google Apps Script Web App
-        // จะทำให้ `google.script.run` ไม่มีอยู่และเกิด error ทันที
         function isAppsScriptReady() {
             return typeof google !== 'undefined' && google.script && google.script.run;
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // ใช้ค่า ID ที่ส่งมาจากฝั่ง Server (Code.gs) เพื่อความแม่นยำ 100%
             const ticketIdFromServer = "<?= id ?>";
             if (ticketIdFromServer) {
                 fetchTicketData(ticketIdFromServer);
             } else {
-                // ถ้าไม่มี ID ให้แสดงตั๋วว่าง
                 addBlankTicket();
             }
         });
@@ -1095,7 +1105,6 @@
             fetchTicketData();
         }
 
-
         function addBlankTicket() {
             const blank = {
                 ticketNo: '',
@@ -1115,7 +1124,6 @@
             wrapper.appendChild(temp.firstElementChild);
 
             fillTicketValues(blank, idx);
-            // Focus the new ID field
             setTimeout(() => {
                 const el = document.getElementById(`f-no-${idx}`);
                 if (el) el.focus();
@@ -1130,10 +1138,8 @@
             const splitTickets = [];
 
             tickets.forEach(t => {
-                // Split seatId if it contains multiple seats (comma or space)
                 const seats = t.seatId ? t.seatId.toString().split(/[\s,]+/).filter(s => s.trim() !== "") : [];
                 if (seats.length > 1) {
-                    // Split into multiple individual tickets for printing
                     const totalBasePrice = parseFloat(t.price) || 0;
                     const pricePerSeat = Math.floor(totalBasePrice / seats.length);
 
@@ -1149,16 +1155,14 @@
                 }
             });
 
-            // แทนที่จะล้างหน้าจอ ให้ใช้วิธีต่อท้าย (Append)
             splitTickets.forEach(t => {
-                // ตรวจสอบว่ามีรหัสนี้อยู่บนหน้าจอแล้วหรือยัง
                 const existingIds = Array.from(document.querySelectorAll('input[id^="f-no-"]')).map(el => el.value.trim());
                 let tNo = t.ticketNo || '';
                 if (tNo.startsWith('online00')) tNo = tNo.replace('online00', '');
 
                 if (existingIds.includes(tNo)) {
                     console.log('Ticket already exists:', tNo);
-                    return; // ข้ามใบที่ซ้ำ
+                    return;
                 }
 
                 const idx = ticketCounter++;
@@ -1364,7 +1368,6 @@
 
 
         function fillTicketValues(t, idx) {
-            // Populate Ticket ID
             let idDisp = t.ticketId || t.ticketNo || '';
             if (idDisp.startsWith('online00')) {
                 idDisp = idDisp.replace('online00', '');
@@ -1405,7 +1408,6 @@
             }
             setText(`f-boarding-disp-${idx}`, t.boarding);
 
-            // Fill Coupon Values
             setText(`cp-no-${idx}`, t.ticketNo || (idDisp ? "online00" + idDisp : '-'));
             setText(`cp-name-${idx}`, t.name);
             setText(`cp-phone-${idx}`, t.phone);
@@ -1421,11 +1423,9 @@
 
             setText(`cp-seat-${idx}`, t.seatId);
 
-            // Payment Logic & Agent Styling
             const pType = (t.paymentType || '').toLowerCase();
             const isAgentData = t.isAgent || pType === 'agent' || pType === 'เอเย่นต์' || (t.agentName && t.agentName !== '');
 
-            // หมายเหตุในตั๋ว (Coupon) - สีแดง
             const cpRemarkText = t.remarks || t.remark || '';
             const cpRemarkEl = document.getElementById(`cp-remark-${idx}`);
             if (cpRemarkEl) {
@@ -1434,12 +1434,10 @@
                 cpRemarkEl.style.fontWeight = 'normal';
             }
 
-            // ปรับการแสดงผลราคาสำหรับเอเย่นต์ (สีฟ้า + (A))
             if (isAgentData) {
                 const agentPriceStr = `${t.price} (A)`;
                 setText(`cp-price-${idx}`, agentPriceStr);
 
-                // ตั๋วหลัก (Main Ticket) - สีน้ำเงินพร้อม (A)
                 const mainPriceInp = document.getElementById(`f-price-${idx}`);
                 if (mainPriceInp) {
                     mainPriceInp.value = agentPriceStr;
@@ -1447,7 +1445,6 @@
                     mainPriceInp.style.fontWeight = '300';
                 }
 
-                // คูปอง (Coupon) - สีดำพร้อม (A)
                 const cpPriceEl = document.getElementById(`cp-price-${idx}`);
                 if (cpPriceEl) {
                     cpPriceEl.style.color = '#000000';
@@ -1456,7 +1453,6 @@
             } else {
                 setText(`cp-price-${idx}`, t.price);
 
-                // ตั๋วหลัก (Main Ticket) - สีดำปกติ
                 const mainPriceInp = document.getElementById(`f-price-${idx}`);
                 if (mainPriceInp) {
                     mainPriceInp.value = t.price;
@@ -1464,7 +1460,6 @@
                     mainPriceInp.style.fontWeight = '300';
                 }
 
-                // คูปอง (Coupon) - สีดำปกติ
                 const cpPriceEl = document.getElementById(`cp-price-${idx}`);
                 if (cpPriceEl) {
                     cpPriceEl.style.color = '#000000';
@@ -1472,7 +1467,6 @@
                 }
             }
 
-            // Payment Logic (Method & Type Text)
             let payMethod = '-';
             if (t.isCash) payMethod = '💵 เงินสด';
             else if (t.isQR) payMethod = '📱 QR-code';
@@ -1500,7 +1494,6 @@
             const methodEl = document.getElementById(`m-pay-method-val-${idx}`);
             if (methodEl) methodEl.textContent = payMethod;
 
-            // Handle Watermark Stamp
             const watermarkStamp = document.getElementById(`cancelled-stamp-${idx}`);
             const status = (t.status || '').toUpperCase();
 
@@ -1510,8 +1503,6 @@
                 if (watermarkStamp) watermarkStamp.style.display = 'none';
             }
 
-
-            // Handle Date from t.day / t.month / t.year fields
             if (t.day && t.month && t.year) {
                 const y = toGregorian(t.year);
                 const mm = t.month.toString().padStart(2, '0');
@@ -1551,20 +1542,12 @@
             }
         }
 
-
-
-
-
-        // Date Conversion Logic
         function toGregorian(y) {
             let yr = parseInt(y);
-            if (yr < 100) yr += 2500;   // ย่อ พ.ศ. เช่น 69 → 2569
-            if (yr > 2400) yr -= 543;   // พ.ศ. → ค.ศ.
+            if (yr < 100) yr += 2500;
+            if (yr > 2400) yr -= 543;
             return yr;
         }
-
-
-
 
         function togglePayment(idx, type) {
             const el = document.getElementById(`m-pay-${type}-${idx}`);
@@ -1572,7 +1555,6 @@
                 el.classList.toggle('checked');
             }
 
-            // Show/Hide Agent name input if Agent or Inspector is checked
             const isAgent = document.getElementById(`m-pay-agent-${idx}`).classList.contains('checked');
             const isInsp = document.getElementById(`m-pay-inspector-${idx}`).classList.contains('checked');
 
@@ -1594,15 +1576,11 @@
             }
         }
 
-
-        // ฟังก์ชันเตรียม DOM ให้พร้อมสำหรับ Export แบบ "กริบ" 100%
         function prepareTicketForExport(originalCard) {
             const clone = originalCard.cloneNode(true);
 
-            // 1. ล้างปุ่มและขยะ UI
             clone.querySelectorAll('.btn-remove, .btn-fetch-inner, .btn-card-action, .btn-remove-inner, .ticket-selector').forEach(el => el.remove());
 
-            // 2. แปลง Input/Select เป็น Text Span (ป้องกัน Ghosting และความเพี้ยน)
             const inputs = clone.querySelectorAll('input, select');
             inputs.forEach(inp => {
                 const originalInp = originalCard.querySelector(`#${inp.id}`);
@@ -1619,7 +1597,6 @@
                 const span = document.createElement('span');
                 span.textContent = val;
 
-                // คัดลอกสไตล์สำคัญ
                 const computedStyle = window.getComputedStyle(originalInp);
                 span.style.cssText = inp.style.cssText;
                 span.style.display = 'block';
@@ -1632,14 +1609,12 @@
                 span.style.lineHeight = '1';
                 span.style.padding = '0';
 
-                // กรณีราคา
                 if (inp.id.includes('f-price')) {
                     span.style.fontSize = '18px';
                     span.style.fontWeight = '700';
                     span.style.color = '#1e3a8a';
                 }
 
-                // กรณีชานชาลา
                 if (inp.id.includes('f-platform')) {
                     span.style.fontSize = '18px';
                     span.style.fontWeight = '700';
@@ -1648,7 +1623,6 @@
                 inp.parentNode.replaceChild(span, inp);
             });
 
-            // 3. ปรับสไตล์พื้นฐานให้คมชัด
             clone.style.transform = 'none';
             clone.style.transition = 'none';
             clone.style.animation = 'none';
@@ -1657,11 +1631,9 @@
             clone.style.background = '#ffffff';
             clone.style.margin = '0';
             clone.style.borderRadius = '0';
-            // อิงขนาดตามหน้า manual จริง
             clone.style.width = `${originalCard.offsetWidth}px`;
             clone.style.minHeight = `${originalCard.offsetHeight}px`;
 
-            // เพิ่มความคมชัดของเส้นตารางในไฟล์ที่ Export
             clone.querySelectorAll('.ticket-table td').forEach(td => {
                 td.style.border = '1.3px solid #000';
             });
@@ -1788,7 +1760,6 @@
                     link.href = canvas.toDataURL('image/png');
                     link.click();
 
-                    // หน่วงเวลานิดนึงกัน Browser block
                     await new Promise(r => setTimeout(r, 500));
                 } catch (err) {
                     console.error('Export failed:', err);
@@ -1847,7 +1818,6 @@
             const card = document.getElementById(`ticket-card-${idx}`);
             if (!card) return;
 
-            // ซ่อนใบอื่นๆ ชั่วคราวเพื่อปริ้นใบเดียว
             const allCards = document.querySelectorAll('.ticket-page');
             allCards.forEach(c => {
                 if (c.id !== `ticket-card-${idx}`) c.style.display = 'none';
@@ -1855,15 +1825,12 @@
 
             window.print();
 
-            // แสดงกลับมาเหมือนเดิม
             allCards.forEach(c => c.style.display = 'block');
         }
-
 
         function fetchTicketForCard(idx) {
             let num = document.getElementById(`f-no-${idx}`).value.trim();
             if (!num) return;
-            // เติม Prefix online00 เข้าไปข้างหน้า
             const id = "online00" + num;
 
             if (!isAppsScriptReady()) {
@@ -1877,14 +1844,12 @@
             google.script.run.withSuccessHandler(res => {
                 overlay.style.display = 'none';
                 if (res && res.success) {
-                    // If it's a group booking, we use the main renderTickets to handle splitting
                     if (res.isGroup && res.tickets.length > 1) {
                         renderTickets(res.tickets);
                         showToast(`ดึงข้อมูลกลุ่มรหัส ${id} เรียบร้อย`);
                     } else {
                         const data = res.isGroup ? res.tickets[0] : res;
                         fillTicketValues(data, idx);
-                        // Update data-station/slot if available
                         const card = document.getElementById(`ticket-card-${idx}`);
                         card.dataset.station = data.station || '';
                         card.dataset.slot = data.slotIndex !== undefined ? data.slotIndex : '';
@@ -1925,7 +1890,6 @@
             });
         }
 
-        // Custom Modal Helpers
         let confirmCallback = null;
         function showConfirm(title, msg, onConfirm) {
             document.getElementById('confirm-title').innerText = title;
@@ -1941,7 +1905,7 @@
             if (confirmCallback) confirmCallback();
             closeConfirmModal();
         };
-        // Smart Phone Formatting
+
         function formatPhone(input) {
             let val = input.value;
             if (val.startsWith('0')) {
