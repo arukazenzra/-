@@ -4,8 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>ออกตั๋วแมนนวลเสมือนจริง (WYSIWYG Ticket)</title>
-    <!-- ใช้ฟอนต์ Sarabun -->
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -16,7 +15,7 @@
         }
 
         body {
-            font-family: 'Sarabun', sans-serif;
+            font-family: 'Noto Sans Thai', sans-serif;
             background: radial-gradient(circle at top, #e2e8f0, #cbd5e1);
             color: #000;
             padding-bottom: 120px;
@@ -24,17 +23,18 @@
         }
 
         .ticket-page {
-            max-width: 1000px;
-            margin: 20px auto;
+            width: 205mm;
+            /* ขยายความกว้างเพิ่มอีกเป็น 205mm เพื่อให้เกือบเต็มหน้า A5 */
+            min-height: 125mm;
+            margin: 5px auto;
             background: #fff;
-            padding: 15px 30px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            padding: 5mm 8mm;
+            /* ลด padding ซ้ายขวาลงนิดนึงเพื่อให้เนื้อที่ตารางกว้างขึ้น */
             position: relative;
-            border-radius: 15px;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            animation: cardEntry 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform: scale(0.95);
-            transform-origin: top center;
+            border-radius: 0;
+            border: 1.2px solid #000;
+            display: flex;
+            flex-direction: column;
         }
 
         @keyframes cardEntry {
@@ -53,54 +53,58 @@
         .header-outer {
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
+            align-items: center;
             margin-bottom: 2px;
+            /* ลดระยะห่างด้านบน */
         }
 
         .logo-section {
             display: flex;
-            align-items: flex-start;
-            gap: 15px;
+            align-items: center;
+            gap: 14px;
         }
 
         .logo-box {
-            width: 70px;
-            height: 70px;
+            width: 100px;
+            height: 110px;
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-image: url('https://lh3.googleusercontent.com/d/1Sxwik4laagC2e6xZYYQ0gJaKZQ2IUWeM');
+            background-image: url('https://lh3.googleusercontent.com/d/1C6xZIU7N3LQ3-Bcs8cffuqg4jykUkE-y');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            border-radius: 8px;
+            border-radius: 0;
             background-color: transparent;
         }
 
         .title-box {
-            padding-top: 5px;
+            padding-top: 10px;
         }
 
         .title-box h1 {
-            font-size: 17px;
+            font-size: 22px;
             font-weight: 800;
             margin: 0;
-            color: #000;
+            color: #1e3a8a;
+            letter-spacing: 1px;
         }
 
         .title-box p {
-            font-size: 15px;
-            margin: 0;
-            color: #000;
-            font-weight: 500;
+            font-size: 16px;
+            margin: 2px 0;
+            color: #475569;
+            font-weight: 600;
         }
 
         .title-main {
-            font-size: 18px;
-            font-weight: 900;
-            margin-top: 2px;
-            color: #000;
+            font-size: 25px;
+            font-weight: 800;
+            margin-top: 0;
+            color: #1e293b;
+            display: inline-block;
+            padding-bottom: 2px;
         }
 
         .header-right {
@@ -129,7 +133,7 @@
             background: #f1f5f9;
             padding: 2px 12px;
             border-radius: 12px;
-            font-weight: 800;
+            font-weight: 400;
             min-width: 120px;
             text-align: left;
             border: none;
@@ -157,9 +161,10 @@
         .ticket-table {
             width: 100%;
             border-collapse: collapse;
-            border: 2px solid #000;
+            border: 1.5px solid #000;
             table-layout: fixed;
-            margin-top: 10px;
+            margin-top: 2px;
+            /* ลดระยะห่างจาก 5px */
         }
 
         .ticket-table td {
@@ -167,32 +172,34 @@
             padding: 2px 6px;
             vertical-align: middle;
             height: 26px;
-            /* Reduced from 40px */
+            /* เพิ่มความสูงแถวให้ดูไม่บีบเหมือนต้นฉบับ */
         }
 
         .td-lbl {
-            background: #f1f5f9;
+            background: #f8fafc;
         }
 
         .lbl {
             font-size: 14px;
             font-weight: 800;
-            color: #000;
+            color: #1e293b;
             display: block;
-            line-height: 1.1;
+            line-height: 1.2;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
         }
 
         .lbl-en {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 400;
             color: #333;
             display: block;
-            margin-top: 0px;
         }
 
         .val-manual {
             font-size: 16px;
-            font-weight: 900;
+            font-weight: 500;
         }
 
         /* ── Payment Section ── */
@@ -200,19 +207,76 @@
             padding: 0 !important;
         }
 
+        .payment-mini-table {
+            width: 100%;
+            height: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            border: none;
+        }
+
+        .payment-mini-label {
+            border: none !important;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 800;
+            width: 45.5%;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.15;
+        }
+
+        .payment-mini-value {
+            border: none !important;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: 500;
+            width: 54.5%;
+            color: #000;
+            line-height: 1.15;
+        }
+
+        .payment-mini-table td {
+            border: none !important;
+        }
+
+        .payment-mini-table .payment-mini-label {
+            border-right: 1px solid #000 !important;
+        }
+
+        .payment-mini-table tr:first-child .payment-mini-label,
+        .payment-mini-table tr:first-child .payment-mini-value {
+            border-bottom: 1px solid #000 !important;
+        }
+
+        .payment-mini-table tr:last-child .payment-mini-label,
+        .payment-mini-table tr:last-child .payment-mini-value {
+            border-bottom: none;
+        }
+
         .payment-inner {
             display: flex;
             flex-direction: column;
+            border-left: 2px solid #000;
+            height: 100%;
         }
 
         .payment-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 5px 12px;
+            padding: 2px 12px;
             border-bottom: 1px solid #000;
+            font-size: 15px;
+            font-weight: 400;
+            height: 50%;
+        }
+
+        .payment-row span:first-child {
+            width: 95px;
+            /* ขยับความกว้างเพื่อให้ข้อมูลด้านหลังตรงกับคอลัมน์ด้านบน */
+            flex-shrink: 0;
+            color: #1e3a8a;
             font-size: 13px;
-            font-weight: 800;
         }
 
         .payment-row:last-child {
@@ -243,10 +307,11 @@
 
         /* ── Coupon Section ── */
         .coupon-section {
-            margin-top: 6px;
-            border: 1.5px dashed #000;
+            margin-top: 1px;
+            border-top: 1px dashed #000;
             background: #fff;
-            overflow: hidden;
+            padding-top: 0px;
+            /* ลดระยะห่าง */
         }
 
         .coupon-table {
@@ -256,9 +321,12 @@
         }
 
         .coupon-table td {
-            padding: 2px 4px;
+            padding: 0px 8px;
+            /* บีบ padding แนวตั้งให้ชิดกันมากที่สุดตามภาพที่ 2 */
             vertical-align: middle;
             border: none !important;
+            line-height: 1.1;
+            height: 24px;
         }
 
         .c-header-row {
@@ -266,32 +334,73 @@
         }
 
         .c-label {
-            font-size: 13px;
-            font-weight: 800;
+            font-size: 10px;
+            /* ลดขนาดหัวข้อคูปอง */
+            font-weight: 400;
             color: #1f2937;
             display: inline-block;
         }
 
         .c-val {
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 10px;
+            /* ลดขนาดค่าในคูปอง */
+            font-weight: 800;
             /* ปรับให้ไม่หนาตามที่ผู้ใช้ต้องการ */
             color: #000;
             display: inline-block;
+            line-height: 1;
+            vertical-align: middle;
         }
 
         .c-seat-val {
-            font-size: 16px;
-            font-weight: 900;
+            font-size: 10px;
+            font-weight: 800;
             color: #000;
+            display: inline-block;
+            line-height: 1;
+            vertical-align: middle;
+        }
+
+        .coupon-table td.center {
+            text-align: center;
+        }
+
+        .coupon-table tr:last-child td {
+            padding-top: 1px;
+            padding-bottom: 1px;
+        }
+
+        .coupon-table td.coupon-data-left {
+            text-align: left;
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+
+        .coupon-table [id^="cp-price-"] {
+            font-weight: 800 !important;
+        }
+
+        .subtitle {
+            font-size: 17px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: -3px;
+        }
+
+        .subtitle-en {
+            font-size: 17px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0;
         }
 
         .c-warning {
-            font-size: 13px;
+            font-size: 10px;
             color: #dc2626;
             font-weight: 800;
             text-align: center;
-            padding: 4px;
+            padding: 0px;
+            /* ลด padding เหลือ 0 เพื่อให้ชิดขอบล่างตามภาพที่ 2 */
             background: #f3f4f6;
             border-top: 1px dashed #000;
         }
@@ -316,32 +425,66 @@
         .wg-input {
             width: 100%;
             border: none;
-            padding: 4px 0;
-            font-family: 'Sarabun', sans-serif;
-            font-size: 16px;
-            background: transparent;
+            padding: 0 2px;
+            font-size: 14px;
+            font-family: 'Noto Sans Thai', sans-serif;
+            transition: 0.2s;
             outline: none;
-            font-weight: 500;
+            background: transparent;
             color: #000;
+            font-weight: 400 !important;
+            opacity: 1;
+        }
+
+        .wg-input[readonly] {
+            border: none !important;
+            background: transparent !important;
+            padding: 0 !important;
+            font-weight: 400 !important;
+            color: #000;
+            box-shadow: none !important;
+            cursor: default;
+            opacity: 1;
         }
 
         .wg-input:focus {
             background: #f1f5f9;
         }
 
-        .bold-val {
-            font-weight: 900 !important;
-            font-size: 18px !important;
+
+        .center {
+            text-align: center !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
         }
 
-
         .wg-input.center {
-            text-align: center;
+            text-align: center !important;
+            padding: 0 !important;
+            width: 100% !important;
+        }
+
+        .wg-input:focus {
+            background: #f1f5f9;
+            font-weight: 400 !important;
         }
 
         .wg-input::placeholder {
             color: #94a3b8;
             font-weight: normal;
+        }
+
+        /* Ultimate Override for all data fields */
+        .ticket-table input,
+        .ticket-table span.c-val,
+        .ticket-table span.c-seat-val,
+        .no-val input,
+        .no-val span,
+        .wg-input {
+            font-weight: 400 !important;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
 
 
@@ -555,78 +698,7 @@
             transform: scale(1.1);
         }
 
-        .no-box {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 800;
-            color: #475569;
-            font-size: 14px;
-        }
 
-        .no-val {
-            background: #fff;
-            padding: 4px;
-            border-radius: 12px;
-            font-weight: 700;
-            border: 2px solid #e2e8f0;
-            color: #1e40af;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-            transition: 0.3s;
-        }
-
-        .wg-input {
-            width: 100%;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 18px;
-            /* ปรับขนาดฟอนต์พื้นฐานให้เท่ากับวันที่ */
-            font-family: 'Sarabun', sans-serif;
-            transition: 0.2s;
-            outline: none;
-            background: white;
-        }
-
-        .wg-input[readonly] {
-            border: none !important;
-            background: transparent !important;
-            padding: 2px 0 !important;
-            font-weight: 600;
-            /* ปรับให้ไม่หนาเกินไปตามที่ผู้ใช้ต้องการ */
-            color: #000;
-            box-shadow: none !important;
-            cursor: default;
-            font-size: 18px;
-        }
-
-        .center {
-            text-align: center !important;
-        }
-
-        .wg-input.center {
-            text-align: center;
-        }
-
-        .lbl {
-            font-size: 14px;
-            /* ปรับหัวข้อให้ใหญ่ขึ้นตามที่ผู้ใช้ต้องการ */
-            font-weight: 800;
-            /* ปรับหัวข้อให้หนาขึ้น */
-            color: #1e293b;
-            /* ปรับสีให้เข้มขึ้นเล็กน้อยเพื่อให้ดูเด่น */
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 2px;
-        }
-
-        .no-val:focus-within {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-        }
 
         .btn-fetch-inner {
             background: #3b82f6;
@@ -710,6 +782,25 @@
             background: #e2e8f0;
         }
 
+        /* ── Watermark CANCELLED ── */
+        .cancelled-watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-15deg);
+            font-size: 80px;
+            font-weight: 900;
+            color: rgba(239, 68, 68, 0.25);
+            border: 8px solid rgba(239, 68, 68, 0.25);
+            padding: 10px 40px;
+            border-radius: 30px;
+            text-transform: uppercase;
+            pointer-events: none;
+            z-index: 100;
+            white-space: nowrap;
+            display: none;
+        }
+
         .btn-confirm-red {
             background: #ef4444;
             color: white;
@@ -720,90 +811,80 @@
             transform: translateY(-2px);
         }
 
-        /* Print Hiding */
+        /* ── Print Settings ── */
         @page {
-            size: 210mm 148.5mm;
+            size: A4 portrait;
             margin: 0;
         }
 
         @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
             body {
                 background: white !important;
                 padding: 0 !important;
-                /* เว้นขอบกระดาษไม่ให้เนื้อหาตกขอบ */
+                margin: 0 !important;
             }
 
             .ticket-page {
-                page-break-after: avoid;
-                page-break-inside: avoid;
-                break-inside: avoid;
+                page-break-after: always;
                 width: 100% !important;
                 max-width: none !important;
-                margin: 0 auto !important;
+                height: auto !important;
+                margin: 0 !important;
                 border: none !important;
                 box-shadow: none !important;
-                padding: 0 !important;
+                padding: 10mm !important;
                 transform: none !important;
-                zoom: 85%;
-                /* Apply zoom for manual tickets too */
+                display: flex !important;
+                flex-direction: column !important;
             }
 
-            .ticket-page * {
-                page-break-inside: avoid;
-                break-inside: avoid;
-            }
-
+            /* ซ่อนสิ่งที่ไม่เกี่ยวข้องกับการพิมพ์ */
             .footer-actions,
             .btn-remove,
             .btn-fetch-inner,
+            .ticket-selector,
+            .no-print,
             .toast,
             .overlay,
-            .modal-overlay {
+            .modal-overlay,
+            #tickets-wrapper>div:not(.ticket-page) {
                 display: none !important;
             }
 
+            /* ปรับช่องกรอกข้อมูลให้ดูเหมือนตัวหนังสือปกติ */
             .wg-input {
                 border: none !important;
                 background: transparent !important;
                 padding: 0 !important;
                 box-shadow: none !important;
                 color: black !important;
-                font-size: 14px !important;
-                font-weight: 900 !important;
+                font-size: 15px !important;
+                font-weight: 400 !important;
             }
 
-            /* Hide date picker icon in Chrome/Edge */
-            input::-webkit-calendar-picker-indicator {
-                display: none !important;
-            }
-
-            select.wg-input {
-                -webkit-appearance: none;
-                appearance: none;
+            .remark-val {
+                color: #ef4444 !important;
             }
 
             .no-val {
                 border: none !important;
-                box-shadow: none !important;
                 background: transparent !important;
+                box-shadow: none !important;
+                padding: 0 !important;
             }
 
-            /* Make print borders softer and elegant */
-            .ticket-table {
-                border: 1px solid #94a3b8 !important;
+            .td-lbl {
+                background-color: #f1f5f9 !important;
             }
 
-            .ticket-table td {
-                border: 1px solid #cbd5e1 !important;
-            }
-
-            .row-table td {
-                border-right: 1px solid #cbd5e1 !important;
-            }
-
-            .ticket-page.print-hidden,
-            .no-print {
-                display: none !important;
+            .logo-box {
+                background-image: url('https://lh3.googleusercontent.com/d/1C6xZIU7N3LQ3-Bcs8cffuqg4jykUkE-y') !important;
             }
         }
 
@@ -836,7 +917,7 @@
             padding: 2px 0 !important;
             box-shadow: none !important;
             color: black !important;
-            font-weight: 700 !important;
+            font-weight: 400 !important;
             -webkit-text-fill-color: black !important;
             opacity: 1 !important;
             filter: none !important;
@@ -863,6 +944,14 @@
 
         body.export-mode .ticket-table {
             border: 2px solid #1e293b !important;
+        }
+
+        .bold-val,
+        .wg-input.bold-val,
+        .wg-input.bold-val:focus {
+            font-weight: 700 !important;
+            font-size: 20px !important;
+            opacity: 1 !important;
         }
     </style>
 </head>
@@ -947,6 +1036,12 @@
             setTimeout(() => t.className = 'toast', 4000);
         }
 
+        // Guard: ถ้าเปิดไฟล์ HTML ตรงๆ นอก Google Apps Script Web App
+        // จะทำให้ `google.script.run` ไม่มีอยู่และเกิด error ทันที
+        function isAppsScriptReady() {
+            return typeof google !== 'undefined' && google.script && google.script.run;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             // ใช้ค่า ID ที่ส่งมาจากฝั่ง Server (Code.gs) เพื่อความแม่นยำ 100%
             const ticketIdFromServer = "<?= id ?>";
@@ -961,6 +1056,11 @@
         function fetchTicketData(id) {
             const ticketId = id || document.getElementById('f-ticket-no-master')?.value.trim();
             if (!ticketId) return;
+
+            if (!isAppsScriptReady()) {
+                showToast('ไม่พบ `google.script.run` (เปิดหน้านี้ไม่ได้แบบไฟล์เดี่ยว) โปรดเปิดผ่าน Web App เท่านั้น', 'error');
+                return;
+            }
 
             const overlay = document.getElementById('loading-overlay');
             overlay.style.display = 'flex';
@@ -1000,11 +1100,11 @@
             const blank = {
                 ticketNo: '',
                 name: '', phone: '', origin: '', destination: '', boarding: '',
-                platform: '', busNo: '', seatId: '', price: '0',
-                issuedBy: localStorage.getItem('lastSeller') || localStorage.getItem('manualAgent') || '',
+                platform: '', busNo: '', seatId: '', price: '',
+                issuedBy: '',
                 priceType: 'cash',
-                day: new Date().getDate(), month: new Date().getMonth() + 1, year: new Date().getFullYear(),
-                issuedDate: new Date().toLocaleDateString('th-TH'),
+                day: '', month: '', year: '',
+                issuedDate: '',
                 time: ''
             };
             const wrapper = document.getElementById('tickets-wrapper');
@@ -1052,7 +1152,7 @@
             // แทนที่จะล้างหน้าจอ ให้ใช้วิธีต่อท้าย (Append)
             splitTickets.forEach(t => {
                 // ตรวจสอบว่ามีรหัสนี้อยู่บนหน้าจอแล้วหรือยัง
-                const existingIds = Array.from(document.querySelectorAll('.wg-input[id^="f-no-"]')).map(el => el.value.trim());
+                const existingIds = Array.from(document.querySelectorAll('input[id^="f-no-"]')).map(el => el.value.trim());
                 let tNo = t.ticketNo || '';
                 if (tNo.startsWith('online00')) tNo = tNo.replace('online00', '');
 
@@ -1090,6 +1190,9 @@
                     <i class="fas fa-times"></i>
                 </button>
 
+                <!-- ตราประทับ CANCELLED -->
+                <div id="cancelled-stamp-${idx}" class="cancelled-watermark">CANCELLED</div>
+
                 <div class="ticket-selector no-print"
                      onclick="const chk=this.querySelector('input'); chk.checked=!chk.checked; togglePrintSelection(${idx}, chk.checked); event.stopPropagation();"
                      style="position:absolute; top:-40px; left:0; width:100%; display:flex; align-items:center; gap:10px; background:#1e293b; color:white; padding:8px 18px; border-radius:12px 12px 0 0; cursor:pointer; border:1px solid rgba(255,255,255,0.1); border-bottom:none;">
@@ -1097,10 +1200,6 @@
                            style="width:18px; height:18px; cursor:pointer;"
                            onclick="togglePrintSelection(${idx}, this.checked); event.stopPropagation();">
                     <label style="font-size:14px; font-weight:800; color:white; cursor:pointer;">พิมพ์ตั๋วใบนี้</label>
-
-                    <button class="btn-save-mini" onclick="saveTicketToSheet(${idx}); event.stopPropagation();" title="บันทึกลงฐานข้อมูล">
-                        <i class="fas fa-save"></i> บันทึกลง Sheet
-                    </button>
                 </div>
 
                 <!-- Header -->
@@ -1118,13 +1217,13 @@
                         <div class="no-box">
                             No.
                             <div class="no-val" style="display:inline-flex; align-items:center;">
-                                <span style="font-weight:900; font-size:16px; color:#000;">online00</span>
+                                <span style="font-weight:400; font-size:16px; color:#000;">online00</span>
                                 <input type="text" id="f-no-${idx}"
                                        maxlength="4"
                                        value="${(t.ticketNo || '').replace('online00', '')}"
                                        placeholder="0000"
                                        autocomplete="off" spellcheck="false" data-lpignore="true"
-                                       style="width:55px; border:none; background:transparent; font-weight:900; font-size:16px; padding:0; outline:none; font-family:'Sarabun',sans-serif;"
+                                       style="width:55px; border:none; background:transparent; font-weight:300; font-size:16px; padding:0; outline:none; font-family:'Noto Sans Thai',sans-serif;"
                                        onkeydown="if(event.key==='Enter') fetchTicketForCard(${idx})">
                                 <button class="btn-fetch-inner no-print" onclick="fetchTicketForCard(${idx})">
                                     <i class="fas fa-search"></i>
@@ -1155,7 +1254,7 @@
                         <td class="td-lbl"><span class="lbl">ชื่อผู้โดยสาร</span><span class="lbl-en">Name</span></td>
                         <td colspan="2"><input type="text" class="wg-input" id="f-name-${idx}" placeholder="ชื่อผู้โดยสาร" autocomplete="off" spellcheck="false" data-lpignore="true" readonly></td>
                         <td class="td-lbl"><span class="lbl">เบอร์โทร</span><span class="lbl-en">Mobile Phone</span></td>
-                        <td colspan="2"><input type="tel" class="wg-input" id="f-phone-${idx}" placeholder="0XX-XXX-XXXX" autocomplete="off" spellcheck="false" data-lpignore="true" oninput="formatPhone(this)"></td>
+                        <td colspan="2"><input type="tel" class="wg-input" id="f-phone-${idx}" placeholder="0XX-XXX-XXXX" autocomplete="off" spellcheck="false" data-lpignore="true" oninput="formatPhone(this)" readonly></td>
                     </tr>
 
                     <!-- Row 2: From & To -->
@@ -1169,58 +1268,58 @@
                     <!-- Row 3: Issued Date, Departure Date, Time -->
                     <tr>
                         <td class="td-lbl"><span class="lbl">วันที่ออกบัตร</span><span class="lbl-en">Date of Issued</span></td>
-                        <td><input type="text" class="wg-input center" id="f-issued-date-${idx}" value="${currentDate}" autocomplete="off" spellcheck="false" data-lpignore="true" readonly></td>
+                        <td><input type="text" class="wg-input" id="f-issued-date-${idx}" placeholder="DD/MM/YY" autocomplete="off" spellcheck="false" data-lpignore="true" readonly></td>
                         <td class="td-lbl"><span class="lbl">วันเดินทาง</span><span class="lbl-en">Departure Date</span></td>
                         <td>
-                            <input type="text" class="wg-input center" id="f-date-display-${idx}" placeholder="DD/MM/YY" autocomplete="off" spellcheck="false" data-lpignore="true" readonly>
+                            <input type="text" class="wg-input" id="f-date-display-${idx}" placeholder="DD/MM/YY" autocomplete="off" spellcheck="false" data-lpignore="true" readonly>
                             <input type="date" id="f-date-${idx}" style="display:none;">
                         </td>
                         <td class="td-lbl"><span class="lbl">เวลา</span><span class="lbl-en">Time</span></td>
-                        <td><input type="text" class="wg-input center" id="f-time-${idx}" placeholder="7:45" readonly></td>
+                        <td><input type="text" class="wg-input" id="f-time-${idx}" placeholder="-" readonly></td>
                     </tr>
 
                     <!-- Row 4: Platform, Bus, Seat -->
                     <tr>
                         <td class="td-lbl"><span class="lbl">ชานชาลาที่</span><span class="lbl-en">P/F No.</span></td>
-                        <td><input type="text" class="wg-input center bold-val" id="f-platform-${idx}" placeholder="18" readonly></td>
+                        <td class="center"><input type="text" class="wg-input center bold-val" id="f-platform-${idx}" placeholder="-" readonly></td>
                         <td class="td-lbl"><span class="lbl">หมายเลขรถ</span><span class="lbl-en">Bus No.</span></td>
-                        <td><input type="text" class="wg-input center" id="f-bus-${idx}" placeholder="443-" readonly></td>
+                        <td><input type="text" class="wg-input" id="f-bus-${idx}" placeholder="443-" readonly></td>
                         <td class="td-lbl"><span class="lbl">เลขที่นั่ง</span><span class="lbl-en">Seat No.</span></td>
-                        <td><input type="text" class="wg-input center" id="f-seat-${idx}" placeholder="1A" readonly></td>
+                        <td><input type="text" class="wg-input" id="f-seat-${idx}" placeholder="-" readonly></td>
                     </tr>
 
                     <!-- Row 5: Price, Payment, Issuer -->
                     <tr>
                         <td class="td-lbl"><span class="lbl">ราคา</span><span class="lbl-en">Price</span></td>
-                        <td><input type="text" class="wg-input center" id="f-price-${idx}" placeholder="462" style="font-size:20px;" readonly></td>
-                        <td class="payment-cell" style="padding:0; border:1px solid #000;" colspan="2">
-                            <table style="width:100%; height:100%; border-collapse:collapse; table-layout: fixed; border:none;">
+                        <td class="center"><input type="text" class="wg-input center" id="f-price-${idx}" placeholder="0" style="font-size:16px;" readonly></td>
+                        <td class="payment-cell" style="padding:0;" colspan="2">
+                            <table class="payment-mini-table">
                                 <tr>
-                                    <td style="border:none; border-bottom:1px solid #000; padding:2px 4px; font-size:10px; font-weight:800; width:35%;">วิธีชำระ</td>
-                                    <td id="m-pay-method-val-${idx}" style="border:none; border-bottom:1px solid #000; padding:2px 4px; font-size:11px; font-weight:900; width:65%;">-</td>
+                                    <td class="payment-mini-label">วิธีชำระ</td>
+                                    <td id="m-pay-method-val-${idx}" class="payment-mini-value">-</td>
                                 </tr>
                                 <tr>
-                                    <td style="border:none; padding:2px 4px; font-size:10px; font-weight:800; width:35%;">ประเภท</td>
-                                    <td id="m-pay-type-val-${idx}" style="border:none; padding:2px 4px; font-size:11px; font-weight:900; width:65%;">-</td>
+                                    <td class="payment-mini-label">ประเภท</td>
+                                    <td id="m-pay-type-val-${idx}" class="payment-mini-value">-</td>
                                 </tr>
                             </table>
                         </td>
                         <td class="td-lbl"><span class="lbl">ผู้ขาย</span><span class="lbl-en">Issued by</span></td>
-                        <td><input type="text" class="wg-input center" id="f-issuer-${idx}" placeholder="Care" readonly></td>
+                        <td><input type="text" class="wg-input" id="f-issuer-${idx}" placeholder="Admin" readonly></td>
                     </tr>
 
                     <!-- Row 6: Remark -->
                     <tr>
                         <td class="td-lbl"><span class="lbl">หมายเหตุ</span></td>
-                        <td colspan="5"><input type="text" class="wg-input" id="f-remark-${idx}" placeholder="หมายเหตุ (ถ้ามี)" style="font-size:14px; padding-left:10px;"></td>
+                        <td colspan="5"><input type="text" class="wg-input" id="f-remark-${idx}" placeholder="หมายเหตุ (ถ้ามี)" style="font-size:12px; padding-left:10px;" readonly></td>
                     </tr>
                 </table>
 
                 <!-- Footer -->
-                <div style="margin-top:8px;">
-                    <div style="text-align:right; font-size:11px; font-weight:600; color:#555;">เวลาออกบัตรโดยสาร ${currentTime}</div>
-                    <div style="text-align:center; font-size:14px; font-weight:800; margin-top:5px;">กรุณาตรวจสอบรายละเอียดภายในตั๋วโดยสาร มิเช่นนั้นจะยึดถือรายละเอียดตามที่ระบุภายในบัตรโดยสารนี้</div>
-                    <div style="text-align:center; font-size:13px; font-weight:600; margin-top:3px; color:#666;">กรุณามารับตั๋วก่อนเวลาเดินทางอย่างน้อย 15 นาที เพื่อความสะดวกในการเดินทาง</div>
+                <div style="margin-top:1px;">
+                    <div style="text-align:right; font-size:9px; font-weight:600; color:#555;">เวลาออกบัตรโดยสาร ${currentTime}</div>
+                    <div style="text-align:center; font-size:11px; font-weight:800; margin-top:1px;">กรุณาตรวจสอบรายละเอียดภายในตั๋วโดยสาร มิเช่นนั้นจะยึดถือรายละเอียดตามที่ระบุภายในบัตรโดยสารนี้</div>
+                    <div style="text-align:center; font-size:10px; font-weight:600; margin-top:0px; color:#666;">กรุณามารับตั๋วก่อนเวลาเดินทางอย่างน้อย 15 นาที เพื่อความสะดวกในการเดินทาง</div>
                 </div>
 
                 <div style="border-top:2px dashed #000; margin:10px 0;"></div>
@@ -1253,8 +1352,8 @@
                             <td><span class="c-label">ชื่อผู้โดยสาร</span></td>
                             <td><span class="c-val" id="cp-name-${idx}">-</span></td>
                             <td><span class="c-val" id="cp-phone-${idx}">-</span></td>
-                            <td><span class="c-val" id="cp-price-${idx}" style="font-size: 15px;">-</span></td>
-                            <td><span class="c-seat-val" id="cp-seat-${idx}">-</span></td>
+                            <td class="coupon-data-left"><span class="c-val" id="cp-price-${idx}" style="font-size: 10px;font-weight: 800;line-height: 1;">-</span></td>
+                            <td class="coupon-data-left"><span class="c-seat-val" id="cp-seat-${idx}">-</span></td>
                         </tr>
                     </table>
                     <div class="c-warning">สงวนสิทธิ์ใช้ได้เฉพาะผู้โดยสารที่ถือตั๋วเดินทางราคา 468 บาทต่อที่นั่งขึ้นไป</div>
@@ -1292,7 +1391,18 @@
             setVal(`f-seat-${idx}`, t.seatId);
             setVal(`f-price-${idx}`, t.price);
             setVal(`f-issuer-${idx}`, t.issuedBy);
-            setVal(`f-remark-${idx}`, t.remarks || t.remark || '');
+            setVal(`f-issued-date-${idx}`, t.issuedDate || t.date);
+            let remarkText = t.remarks || t.remark || '';
+            if (remarkText.includes('ตั๋วใบนี้ถูกยกเลิกแล้ว')) {
+                remarkText = remarkText.replace('ตั๋วใบนี้ถูกยกเลิกแล้ว', '').trim();
+            }
+            setVal(`f-remark-${idx}`, remarkText);
+
+            const remarkInp = document.getElementById(`f-remark-${idx}`);
+            if (remarkInp) {
+                remarkInp.style.color = 'red';
+                remarkInp.style.fontWeight = 'normal';
+            }
             setText(`f-boarding-disp-${idx}`, t.boarding);
 
             // Fill Coupon Values
@@ -1310,36 +1420,96 @@
             setText(`cp-time-${idx}`, timeStr);
 
             setText(`cp-seat-${idx}`, t.seatId);
-            setText(`cp-price-${idx}`, t.price);
 
-            // Payment Logic
+            // Payment Logic & Agent Styling
+            const pType = (t.paymentType || '').toLowerCase();
+            const isAgentData = t.isAgent || pType === 'agent' || pType === 'เอเย่นต์' || (t.agentName && t.agentName !== '');
+
+            // หมายเหตุในตั๋ว (Coupon) - สีแดง
+            const cpRemarkText = t.remarks || t.remark || '';
+            const cpRemarkEl = document.getElementById(`cp-remark-${idx}`);
+            if (cpRemarkEl) {
+                cpRemarkEl.textContent = cpRemarkText;
+                cpRemarkEl.style.color = 'red';
+                cpRemarkEl.style.fontWeight = 'normal';
+            }
+
+            // ปรับการแสดงผลราคาสำหรับเอเย่นต์ (สีฟ้า + (A))
+            if (isAgentData) {
+                const agentPriceStr = `${t.price} (A)`;
+                setText(`cp-price-${idx}`, agentPriceStr);
+
+                // ตั๋วหลัก (Main Ticket) - สีน้ำเงินพร้อม (A)
+                const mainPriceInp = document.getElementById(`f-price-${idx}`);
+                if (mainPriceInp) {
+                    mainPriceInp.value = agentPriceStr;
+                    mainPriceInp.style.color = '#2563eb';
+                    mainPriceInp.style.fontWeight = '300';
+                }
+
+                // คูปอง (Coupon) - สีดำพร้อม (A)
+                const cpPriceEl = document.getElementById(`cp-price-${idx}`);
+                if (cpPriceEl) {
+                    cpPriceEl.style.color = '#000000';
+                    cpPriceEl.style.fontWeight = '400';
+                }
+            } else {
+                setText(`cp-price-${idx}`, t.price);
+
+                // ตั๋วหลัก (Main Ticket) - สีดำปกติ
+                const mainPriceInp = document.getElementById(`f-price-${idx}`);
+                if (mainPriceInp) {
+                    mainPriceInp.value = t.price;
+                    mainPriceInp.style.color = '#000000';
+                    mainPriceInp.style.fontWeight = '300';
+                }
+
+                // คูปอง (Coupon) - สีดำปกติ
+                const cpPriceEl = document.getElementById(`cp-price-${idx}`);
+                if (cpPriceEl) {
+                    cpPriceEl.style.color = '#000000';
+                    cpPriceEl.style.fontWeight = '300';
+                }
+            }
+
+            // Payment Logic (Method & Type Text)
             let payMethod = '-';
             if (t.isCash) payMethod = '💵 เงินสด';
             else if (t.isQR) payMethod = '📱 QR-code';
             else if (t.isCard) payMethod = '💳 บัตร';
             else if (t.isInspector) payMethod = '🎫 บัตรตรวจฯ';
 
-            let payType = '👤 ทั่วไป';
-            let typeText = 'ปกติ';
-            const pType = (t.paymentType || '').toLowerCase();
-            const isAgentData = t.isAgent || pType === 'agent' || pType === 'เอเย่นต์' || (t.agentName && t.agentName !== '');
-
+            let typeText = '-';
             if (isAgentData) {
                 typeText = '👤 เอเย่นต์';
             } else if (t.isCard || pType === 'ราคาบัตร') {
                 typeText = '💳 ราคาบัตร';
             } else if (t.isInspector || pType === 'ตรวจการ' || pType === 'inspector') {
                 typeText = '👮 ตรวจการ';
+            } else if (t.isCash || t.isQR || pType === 'cash' || pType === 'qr') {
+                typeText = '🎫ปกติ';
             }
+
             const typeEl = document.getElementById(`m-pay-type-val-${idx}`);
             if (typeEl) {
                 typeEl.textContent = typeText;
                 if (isAgentData) typeEl.style.color = '#2563eb';
-                else typeEl.style.color = '#1e293b';
+                else typeEl.style.color = '#000000';
             }
 
             const methodEl = document.getElementById(`m-pay-method-val-${idx}`);
             if (methodEl) methodEl.textContent = payMethod;
+
+            // Handle Watermark Stamp
+            const watermarkStamp = document.getElementById(`cancelled-stamp-${idx}`);
+            const status = (t.status || '').toUpperCase();
+
+            if (status === 'CANCELLED') {
+                if (watermarkStamp) watermarkStamp.style.display = 'block';
+            } else {
+                if (watermarkStamp) watermarkStamp.style.display = 'none';
+            }
+
 
             // Handle Date from t.day / t.month / t.year fields
             if (t.day && t.month && t.year) {
@@ -1455,22 +1625,24 @@
                 span.style.display = 'block';
                 span.style.width = '100%';
                 span.style.textAlign = computedStyle.textAlign || 'center';
-                span.style.fontWeight = '900';
-                span.style.fontFamily = "'Sarabun', sans-serif";
+                span.style.fontWeight = '500';
+                span.style.fontFamily = "'Noto Sans Thai', sans-serif";
                 span.style.fontSize = computedStyle.fontSize || '18px';
                 span.style.color = computedStyle.color || 'black';
-                span.style.lineHeight = '1.2';
-                span.style.padding = '2px 0';
+                span.style.lineHeight = '1';
+                span.style.padding = '0';
 
                 // กรณีราคา
                 if (inp.id.includes('f-price')) {
-                    span.style.fontSize = '26px';
+                    span.style.fontSize = '18px';
+                    span.style.fontWeight = '700';
                     span.style.color = '#1e3a8a';
                 }
 
                 // กรณีชานชาลา
                 if (inp.id.includes('f-platform')) {
-                    span.style.fontSize = '28px';
+                    span.style.fontSize = '18px';
+                    span.style.fontWeight = '700';
                 }
 
                 inp.parentNode.replaceChild(span, inp);
@@ -1481,10 +1653,32 @@
             clone.style.transition = 'none';
             clone.style.animation = 'none';
             clone.style.boxShadow = 'none';
-            clone.style.border = '2px solid #000';
+            clone.style.border = 'none';
             clone.style.background = '#ffffff';
             clone.style.margin = '0';
             clone.style.borderRadius = '0';
+            // อิงขนาดตามหน้า manual จริง
+            clone.style.width = `${originalCard.offsetWidth}px`;
+            clone.style.minHeight = `${originalCard.offsetHeight}px`;
+
+            // เพิ่มความคมชัดของเส้นตารางในไฟล์ที่ Export
+            clone.querySelectorAll('.ticket-table td').forEach(td => {
+                td.style.border = '1.3px solid #000';
+            });
+            clone.querySelectorAll('.payment-mini-table').forEach(table => {
+                table.style.borderCollapse = 'collapse';
+                table.style.borderSpacing = '0';
+            });
+            clone.querySelectorAll('.payment-mini-table td').forEach(td => {
+                td.style.border = 'none';
+                td.style.boxSizing = 'border-box';
+            });
+            clone.querySelectorAll('.payment-mini-table .payment-mini-label').forEach(td => {
+                td.style.borderRight = '1.6px solid #000';
+            });
+            clone.querySelectorAll('.payment-mini-table tr:first-child .payment-mini-label, .payment-mini-table tr:first-child .payment-mini-value').forEach(td => {
+                td.style.borderBottom = '1.6px solid #000';
+            });
 
             return clone;
         }
@@ -1507,12 +1701,12 @@
             captureArea.style.position = 'fixed';
             captureArea.style.top = '-20000px';
             captureArea.style.left = '0';
-            captureArea.style.width = '900px';
+            captureArea.style.width = 'fit-content';
             captureArea.style.display = 'flex';
             captureArea.style.flexDirection = 'column';
             captureArea.style.gap = '20px';
-            captureArea.style.padding = '20px';
-            captureArea.style.background = '#f1f5f9';
+            captureArea.style.padding = '0';
+            captureArea.style.background = '#ffffff';
             document.body.appendChild(captureArea);
 
             for (let card of selectedCards) {
@@ -1521,11 +1715,17 @@
             }
 
             try {
+                const targetWidth = captureArea.scrollWidth;
+                const targetHeight = captureArea.scrollHeight;
                 const canvas = await html2canvas(captureArea, {
                     scale: 4,
                     useCORS: true,
                     backgroundColor: '#f1f5f9',
-                    logging: false
+                    logging: false,
+                    width: targetWidth,
+                    height: targetHeight,
+                    windowWidth: targetWidth,
+                    windowHeight: targetHeight
                 });
 
                 const link = document.createElement('a');
@@ -1568,12 +1768,18 @@
                 captureArea.appendChild(exportNode);
 
                 try {
+                    const targetWidth = exportNode.scrollWidth;
+                    const targetHeight = exportNode.scrollHeight;
                     const canvas = await html2canvas(exportNode, {
                         scale: 4,
                         useCORS: true,
                         backgroundColor: '#ffffff',
                         logging: false,
-                        imageTimeout: 0
+                        imageTimeout: 0,
+                        width: targetWidth,
+                        height: targetHeight,
+                        windowWidth: targetWidth,
+                        windowHeight: targetHeight
                     });
 
                     const link = document.createElement('a');
@@ -1610,12 +1816,18 @@
             captureArea.appendChild(exportNode);
 
             try {
+                const targetWidth = exportNode.scrollWidth;
+                const targetHeight = exportNode.scrollHeight;
                 const canvas = await html2canvas(exportNode, {
                     scale: 4,
                     useCORS: true,
                     backgroundColor: '#ffffff',
                     logging: false,
-                    imageTimeout: 0
+                    imageTimeout: 0,
+                    width: targetWidth,
+                    height: targetHeight,
+                    windowWidth: targetWidth,
+                    windowHeight: targetHeight
                 });
 
                 const link = document.createElement('a');
@@ -1653,6 +1865,11 @@
             if (!num) return;
             // เติม Prefix online00 เข้าไปข้างหน้า
             const id = "online00" + num;
+
+            if (!isAppsScriptReady()) {
+                showToast('ไม่พบ `google.script.run` (เปิดหน้านี้ไม่ได้แบบไฟล์เดี่ยว) โปรดเปิดผ่าน Web App เท่านั้น', 'error');
+                return;
+            }
 
             const overlay = document.getElementById('loading-overlay');
             overlay.style.display = 'flex';
@@ -1706,50 +1923,6 @@
                     }, 300);
                 }
             });
-        }
-
-        async function saveTicketToSheet(idx) {
-            const getV = (id) => document.getElementById(`${id}-${idx}`)?.value || '';
-            const isChecked = (id) => document.getElementById(`${id}-${idx}`)?.classList.contains('checked');
-
-            const otherVal = getV('f-pay-other-selector');
-            const data = {
-                name: getV('f-name'),
-                phone: getV('f-phone'),
-                from: getV('f-from'),
-                to: getV('f-to'),
-                date: document.getElementById(`f-date-${idx}`).value,
-                time: getV('f-time'),
-                seatNo: getV('f-seat'),
-                boarding: getV('f-boarding'),
-                platform: getV('f-platform'),
-                busNo: getV('f-bus'),
-                price: getV('f-price'),
-                isCash: isChecked('m-pay-cash'),
-                isQR: isChecked('m-pay-qr'),
-                isAgent: otherVal !== "" && otherVal !== "ราคาบัตร" && !otherVal.includes("บัตรตรวจ"),
-                isCard: otherVal === "ราคาบัตร",
-                isInspector: otherVal.includes("บัตรตรวจ"),
-                agentName: (otherVal !== "ราคาบัตร") ? otherVal : "",
-                issuer: getV('f-issuer'),
-                remarks: getV('f-remark')
-            };
-
-            const overlay = document.getElementById('loading-overlay');
-            overlay.style.display = 'flex';
-
-            google.script.run.withSuccessHandler(res => {
-                overlay.style.display = 'none';
-                if (res.success) {
-                    showToast('บันทึกข้อมูลลงฐานข้อมูลเรียบร้อยแล้ว', 'success');
-                    if (res.printData && res.printData.ticketNo) {
-                        document.getElementById(`f-no-${idx}`).value = res.printData.ticketNo.replace('online00', '');
-                        showToast(`รหัสตั๋วใหม่: ${res.printData.ticketNo}`, 'info');
-                    }
-                } else {
-                    showToast('บันทึกไม่สำเร็จ: ' + res.error, 'error');
-                }
-            }).processManualTicket(data);
         }
 
         // Custom Modal Helpers

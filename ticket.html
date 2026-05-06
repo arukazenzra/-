@@ -4,14 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <title>KRR E-Ticket: บัตรโดยสารอิเล็กทรอนิกส์</title>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800;900&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <style>
         @media print {
             @page {
-                size: 210mm 148.5mm;
+                size: A4;
                 margin: 0;
-                /* Changed back to 0 for maximum space */
             }
 
             .no-print {
@@ -19,37 +18,19 @@
             }
 
             body {
-                margin: 0;
-                padding: 0;
                 background: #fff;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
-                zoom: 85%;
-                /* Reduced further to ensure fit */
-            }
-
-            * {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
+                margin: 0;
+                padding: 0;
             }
 
             .ticket-page {
-                width: 100%;
-                height: 100%;
-                padding: 0;
-                border: none;
+                width: 210mm;
+                height: 148.5mm;
                 margin: 0;
+                border: none;
                 box-shadow: none;
-                overflow: visible;
-                display: block;
-                page-break-after: avoid;
-                page-break-inside: avoid;
-                break-inside: avoid;
-            }
-
-            .ticket-page * {
-                page-break-inside: avoid;
-                break-inside: avoid;
             }
         }
 
@@ -62,217 +43,235 @@
         }
 
         body {
-            font-family: 'Sarabun', sans-serif;
+            font-family: 'Noto Sans Thai', sans-serif;
             background: #f4f4f5;
             color: #000;
-            line-height: 1.2;
-        }
-
-        .no-print-bar {
-            background: #1e293b;
-            padding: 10px;
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .btn-p {
-            padding: 8px 20px;
-            border-radius: 6px;
-            border: none;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .btn-print {
-            background: #facc15;
-            color: #000;
-        }
-
-        .btn-close {
-            background: #64748b;
-            color: #fff;
         }
 
         .ticket-page {
             width: 210mm;
-            height: auto;
-            margin: 2px auto;
-            background: #fff;
-            padding: 1mm 4mm;
-            border: 1px dashed #ccc;
+            height: 148.5mm; /* ล็อคความสูงให้เต็มครึ่งหน้า A4 พอดี */
+            margin: 0 auto;
+            background: #fff !important; 
+            padding: 10mm 15mm;
             position: relative;
-            display: block;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden; /* ป้องกันเนื้อหาล้นจนเกิดหน้าใหม่ */
         }
 
-        /* Header Section */
-        .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 2px;
-        }
-
-        .header-left {
-            display: flex;
+        /* Header Layout */
+        .header-layout {
+            display: grid;
+            grid-template-columns: 80px 1fr 240px;
+            gap: 15px;
+            margin-bottom: 8px;
             align-items: center;
-            gap: 10px;
         }
 
         .logo-img {
-            width: 45px;
-            height: 45px;
+            width: 90px;
+            height: 90px;
             object-fit: contain;
         }
 
-        .title-group h2 {
-            font-size: 9px;
-            font-weight: 700;
-            margin-bottom: -4px;
+        .title-main h2 {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 2px;
+            color: #1e3a8a;
         }
 
-        .title-group p {
-            font-size: 8px;
+        .title-main p {
+            font-size: 15px;
             font-weight: 500;
-            color: #444;
+            color: #475569;
         }
 
-        .title-group h1 {
-            font-size: 14px;
+        .title-main h1 {
+            font-size: 28px;
             font-weight: 900;
-            letter-spacing: -0.5px;
-            margin-top: -2px;
+            margin-top: 4px;
+            color: #1e293b;
         }
 
-        .header-right {
+        .header-info {
             text-align: right;
         }
 
-        .copy-tag {
-            font-size: 11px;
+        .copy-text {
+            font-size: 12px;
             font-weight: 700;
             font-style: italic;
-            margin-bottom: 2px;
         }
 
-        .no-box {
-            font-size: 11px;
-            font-weight: 800;
+        .no-row {
             display: flex;
-            align-items: center;
             justify-content: flex-end;
-            gap: 3px;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
         }
 
-        .no-val {
-            border: 1.5px solid #cbd5e1;
-            border-radius: 4px;
-            padding: 0px 6px;
-            font-size: 12px;
-            min-width: 80px;
+        .no-label {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .no-value {
+            border: 2px solid #000;
+            padding: 2px 12px;
+            font-size: 18px;
+            font-weight: 900;
+            min-width: 130px;
             text-align: center;
-            background: #f8fafc;
-            font-weight: 900;
-            color: #000;
         }
 
-        .boarding-top {
-            font-weight: 900;
-            font-size: 12px;
-            margin-top: 1px;
-            color: #000;
-        }
-
-        .boarding-val {
-            color: #ef4444;
-            margin-left: 5px;
-        }
-
-        /* Excel-Style Table */
+        /* Main Table Style */
         .excel-table {
             width: 100%;
             border-collapse: collapse;
-            border: 1.5px solid #000;
+            border: 2px solid #000;
             table-layout: fixed;
+            margin-bottom: 5px;
+            flex: 1; /* ให้ตารางยืดตัวเพื่อเติมเต็มพื้นที่ว่างตรงกลาง */
         }
 
         .excel-table td {
-            border: 1px solid #000;
-            padding: 2px 8px;
+            border: 2px solid #000;
+            padding: 2px 10px;
             vertical-align: middle;
+            background: #f2f2f2 !important;
+            height: auto !important;
         }
 
-        .td-lbl {
-            background: #f8fafc;
+        .td-gray {
+            background: #e2e2e2 !important;
+            width: 16%;
         }
 
-        .lbl {
-            font-size: 11px;
+        .td-val {
+            width: 34%;
+            padding: 0 10px;
+            font-size: 18px; /* ลดลงจาก 20px */
+            font-weight: 800;
+        }
+
+        .wg-input-ticket {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-family: 'Noto Sans Thai', sans-serif;
+            font-size: 18px; /* ลดลงจาก 20px */
+            font-weight: 800;
+            color: #000;
+            outline: none;
+            padding: 2px 0;
+        }
+
+        .lbl-th {
+            font-size: 15px;
             font-weight: 800;
             display: block;
-            line-height: 1.0;
-            color: #000;
+            line-height: 1.2;
+            margin-bottom: 2px;
+            color: #1e3a8a;
         }
 
-        .lbl span {
-            font-size: 9px;
+        .lbl-en {
+            font-size: 11px;
             font-weight: 500;
             color: #444;
             display: block;
+            line-height: 1.0;
         }
 
-        .val {
-            font-size: 15px;
-            font-weight: 900;
-            color: #000;
-            padding-left: 2px;
-        }
-
-        .val-lg {
-            font-size: 26px;
-            font-weight: 900;
-            text-align: center;
-            display: block;
-            width: 100%;
-            color: #000;
-        }
-
-        /* Payment Section inside Table */
-        .pay-table {
-            width: 100%;
-            border-collapse: collapse;
-            height: 100%;
-        }
-
-        .pay-table td {
-            border: 1px solid #000;
-            padding: 0px 4px;
-            font-size: 9px;
+        .val-text {
+            font-size: 18px; /* ลดลงจาก 20px */
             font-weight: 800;
             color: #000;
-            height: 16px;
         }
 
-        .pay-table td:first-child {
-            border-left: none;
-            border-top: none;
-            width: 78%;
-        }
-
-        .pay-table td:last-child {
-            border-right: none;
-            border-top: none;
-            width: 22%;
+        /* Special Values */
+        .val-platform {
+            font-size: 38px;
+            font-weight: 900;
             text-align: center;
+            line-height: 1;
+            color: #000;
         }
 
-        .pay-table tr:last-child td {
-            border-bottom: none;
+        .val-seat {
+            font-size: 38px;
+            font-weight: 900;
+            text-align: center;
+            line-height: 1;
+            color: #000;
+        }
+
+        .val-price {
+            font-size: 28px;
+            font-weight: 900;
+            text-align: center;
+            color: #000;
+        }
+
+        .inner-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: none;
+            table-layout: fixed;
+            margin: -3px -11px;
+        }
+
+        .inner-table td {
+            border: none !important;
+            border-right: 2px solid #000 !important;
+            padding: 5px 12px;
+            height: auto !important;
+        }
+
+        .payment-inner-ticket {
+            display: flex;
+            flex-direction: column;
+            border-left: 2px solid #000; /* ขีดเส้นกรอบให้ตรงกับด้านบน */
+            height: 100%;
+            margin: -5px -12px; /* ดึงให้เส้นชิดขอบช่อง */
+        }
+
+        .payment-row-ticket {
+            display: flex;
+            align-items: center;
+            padding: 4px 15px;
+            border-bottom: 1px solid #000;
+            height: 50%;
+        }
+
+        .payment-row-ticket span:first-child {
+            width: 95px; /* ล็อคระยะหัวข้อเพื่อให้ข้อมูลตรงกับด้านบน */
+            flex-shrink: 0;
+            color: #1e3a8a;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .payment-val-ticket {
+            font-weight: 800;
+            font-size: 16px;
+        }
+
+        .inner-table td:last-child {
+            border-right: none !important;
+        }
+
+        /* Special Rows */
+        .check-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 2px 0;
         }
 
         .check-box {
@@ -282,96 +281,45 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            float: right;
+            font-size: 12px;
+            font-weight: 900;
             background: #fff;
-        }
-
-        .check-box.checked {
-            background: #334155;
         }
 
         .check-box.checked::after {
             content: '✔';
-            font-size: 10px;
-            color: #fff;
-        }
-
-        /* Adjustments for A5 fit */
-        .excel-table td {
-            height: 21px;
-            font-size: 10px;
-        }
-
-        .title-group h1 {
-            font-size: 18px;
-        }
-
-        .val-lg {
-            font-size: 20px;
-        }
-
-        .footer-warning {
-            font-size: 12px;
-            margin-top: 2px;
-        }
-
-        .footer-note {
-            font-size: 11px;
-        }
-
-        .divider {
-            margin: 2px 0;
-        }
-
-        .coupon-section {
-            margin-top: 0;
-        }
-
-        .c-seat-tag {
-            font-size: 20px;
-        }
-
-        .header-section {
-            margin-bottom: 5px;
         }
 
         /* Footer */
-        .issued-time-row {
+        .footer-info {
+            margin-top: 10px;
+        }
+
+        .issue-time {
             text-align: right;
-            font-size: 9px;
-            margin-top: 2px;
+            font-size: 11px;
             font-weight: 700;
-            color: #000;
         }
 
-        .footer-warning {
+        .warning-text {
             text-align: center;
-            font-size: 10px;
-            font-weight: 900;
-            margin-top: 0px;
-            color: #000;
+            font-size: 13px;
+            font-weight: 800;
+            margin-top: 5px;
         }
 
-        .footer-note {
+        .note-text {
             text-align: center;
-            font-size: 9px;
+            font-size: 12px;
             font-weight: 600;
-            margin-top: 0px;
-            color: #000;
-        }
-
-        .divider {
-            border-bottom: 1px dashed #000;
-            margin: 1px 0;
-            page-break-before: avoid;
         }
 
         /* Coupon Section */
-        .coupon-section {
-            margin-top: 5px;
-            border: 1.5px dashed #000;
-            padding: 0;
-            background: #fff;
+        .coupon-box {
+            margin-top: 10px; /* เพิ่มระยะห่างก่อนถึงคูปอง */
+            border-top: 1.5px dashed #000;
+            padding: 10px 0 0 0;
+            background: #fff !important;
         }
 
         .coupon-table {
@@ -381,76 +329,43 @@
         }
 
         .coupon-table td {
-            padding: 2px 8px;
+            padding: 6px 12px;
             vertical-align: middle;
-            border: none !important;
+            border: none;
+            height: 45px;
         }
 
-        .c-header-row {
-            background: #f1f5f9;
+        .c-gray {
+            background: #e2e8f0;
+            border-bottom: 2px solid #000 !important;
         }
 
-        .c-label {
-            font-size: 9px;
+        .coupon-title {
+            font-size: 13px;
             font-weight: 800;
             color: #000;
         }
 
-        .c-value {
-            font-size: 11px;
+        .coupon-val {
+            font-size: 18px;
             font-weight: 900;
             color: #000;
         }
 
-        .c-seat-tag {
+        .coupon-food {
+            text-align: right;
+            font-size: 14px;
+            font-weight: 800;
             color: #000;
-            font-size: 20px;
-            font-weight: 900;
         }
 
-        .c-warning {
-            font-size: 11px;
-            color: #ef4444;
-            font-weight: 900;
+        .coupon-footer {
             text-align: center;
-            width: 100%;
-            padding: 2px;
-            background: #fff;
-            border-top: 1px dashed #000;
-        }
-
-        /* ── Cancelled Stamp ── */
-        .cancelled-stamp {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-12deg);
-            border: 8px solid #ef4444;
-            color: #ef4444;
-            font-size: 100px;
+            color: red;
             font-weight: 900;
-            padding: 10px 40px;
-            border-radius: 20px;
-            opacity: 0.3;
-            /* Subtle for printing but clear */
-            pointer-events: none;
-            z-index: 1000;
-            text-transform: uppercase;
-            letter-spacing: 10px;
-            display: none;
-            white-space: nowrap;
-            user-select: none;
-        }
-
-        .cancelled-stamp.show {
-            display: block;
-        }
-
-        @media print {
-            .cancelled-stamp {
-                opacity: 0.5;
-                /* More visible when printing */
-            }
+            font-size: 14px;
+            border-top: 2px dashed #000;
+            padding: 6px;
         }
     </style>
 </head>
@@ -462,172 +377,168 @@
         <button class="btn-p btn-close" onclick="window.close()">✖️ ปิด</button>
     </div>
 
-    <div class="ticket-page" id="ticket-container"
-        style="page-break-inside: avoid; break-inside: avoid; position: relative;">
+    <div class="ticket-page" id="ticket-container">
         <!-- Cancelled Stamp -->
         <div class="cancelled-stamp" id="cancel-stamp">CANCELLED</div>
 
-        <div style="page-break-inside: avoid; break-inside: avoid; width: 100%;">
-            <!-- Header -->
-            <div class="header-section">
-                <div class="header-left">
-                    <img src="https://drive.google.com/thumbnail?id=1Sxwik4laagC2e6xZYYQ0gJaKZQ2IUWeM&sz=w200"
-                        class="logo-img">
-                    <div class="title-group">
-                        <h2>บัตรโดยสารอิเล็กทรอนิกส์ [กิจรุ่งเรืองทัวร์]</h2>
-                        <p>Passenger ticket</p>
-                        <h1>Kitrungrueng E-Ticket</h1>
-                    </div>
+        <!-- Header -->
+        <div class="header-layout">
+            <img src="https://drive.google.com/thumbnail?id=1Sxwik4laagC2e6xZYYQ0gJaKZQ2IUWeM&sz=w200" class="logo-img">
+            <div class="title-main">
+                <h2>บัตรโดยสารอิเล็กทรอนิกส์ [กิจรุ่งเรืองทัวร์]</h2>
+                <p>Passenger ticket</p>
+                <h1>Kitrungrueng E-Ticket</h1>
+            </div>
+            <div class="header-info">
+                <div class="copy-text">สำหรับผู้โดยสาร/สำเนา</div>
+                <div class="no-row">
+                    <span class="no-label">No.</span>
+                    <div class="no-value" id="tk-no">online000000</div>
                 </div>
-                <div class="header-right">
-                    <div class="copy-tag">สำหรับผู้โดยสาร/สำเนา</div>
-                    <div class="no-box">
-                        No.
-                        <div class="no-val" id="tk-no" autocomplete="off" spellcheck="false" data-lpignore="true">
-                            online000000</div>
-                    </div>
-                    <div class="boarding-top">
-                        จุดขึ้นรถ <span class="boarding-val" id="tk-boarding-top"
-                            style="color:#ef4444; font-weight: 900;">-</span>
-                    </div>
+                <div style="font-weight: 900; font-size: 16px; margin-top: 5px;">
+                    จุดขึ้นรถ <span id="tk-boarding-top" style="color:red;">-</span>
                 </div>
             </div>
+        </div>
 
-            <!-- Main Body -->
-            <table class="excel-table">
+        <!-- Main Body Table -->
+        <table class="excel-table">
+            <tr>
+                <td class="td-gray"><span class="lbl-th">ชื่อผู้โดยสาร</span><span class="lbl-en">Name</span></td>
+                <td class="td-val"><input type="text" id="tk-name" class="wg-input-ticket"></td>
+                <td class="td-gray"><span class="lbl-th">เบอร์โทร</span><span class="lbl-en">Mobile Phone</span></td>
+                <td class="td-val"><input type="text" id="tk-phone" class="wg-input-ticket" placeholder="พิมพ์แก้ไขได้ที่นี่"></td>
+            </tr>
+            <tr>
+                <td class="td-gray"><span class="lbl-th">จาก</span><span class="lbl-en">From</span></td>
+                <td class="td-val"><input type="text" id="tk-from" class="wg-input-ticket"></td>
+                <td class="td-gray"><span class="lbl-th">ถึง</span><span class="lbl-en">To</span></td>
+                <td class="td-val"><input type="text" id="tk-to" class="wg-input-ticket"></td>
+            </tr>
+            <tr>
+                <td colspan="4" style="padding: 0; border: none;">
+                    <table class="inner-table">
+                        <tr>
+                            <td class="td-gray" style="width: 16%; border: none; border-right: 1.5px solid #000;"><span
+                                    class="lbl-th">วันที่ออกบัตร</span><span class="lbl-en">Date of Issued</span></td>
+                            <td style="width: 17.33%; border: none; border-right: 1.5px solid #000;">
+                                <div class="val-text" id="tk-issued-date" style="text-align: center;"></div>
+                            </td>
+                            <td class="td-gray" style="width: 16%; border: none; border-right: 1.5px solid #000;"><span
+                                    class="lbl-th">วันเดินทาง</span><span class="lbl-en">Departure Date</span></td>
+                            <td style="width: 17.33%; border: none; border-right: 1.5px solid #000;">
+                                <div class="val-text" id="tk-date" style="text-align: center;"></div>
+                            </td>
+                            <td class="td-gray" style="width: 16%; border: none; border-right: 1.5px solid #000;"><span
+                                    class="lbl-th">เวลา</span><span class="lbl-en">Time</span></td>
+                            <td style="width: 17.34%; border: none;">
+                                <div class="val-text" id="tk-time" style="text-align: center;"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4" style="padding: 0; border: none;">
+                    <table class="inner-table">
+                        <tr>
+                            <td class="td-gray" style="width: 16%; border: none; border-right: 1.5px solid #000;"><span
+                                    class="lbl-th">ชานชาลาที่</span><span class="lbl-en">P/F No.</span></td>
+                            <td style="width: 17.33%; border: none; border-right: 1.5px solid #000;">
+                                <div class="val-platform" id="tk-platform"></div>
+                            </td>
+                            <td class="td-gray" style="width: 16%; border: none; border-right: 1.5px solid #000;"><span
+                                    class="lbl-th">หมายเลขรถ</span><span class="lbl-en">Bus No.</span></td>
+                            <td style="width: 17.33%; border: none; border-right: 1.5px solid #000;">
+                                <div class="val-text" id="tk-bus" style="text-align: center; font-weight: 900;"></div>
+                            </td>
+                            <td class="td-gray" style="width: 16%; border: none; border-right: 1.5px solid #000;"><span
+                                    class="lbl-th">เลขที่นั่ง</span><span class="lbl-en">Seat No.</span></td>
+                            <td style="width: 17.34%; border: none;">
+                                <div class="val-seat" id="tk-seat"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td class="td-gray"><span class="lbl-th">ราคา</span><span class="lbl-en">Price</span></td>
+                <td class="val-price" id="tk-price"></td>
+                <td colspan="2" style="padding: 0; border: none;">
+                    <table class="inner-table">
+                        <tr>
+                            <td style="width: 55%; padding: 2px 10px; border: none; border-right: 2px solid #000;">
+                                <div class="payment-inner-ticket">
+                                    <div class="payment-row-ticket">
+                                        <span>วิธีชำระ</span>
+                                        <span id="pay-method-display" class="payment-val-ticket"></span>
+                                    </div>
+                                    <div class="payment-row-ticket" style="border-bottom: none;">
+                                        <span>ประเภท</span>
+                                        <span id="pay-type-display" class="payment-val-ticket"></span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="td-gray" style="width: 20%; border: none; border-right: 1.5px solid #000;"><span
+                                    class="lbl-th">ผู้ขาย</span><span class="lbl-en">Issued by</span></td>
+                            <td style="width: 25%; text-align: center; font-weight: 900; border: none;" id="tk-issuer">
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td class="td-gray"><span class="lbl-th">หมายเหตุ</span></td>
+                <td colspan="3" style="padding: 0 10px;">
+                    <input type="text" id="tk-remark" class="wg-input-ticket" style="color: #ef4444; font-size: 20px; font-weight: 900;" placeholder="พิมพ์หมายเหตุเพิ่มเติมได้ที่นี่">
+                </td>
+            </tr>
+        </table>
+
+        <!-- Footer Info -->
+        <div class="footer-info">
+            <div class="issue-time">เวลาออกบัตรโดยสาร <span id="tk-issued-full">-</span></div>
+            <div class="warning-text">กรุณาตรวจสอบรายละเอียดภายในตั๋วโดยสาร
+                มิเช่นนั้นจะยึดถือรายละเอียดตามที่ระบุภายในบัตรโดยสารนี้</div>
+            <div class="note-text">กรุณามารับตั๋วก่อนเวลาเดินทางอย่างน้อย 15 นาที เพื่อความสะดวกในการเดินทาง</div>
+        </div>
+
+        <!-- Coupon Section -->
+        <div class="coupon-box">
+            <table class="coupon-table">
                 <colgroup>
-                    <col style="width: 14%;">
-                    <col style="width: 32%;">
-                    <col style="width: 14%;">
-                    <col style="width: 14%;">
-                    <col style="width: 12%;">
-                    <col style="width: 14%;">
+                    <col style="width: 30%;">
+                    <col style="width: 30%;">
+                    <col style="width: 40%;">
                 </colgroup>
-
-                <tr>
-                    <td class="td-lbl"><span class="lbl">ชื่อผู้โดยสาร <span>Name</span></span></td>
-                    <td class="val" id="tk-name" style="font-weight: 900;">-</td>
-                    <td class="td-lbl"><span class="lbl">เบอร์โทร <span>Mobile Phone</span></span></td>
-                    <td colspan="3" class="val" id="tk-phone" style="font-weight: 900;">-</td>
-                </tr>
-
-                <tr>
-                    <td class="td-lbl"><span class="lbl">จาก <span>From</span></span></td>
-                    <td class="val" id="tk-from" style="font-weight: 900;">-</td>
-                    <td class="td-lbl"><span class="lbl">ถึง <span>To</span></span></td>
-                    <td colspan="3" class="val" id="tk-to" style="font-weight: 900;">-</td>
-                </tr>
-
-                <tr>
-                    <td class="td-lbl"><span class="lbl">วันที่ออกบัตร <span>Date of Issued</span></span></td>
-                    <td class="val" id="tk-issued-date" style="text-align: center; font-weight: 900;">-</td>
-                    <td class="td-lbl"><span class="lbl">วันเดินทาง <span>Departure Date</span></span></td>
-                    <td class="val" id="tk-date" style="text-align: center; font-weight: 900;">-</td>
-                    <td class="td-lbl"><span class="lbl">เวลา <span>Time</span></span></td>
-                    <td class="val" id="tk-time" style="text-align: center; font-weight: 900;">-</td>
-                </tr>
-
-                <tr>
-                    <td class="td-lbl"><span class="lbl">ชานชาลาที่ <span>P/F No.</span></span></td>
-                    <td class="val-lg" id="tk-platform" style="font-size: 20px; font-weight: 900; text-align: center;">-
+                <tr class="c-gray">
+                    <td><span class="coupon-title">ต้นทาง [From]</span></td>
+                    <td><span class="coupon-title">ปลายทาง [To]</span></td>
+                    <td>
+                        <div class="coupon-food">(คูปองแลกอาหารและเครื่องดื่ม มูลค่า 35 บาท)</div>
                     </td>
-                    <td class="td-lbl"><span class="lbl">หมายเลขรถ <span>Bus No.</span></span></td>
-                    <td class="val" id="tk-bus" style="text-align: center; font-weight: 900;">-</td>
-                    <td class="td-lbl"><span class="lbl">เลขที่นั่ง <span>Seat No.</span></span></td>
-                    <td class="val" id="tk-seat" style="text-align: center; font-size: 18px; font-weight: 900;">-</td>
                 </tr>
-
                 <tr>
-                    <td class="td-lbl"><span class="lbl">ราคา <span>Price</span></span></td>
-                    <td class="val" id="tk-price" style="text-align: center; font-size: 18px; font-weight: 900;">-</td>
-                    <td colspan="2" style="padding: 0;">
-                        <table class="pay-table">
-                            <tr>
-                                <td
-                                    style="font-size: 9px; font-weight: 800; color: #64748b; width: 40%; padding-left: 8px;">
-                                    วิธีชำระ</td>
-                                <td style="font-size: 12px; font-weight: 900; color: #1e293b;" id="pay-method-display">-
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="font-size: 9px; font-weight: 800; color: #64748b; padding-left: 8px;">ประเภท
-                                </td>
-                                <td style="font-size: 12px; font-weight: 900; color: #1e293b;" id="pay-type-display">-
-                                </td>
-                            </tr>
-                        </table>
+                    <td><span class="coupon-val" id="cp-from"></span></td>
+                    <td><span class="coupon-val" id="cp-to"></span></td>
+                    <td style="text-align: right;">
+                        <span class="coupon-title">เลขที่ตั๋ว</span>
+                        <span class="coupon-val" id="cp-no" style="font-style: italic; margin-left: 10px;"></span>
                     </td>
-                    <td class="td-lbl"><span class="lbl">ผู้ขาย <span>Issued by</span></span></td>
-                    <td class="val" id="tk-issuer" style="text-align: center; font-weight: 900;">-</td>
                 </tr>
-
+                <tr class="c-gray" style="border-top: 1.5px solid #000;">
+                    <td><span class="coupon-title">วันที่เดินทาง [Departure Date.]</span></td>
+                    <td><span class="coupon-title">เลขที่นั่ง</span></td>
+                    <td style="text-align: right;"><span class="coupon-title">ชื่อผู้โดยสาร</span></td>
+                </tr>
                 <tr>
-                    <td class="td-lbl"><span class="lbl">หมายเหตุ <span>Remark</span></span></td>
-                    <td colspan="5" class="val" id="tk-remark" style="font-size:14px; min-height: 20px;"></td>
+                    <td><span class="coupon-val" id="cp-date"></span></td>
+                    <td><span class="coupon-val" id="cp-seat" style="font-size: 34px; line-height: 1;"></span></td>
+                    <td><span class="coupon-val" id="cp-name" style="text-align: right; display: block;"></span></td>
                 </tr>
             </table>
-
-            <!-- Summary Footer -->
-            <div class="issued-time-row">
-                <span>เวลาออกบัตรโดยสาร <span id="tk-issued-full">-</span></span>
-            </div>
-            <div class="footer-warning">กรุณาตรวจสอบรายละเอียดภายในตั๋วโดยสาร
-                มิเช่นนั้นจะยึดถือรายละเอียดตามที่ระบุภายในบัตรโดยสารนี้</div>
-            <div class="footer-note">กรุณามารับตั๋วก่อนเวลาเดินทางอย่างน้อย 15 นาที เพื่อความสะดวกในการเดินทาง</div>
-
-            <div class="divider"></div>
-
-            <!-- Coupon Section -->
-            <div class="coupon-section">
-                <table class="coupon-table">
-                    <colgroup>
-                        <col style="width: 25%;">
-                        <col style="width: 20%;">
-                        <col style="width: 20%;">
-                        <col style="width: 35%;">
-                    </colgroup>
-                    <tr class="c-header-row">
-                        <td><span class="c-label">ต้นทาง [Form]</span></td>
-                        <td><span class="c-label">ปลายทาง [To]</span></td>
-                        <td colspan="2" style="text-align: right;"><span class="c-label">(คูปองแลกอาหารและเครื่องดื่ม
-                                มูลค่า 35 บาท)</span></td>
-                    </tr>
-                    <tr>
-                        <td><span class="c-value" id="cp-from" style="font-weight: 900;">-</span></td>
-                        <td><span class="c-value" id="cp-to" style="font-weight: 900;">-</span></td>
-                        <td colspan="2"></td>
-                    </tr>
-                    <tr class="c-header-row">
-                        <td><span class="c-label">วันที่เดินทาง [Departure Date.]</span></td>
-                        <td><span class="c-label">เวลา</span></td>
-                        <td colspan="2" style="text-align: right;"><span class="c-label">เลขที่ตั๋ว</span></td>
-                    </tr>
-                    <tr>
-                        <td><span class="c-value" id="cp-date" style="font-weight: 900;">-</span></td>
-                        <td><span class="c-value" id="cp-time" style="font-weight: 900;">-</span></td>
-                        <td colspan="2" style="text-align: right;"><span class="c-value"
-                                style="font-weight: 900; font-style: italic;" id="cp-no">-</span></td>
-                    </tr>
-                    <tr class="c-header-row">
-                        <td><span class="c-label">ชื่อผู้โดยสาร</span></td>
-                        <td style="text-align: center;"><span class="c-label">ราคา</span></td>
-                        <td colspan="2" style="text-align: right;"><span class="c-label">เลขที่นั่ง</span></td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div style="display: flex; gap: 10px;">
-                                <span class="c-value" id="cp-name" style="font-weight: 900;">-</span>
-                                <span class="c-value" style="font-size: 12px; font-weight: 900;" id="cp-phone">-</span>
-                            </div>
-                        </td>
-                        <td class="c-value" id="cp-price" style="text-align: center; font-weight: 900;">-</td>
-                        <td colspan="2" style="text-align: right;"><span class="c-seat-tag" id="cp-seat"
-                                style="font-size: 24px; font-weight: 900;">-</span></td>
-                    </tr>
-                </table>
-                <div class="c-warning" id="cp-warning">
-                    สงวนสิทธิ์ใช้ได้เฉพาะผู้โดยสารที่ถือตั๋วเดินทางราคา 468 บาทต่อที่นั่งขึ้นไป
-                </div>
+            <div class="coupon-footer">
+                สงวนสิทธิ์ใช้ได้เฉพาะผู้โดยสารที่ถือตั๋วเดินทางราคา 468 บาทต่อที่นั่งขึ้นไป
             </div>
         </div>
     </div>
@@ -636,46 +547,40 @@
         function fillData(data) {
             if (!data) return;
 
-            // Basic Info
-            document.getElementById('tk-no').textContent = data.ticketNo || '-';
-            document.getElementById('tk-boarding-top').textContent = data.boarding || '-';
-            document.getElementById('tk-name').textContent = data.name || '-';
-            document.getElementById('tk-phone').textContent = data.phone || '-';
-            document.getElementById('tk-from').textContent = data.from || data.origin || '-';
-            document.getElementById('tk-to').textContent = data.to || data.destination || '-';
-            document.getElementById('tk-date').textContent = data.date || '-';
-            document.getElementById('tk-time').textContent = data.time || '-';
-            document.getElementById('tk-platform').textContent = data.platform || '-';
-            document.getElementById('tk-bus').textContent = data.busNo || '-';
-            document.getElementById('tk-seat').textContent = data.seatId || '-';
-            document.getElementById('tk-price').textContent = (data.price || '0') + (data.isAgent ? '(A)' : '');
-            document.getElementById('tk-issuer').textContent = data.issuedBy || '-';
-            const rMark = document.getElementById('tk-remark');
-            if (rMark) {
-                rMark.textContent = data.remark || '';
-                rMark.style.color = data.remark ? 'red' : 'black';
-                rMark.style.fontWeight = '500'; // ไม่หนามากแต่ชัดเจน
+            const setInp = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.value = val || '';
+            };
 
-                // เอากล่องและพื้นหลังออก (ทำให้เป็นตัวอักษรลอยๆ)
-                const rRow = rMark.closest('tr');
-                if (rRow) {
-                    const cells = rRow.querySelectorAll('td');
-                    cells.forEach(c => {
-                        c.style.background = 'transparent';
-                    });
-                }
-            }
+            // Basic Info
+            document.getElementById('tk-no').textContent = data.ticketNo || '';
+            document.getElementById('tk-boarding-top').textContent = data.boarding || '';
+            
+            setInp('tk-name', data.name);
+            setInp('tk-phone', data.phone);
+            setInp('tk-from', data.from || data.origin);
+            setInp('tk-to', data.to || data.destination);
+            setInp('tk-remark', data.remark);
+
+            // Payment Display — Original Style
+            let methodText = '';
+            if (data.isCash) methodText = '💵 เงินสด';
+            else if (data.isQR) methodText = '📱 โอน (QR)';
+            document.getElementById('pay-method-display').textContent = methodText;
+
+            let typeText = '🎫ปกติ';
+            if (data.isAgent) typeText = '👤 เอเย่น';
+            else if (data.isCard) typeText = '💳 ราคาบัตร';
+            else if (data.isInspector) typeText = '👮 ตรวจการขนส่ง';
+            document.getElementById('pay-type-display').textContent = typeText;
 
             // Coupon
-            document.getElementById('cp-no').textContent = data.ticketNo || '-';
-            document.getElementById('cp-name').textContent = data.name || '-';
-            document.getElementById('cp-phone').textContent = data.phone || '-';
-            document.getElementById('cp-from').textContent = data.from || data.origin || '-';
-            document.getElementById('cp-to').textContent = data.to || data.destination || '-';
-            document.getElementById('cp-date').textContent = data.date || '-';
-            document.getElementById('cp-time').textContent = data.time || '-';
-            document.getElementById('cp-seat').textContent = data.seatId || '-';
-            document.getElementById('cp-price').textContent = (data.price || '0') + (data.isAgent ? '(A)' : '');
+            document.getElementById('cp-no').textContent = data.ticketNo || '';
+            document.getElementById('cp-name').textContent = data.name || '';
+            document.getElementById('cp-from').textContent = data.from || data.origin || '';
+            document.getElementById('cp-to').textContent = data.to || data.destination || '';
+            document.getElementById('cp-date').textContent = data.date || '';
+            document.getElementById('cp-seat').textContent = data.seatId || '';
 
             // Show Cancelled Stamp
             if (data.status === 'CANCELLED' || data.status === 'EXPIRED') {
@@ -684,24 +589,10 @@
                 document.getElementById('cancel-stamp').classList.remove('show');
             }
 
-            // Payment Display — pull directly from data
-            let methodText = '-';
-            if (data.isCash) methodText = '💵 เงินสด';
-            else if (data.isQR) methodText = '📱 โอน (QR)';
-            document.getElementById('pay-method-display').textContent = methodText;
-
-            let typeText = 'ปกติ';
-            if (data.isAgent) typeText = '👤 เอเย่น';
-            else if (data.isCard) typeText = '💳 ราคาบัตร';
-            else if (data.isInspector) typeText = '👮 ตรวจการขนส่ง';
-            document.getElementById('pay-type-display').textContent = typeText;
-
             const now = new Date();
             const year = now.getFullYear() + 543;
             document.getElementById('tk-issued-date').textContent = `${now.getDate()}/${now.getMonth() + 1}/${year.toString().slice(-2)}`;
             document.getElementById('tk-issued-full').textContent = `${now.getDate()}/${now.getMonth() + 1}/${year.toString()}, ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
-
-            document.getElementById('cp-warning').textContent = `สงวนสิทธิ์ใช้ได้เฉพาะผู้โดยสารที่ถือตั๋วเดินทางราคา 468 บาทต่อที่นั่งขึ้นไป`;
         }
 
         window.onload = () => {
