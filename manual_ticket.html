@@ -23,7 +23,7 @@
         }
 
         .ticket-page {
-            width: 210mm;
+            width: 198mm;
             min-height: 125mm;
             margin: 90px auto;
             background: #fff;
@@ -55,10 +55,11 @@
             margin-bottom: 2px;
         }
 
+
         .logo-section {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 15px;
         }
 
         .logo-box {
@@ -76,8 +77,17 @@
             background-color: transparent;
         }
 
+        /* สำหรับหน้า Manual ปกติ (หน้าเว็บ) ให้ใช้ top: 60px เพื่อให้ภาพแรกดูดี */
+        .ticket-logo {
+            position: absolute;
+            top: 55px;
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+
         .title-box {
-            padding-top: 10px;
+            padding-top: 0px;
         }
 
         .title-box h1 {
@@ -95,13 +105,24 @@
             font-weight: 600;
         }
 
-        .title-main {
-            font-size: 25px;
+        .p {
+            font-size: 11px;
             font-weight: 800;
-            margin-top: 0;
-            color: #1e293b;
+            color: #64748b;
+            letter-spacing: 0.5px;
+            margin-top: 20px;
+            margin-left: 65px;
+            line-height: 1;
+        }
+
+        .title-main {
+            font-size: 20px;
+            font-weight: 800;
+            color: #3B4C6B;
             display: inline-block;
-            padding-bottom: 2px;
+            line-height: 1;
+            margin-top: 4px;
+            margin-left: 65px;
         }
 
         .header-right {
@@ -197,6 +218,30 @@
             font-weight: 500;
         }
 
+        /* สำหรับแสดงผล คันที่ (สีแดง) ในตั๋ว */
+        .extra-trip-label {
+            color: #ef4444 !important;
+            font-weight: 800 !important;
+        }
+
+        .extra-time-label {
+            color: #000 !important;
+            font-weight: 500 !important;
+            margin-left: 4px;
+        }
+
+        /* สำหรับแสดงผล คันที่ (สีแดง) ในตั๋ว */
+        .extra-trip-label {
+            color: #ef4444;
+            font-weight: 800;
+        }
+
+        .extra-time-label {
+            color: #000;
+            font-weight: 500;
+            margin-left: 4px;
+        }
+
         /* ── Payment Section ── */
         .payment-cell {
             padding: 0 !important;
@@ -211,43 +256,25 @@
         }
 
         .payment-mini-label {
-            border: none !important;
             padding: 2px 6px;
             font-size: 10px;
             font-weight: 800;
-            width: 45.5%;
             background: #f8fafc;
             color: #1e293b;
             line-height: 1.15;
+            text-align: left;
         }
 
         .payment-mini-value {
-            border: none !important;
             padding: 2px 6px;
             font-size: 11px;
             font-weight: 500;
-            width: 54.5%;
             color: #000;
             line-height: 1.15;
+            text-align: center;
         }
 
-        .payment-mini-table td {
-            border: none !important;
-        }
 
-        .payment-mini-table .payment-mini-label {
-            border-right: 1px solid #000 !important;
-        }
-
-        .payment-mini-table tr:first-child .payment-mini-label,
-        .payment-mini-table tr:first-child .payment-mini-value {
-            border-bottom: 1px solid #000 !important;
-        }
-
-        .payment-mini-table tr:last-child .payment-mini-label,
-        .payment-mini-table tr:last-child .payment-mini-value {
-            border-bottom: none;
-        }
 
         .payment-inner {
             display: flex;
@@ -371,16 +398,10 @@
 
         .subtitle {
             font-size: 17px;
-            font-weight: 700;
+            font-weight: 500;
             color: #000;
             margin-bottom: -3px;
-        }
-
-        .subtitle-en {
-            font-size: 17px;
-            font-weight: 500;
-            color: #333;
-            margin-bottom: 0;
+            margin-top: -4px;
         }
 
         .c-warning {
@@ -822,7 +843,7 @@
                 break-inside: avoid !important;
                 page-break-after: always !important;
                 margin: 0 auto !important;
-                width: 188mm !important;
+                width: 198mm !important;
                 /* ลดความกว้างลง เพื่อให้สัดส่วนตั๋วเล็กลง (ลดการขยาย) */
                 min-height: auto !important;
                 /* ปลดล็อคความสูงขั้นต่ำ จะได้ไม่โดนดันตกขอบ */
@@ -834,6 +855,10 @@
                 box-shadow: none !important;
                 transform: none !important;
                 display: block !important;
+            }
+
+            .ticket-logo {
+                top: 45px !important;
             }
 
             /* ย่อความสูงของตารางลงนิดหน่อยเฉพาะตอนปริ้น เพื่อให้อัดพอดี 1 หน้าเป๊ะๆ */
@@ -1211,9 +1236,10 @@
                     <div class="logo-section">
                         <div class="logo-box"></div>
                         <div class="title-box">
+                          <img src="https://lh3.googleusercontent.com/d/1p7wn02R8rB1C6yYIZ68sDNxiBPBsCR9W" class="ticket-logo">
                             <div class="subtitle">บัตรโดยสารอิเล็กทรอนิกส์ [กิจรุ่งเรืองทัวร์]</div>
-                            <div class="subtitle-en">Passenger ticket</div>
                             <div class="title-main">Kitrungrueng E-Ticket</div>
+                            <div class="p">ID LINE : @line6934 | โทร : 081-0966934</div>
                         </div>
                     </div>
                     <div class="header-right">
@@ -1279,7 +1305,10 @@
                             <input type="date" id="f-date-${idx}" style="display:none;">
                         </td>
                         <td class="td-lbl"><span class="lbl">เวลา</span><span class="lbl-en">Time</span></td>
-                        <td><input type="text" class="wg-input" id="f-time-${idx}" placeholder="-" readonly></td>
+                        <td>
+                            <div id="f-time-display-${idx}" class="wg-input" style="font-size:16px; border:none; background:transparent; display:contents; align-items:center; justify-content:center; height:100%;">00:00</div>
+                            <input type="hidden" id="f-time-${idx}">
+                        </td>
                     </tr>
 
                     <!-- Row 4: Platform, Bus, Seat -->
@@ -1294,22 +1323,16 @@
 
                     <!-- Row 5: Price, Payment, Issuer -->
                     <tr>
-                        <td class="td-lbl"><span class="lbl">ราคา</span><span class="lbl-en">Price</span></td>
-                        <td class="center"><input type="text" class="wg-input center" id="f-price-${idx}" placeholder="0" style="font-size:16px;" readonly></td>
-                        <td class="payment-cell" style="padding:0;" colspan="2">
-                            <table class="payment-mini-table">
-                                <tr>
-                                    <td class="payment-mini-label">วิธีชำระ</td>
-                                    <td id="m-pay-method-val-${idx}" class="payment-mini-value">-</td>
-                                </tr>
-                                <tr>
-                                    <td class="payment-mini-label">ประเภท</td>
-                                    <td id="m-pay-type-val-${idx}" class="payment-mini-value">-</td>
-                                </tr>
-                            </table>
-                        </td>
-                        <td class="td-lbl"><span class="lbl">ผู้ขาย</span><span class="lbl-en">Issued by</span></td>
-                        <td><input type="text" class="wg-input" id="f-issuer-${idx}" placeholder="Admin" readonly></td>
+                        <td class="td-lbl" rowspan="2"><span class="lbl">ราคา</span><span class="lbl-en">Price</span></td>
+                        <td class="center" rowspan="2"><input type="text" class="wg-input center" id="f-price-${idx}" placeholder="0" style="font-size:16px; height: 100%;" readonly></td>
+                        <td class="payment-mini-label">วิธีชำระ</td>
+                        <td id="m-pay-method-val-${idx}" class="payment-mini-value">-</td>
+                        <td class="td-lbl" rowspan="2"><span class="lbl">ผู้ขาย</span><span class="lbl-en">Issued by</span></td>
+                        <td rowspan="2"><input type="text" class="wg-input" id="f-issuer-${idx}" placeholder="Admin" style="height: 100%;" readonly></td>
+                    </tr>
+                    <tr>
+                        <td class="payment-mini-label">ประเภท</td>
+                        <td id="m-pay-type-val-${idx}" class="payment-mini-value">-</td>
                     </tr>
 
                     <!-- Row 6: Remark -->
@@ -1419,7 +1442,22 @@
             if (timeStr !== '-' && !timeStr.includes('(เวลาต้นทาง)')) {
                 timeStr += ' (เวลาต้นทาง)';
             }
-            setText(`cp-time-${idx}`, timeStr);
+
+            const cpTimeEl = document.getElementById(`cp-time-${idx}`);
+            if (cpTimeEl) {
+                if (timeStr.includes("คันที่")) {
+                    const parts = timeStr.split('(');
+                    if (parts.length > 1) {
+                        const busPart = parts[0].trim();
+                        const timePart = "(" + parts.slice(1).join('(');
+                        cpTimeEl.innerHTML = `<span class="extra-trip-label">${busPart}</span><span class="extra-time-label">${timePart}</span>`;
+                    } else {
+                        cpTimeEl.innerHTML = `<span class="extra-trip-label">${timeStr}</span>`;
+                    }
+                } else {
+                    cpTimeEl.textContent = timeStr;
+                }
+            }
 
             setText(`cp-seat-${idx}`, t.seatId);
 
@@ -1527,8 +1565,25 @@
                     if (dateDisp) dateDisp.value = `${dd}/${mm}/${yy}`;
                 }
             }
-            const timeEl = document.getElementById(`f-time-${idx}`);
-            if (timeEl) timeEl.value = t.time || '';
+            const timeVal = t.time || '';
+            const timeDisplay = document.getElementById(`f-time-display-${idx}`);
+            const timeHidden = document.getElementById(`f-time-${idx}`);
+
+            if (timeDisplay) {
+                if (timeVal.includes("คันที่")) {
+                    const parts = timeVal.split('(');
+                    if (parts.length > 1) {
+                        const busPart = parts[0].trim();
+                        const timePart = "(" + parts.slice(1).join('(');
+                        timeDisplay.innerHTML = `<span class="extra-trip-label">${busPart}</span><span class="extra-time-label">${timePart}</span>`;
+                    } else {
+                        timeDisplay.innerHTML = `<span class="extra-trip-label">${timeVal}</span>`;
+                    }
+                } else {
+                    timeDisplay.textContent = timeVal;
+                }
+            }
+            if (timeHidden) timeHidden.value = timeVal;
 
         }
 

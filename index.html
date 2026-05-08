@@ -1327,6 +1327,47 @@
             background: rgba(255, 255, 255, 0.5);
             border-radius: 12px;
         }
+        /* ── Trip Lock Overlay ── */
+        .grid-container {
+            position: relative;
+        }
+        .trip-locked-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(2px);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            pointer-events: all;
+        }
+        .lock-badge {
+            background: #ef4444;
+            color: #fff;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 24px;
+            font-weight: 900;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+        .lock-desc {
+            color: #1e293b;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 5px 15px;
+            border-radius: 8px;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
     </style>
 </head>
 
@@ -1512,24 +1553,7 @@
         </div>
     </div>
 
-    <!-- Admin PIN Modal for Extra Slots -->
-    <div id="pin-modal" class="modal-overlay" style="display: none; z-index: 3000;">
-        <div class="modal-content" style="max-width: 400px; padding: 30px;">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <div style="font-size: 50px; margin-bottom: 10px;">🔐</div>
-                <h2 id="pin-title-text" style="margin: 0; color: var(--primary);">ยืนยันตัวตน</h2>
-                <p id="pin-desc-text" style="color: #64748b; margin-top: 5px;">กรุณาใส่รหัส PIN เพื่อดำเนินการ</p>
-            </div>
-            <input type="password" id="admin-pin-input" maxlength="4" placeholder="รหัส 4 หลัก"
-                style="width: 100%; padding: 15px; font-size: 24px; text-align: center; border-radius: 12px; border: 2px solid var(--border); margin-bottom: 20px; letter-spacing: 10px;">
-            <div style="display: flex; gap: 10px;">
-                <button onclick="closePinModal()"
-                    style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: #f1f5f9; color: #64748b; font-weight: 700; cursor: pointer;">ยกเลิก</button>
-                <button id="btn-submit-pin"
-                    style="flex: 1; padding: 12px; border-radius: 12px; border: none; background: var(--accent); color: #fff; font-weight: 700; cursor: pointer;">ตกลง</button>
-            </div>
-        </div>
-    </div>
+
 
     <div id="loading" class="loading-indicator">
         <div class="spinner"></div>
@@ -1654,7 +1678,7 @@
                 </div>
 
                 <div id="seating-section" style="display: none;">
-                    <div class="bus-container" id="capture-area">
+                    <div class="bus-container grid-container" id="capture-area">
                         <div class="bus-front-label">FRONT / ด้านหน้า</div>
                         <div id="seating-grid" class="grid"></div>
                     </div>
@@ -2053,6 +2077,8 @@
         let editTicketId = null; // สำหรับเก็บรหัสตั๋วกรณีแก้ไข
         let selectedGender = null; // สำหรับเก็บเพศที่เลือก
         let hCount = 6; // จำนวนรอบหาดใหญ่ปัจจุบัน (เริ่มต้น 6)
+        let currentSlots = []; // เก็บรายการรอบทั้งหมดสำหรับเช็คสถานะการตัดวิน
+        let pinMode = ''; // 'toggleCutWin', 'addExtra', 'removeExtra'
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('target-date').valueAsDate = new Date();
@@ -2177,6 +2203,7 @@
                 if (!res || !res.success) return showToast((res && res.error) || 'ไม่สามารถดึงข้อมูลได้', 'error');
                 isExtraTripExpanded = !!res.isExpanded;
                 hCount = res.hCount || 6;
+                currentSlots = res.slots;
                 renderTabs(res.slots);
                 selectSlot(0);
             }).getSlotSummary(d, m, y, currentStation);
@@ -2209,11 +2236,9 @@
                 }
             });
 
-            // เพิ่มปุ่มจัดการรอบเสริม (เฉพาะหาดใหญ่)
+            // ปุ่มจัดการรอบ (เฉพาะหาดใหญ่)
             if (currentStation === 'hatyai') {
                 html += '<div style="display:flex; gap:8px;">';
-
-                // ปุ่มเพิ่ม: โชว์ถ้ายังไม่ถึง 10 รอบ
                 if (hCount < 10) {
                     html += `
                         <div class="tab tab-add" onclick="handleAddExtraTrip()" style="min-height:unset; width:80px; padding:10px;">
@@ -2222,8 +2247,6 @@
                         </div>
                     `;
                 }
-
-                // ปุ่มลบ: โชว์ถ้ามีการขยายเกิน 6 รอบปกติ
                 if (hCount > 6) {
                     html += `
                         <div class="tab tab-add" onclick="handleRemoveSpecificTrip()" style="min-height:unset; width:80px; padding:10px; border-color:#fee2e2; color:#ef4444; border-style: solid;">
@@ -2232,9 +2255,18 @@
                         </div>
                     `;
                 }
-
                 html += '</div>';
             }
+
+            // ปุ่มตัดวิน: โชว์ทุกรอบ (ทุกสถานี)
+            const isThisCut = slots[currentSlotIdx]?.isCut;
+            html += `
+                <div class="tab tab-add ${isThisCut ? 'active' : ''}" onclick="handleToggleCutWin()" 
+                     style="min-height:unset; width:120px; padding:10px; margin-left:8px; ${isThisCut ? 'background:#fee2e2; border-color:#ef4444; color:#ef4444;' : 'border-color:#10b981; color:#10b981;'}">
+                    <div style="font-size: 18px; margin-bottom: 4px;">${isThisCut ? '🔓' : '✂️'}</div>
+                    <div style="font-size: 11px; font-weight: bold;">${isThisCut ? 'ปลดล็อกวิน' : 'ตัดวิน (ปิดรอบ)'}</div>
+                </div>
+            `;
 
             container.innerHTML = html;
         }
@@ -2243,17 +2275,15 @@
          * ฟังก์ชันจัดการเมื่อกดปุ่ม [+] เพิ่มรอบเสริม
          */
         function handleAddExtraTrip() {
-            document.getElementById('pin-title-text').innerText = "เพิ่มรอบเสริม";
-            document.getElementById('pin-desc-text').innerText = "กรุณาใส่รหัส PIN เพื่อเพิ่มรอบเสริมหาดใหญ่";
+            pinMode = 'addExtra';
+            document.getElementById('pin-title-text').innerText = "เพิ่มรถเสริม (คันที่)";
+            document.getElementById('pin-desc-text').innerText = "กรุณาใส่รหัส PIN เพื่อเพิ่มรถเสริมคันใหม่ของหาดใหญ่";
 
             const modal = document.getElementById('pin-modal');
             const input = document.getElementById('admin-pin-input');
             input.value = '';
             modal.style.display = 'flex';
-            input.focus();
-
-            // กู้คืนปุ่ม Submit ให้เป็นสำหรับการเพิ่มรอบ
-            restoreAddTripSubmit();
+            setTimeout(() => input.focus(), 100);
         }
 
         function handleRemoveSpecificTrip() {
@@ -2261,103 +2291,123 @@
             if (currentSlotIdx <= 5) {
                 return showToast("❌ รอบที่ 1-6 เป็นรอบมาตรฐาน ไม่สามารถลบได้ครับ", "error");
             }
-
-            document.getElementById('pin-title-text').innerText = "ลบรอบเสริม";
+            pinMode = 'removeExtra';
+            document.getElementById('pin-title-text').innerText = "🗑️ ยืนยันการลบรอบ";
             document.getElementById('pin-desc-text').innerText = `ยืนยันการลบรอบที่ ${currentSlotIdx + 1} เฉพาะของวันนี้?`;
 
             const modal = document.getElementById('pin-modal');
             const input = document.getElementById('admin-pin-input');
             input.value = '';
             modal.style.display = 'flex';
-            input.focus();
-
-            // เปลี่ยนปุ่ม Submit ให้เรียกใช้ฟังก์ชันลบแบบระบุ Slot
-            const oldSubmit = document.getElementById('btn-submit-pin');
-            if (oldSubmit) {
-                const newSubmit = oldSubmit.cloneNode(true);
-                newSubmit.onclick = () => submitRemoveExtraTripPin();
-                oldSubmit.parentNode.replaceChild(newSubmit, oldSubmit);
-            }
+            setTimeout(() => input.focus(), 100);
         }
 
         function handleRemoveExtraTrip() {
+            pinMode = 'removeExtra';
             document.getElementById('pin-title-text').innerText = "ลบรอบเสริม";
-            document.getElementById('pin-desc-text').innerText = "กรุณาใส่รหัส PIN เพื่อลบรอบเสริม 2-5 (ย้ายภูเก็ตกลับมา)";
+            document.getElementById('pin-desc-text').innerText = "กรุณาใส่รหัส PIN เพื่อลบรอบเสริมออกจากระบบ";
 
             const modal = document.getElementById('pin-modal');
             const input = document.getElementById('admin-pin-input');
             input.value = '';
             modal.style.display = 'flex';
-            input.focus();
-
-            // เปลี่ยนปุ่ม Submit ให้เป็นสำหรับการลบหลัก
-            const oldSubmit = document.getElementById('btn-submit-pin');
-            if (oldSubmit) {
-                const newSubmit = oldSubmit.cloneNode(true);
-                newSubmit.onclick = () => submitRemoveExtraTripPin();
-                oldSubmit.parentNode.replaceChild(newSubmit, oldSubmit);
-            }
+            setTimeout(() => input.focus(), 100);
         }
 
         // เพิ่ม Event Listener สำหรับปุ่ม Enter ใน PIN Modal
         document.getElementById('admin-pin-input')?.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                document.getElementById('btn-submit-pin').click();
+                handleAdminPinSubmit();
             }
         });
 
         function closePinModal() {
             document.getElementById('pin-modal').style.display = 'none';
         }
+        /**
+         * ฟังก์ชันจัดการตัดวิน (Toggle Cut Win)
+         */
+        function handleToggleCutWin() {
+            if (!currentData) return showToast("ไม่พบข้อมูลรอบรถ", "error");
+            
+            pinMode = 'toggleCutWin';
+            const isNowCut = !!currentData.header.isCut;
+            const title = isNowCut ? "ปลดล็อกการตัดวิน" : "ตัดวิน (ปิดรอบการจอง)";
+            const desc = isNowCut ? "กรุณาใส่รหัส PIN เพื่อปลดล็อกให้จองได้ตามปกติ" : "เมื่อตัดวินแล้ว จะไม่สามารถจองหรือแก้ไขได้อีก จนกว่าจะปลดล็อก";
 
-        function submitExtraTripPin() {
-            const pin = document.getElementById('admin-pin-input').value;
-            if (!pin) return showToast("กรุณาใส่รหัส PIN", "error");
+            document.getElementById('pin-title-text').innerText = title;
+            document.getElementById('pin-desc-text').innerText = desc;
 
-            closePinModal();
-            const dateStr = document.getElementById('target-date').value;
-
-            showLoading(true, "กำลังกู้คืนผังที่นั่งใน Google Sheet... (ประมาณ 10 วินาที)");
-            google.script.run.withSuccessHandler(res => {
-                showLoading(false);
-                if (res.success) {
-                    showToast("✅ เพิ่มรอบเสริมเรียบร้อยแล้ว!", "success");
-                    setTimeout(() => loadFleetData(), 500);
-                } else {
-                    showToast("❌ " + res.error, "error");
-                }
-            }).runSetupFromWeb(pin, dateStr);
+            const modal = document.getElementById('pin-modal');
+            const input = document.getElementById('admin-pin-input');
+            input.value = '';
+            modal.style.display = 'flex';
+            setTimeout(() => input.focus(), 100);
         }
 
-        function submitRemoveExtraTripPin() {
-            const pin = document.getElementById('admin-pin-input').value;
-            if (!pin) return showToast("กรุณาใส่รหัส PIN", "error");
+        /**
+         * ฟังก์ชันจัดการเมื่อกด "ตกลง" ในหน้าต่าง PIN
+         */
+        function handleAdminPinSubmit() {
+            const pinVal = document.getElementById('admin-pin-input').value;
+            if (pinVal !== '1234') return showToast("❌ รหัส PIN ไม่ถูกต้อง", "error");
 
-            closePinModal();
-            const dateStr = document.getElementById('target-date').value;
+            const modal = document.getElementById('pin-modal');
+            modal.style.display = 'none';
 
-            showLoading(true, "กำลังตรวจสอบและลบรอบเสริม... (ประมาณ 5 วินาที)");
-            google.script.run.withSuccessHandler(res => {
-                showLoading(false);
-                restoreAddTripSubmit();
+            if (pinMode === 'toggleCutWin') {
+                const isNowCut = !!currentData.header.isCut;
+                const action = isNowCut ? 'open' : 'cut';
+                const msg = isNowCut ? 'กำลังปลดล็อกวิน...' : 'กำลังดำเนินการตัดวิน...';
+                
+                showLoading(true, msg);
+                const dateVal = document.getElementById('target-date').value;
+                const [y, m, d] = dateVal.split('-').map(Number);
 
-                if (res.success) {
-                    showToast("✅ " + (res.msg || "ลบรอบเสริมเรียบร้อยแล้ว!"), "success");
-                    setTimeout(() => loadFleetData(), 500);
-                } else {
-                    showToast("❌ " + res.error, "error");
-                }
-            }).runRemoveFromWeb(pin, dateStr, currentStation, currentSlotIdx);
-        }
+                google.script.run.withSuccessHandler(res => {
+                    showLoading(false);
+                    if (res.success) {
+                        showToast(isNowCut ? "🔓 ปลดล็อกเรียบร้อย" : "✂️ ตัดวินเรียบร้อย", "success");
+                        loadFleetData();
+                    } else {
+                        showToast("❌ " + res.error, "error");
+                    }
+                }).toggleCutWinStatus({
+                    station: currentStation,
+                    slotIndex: currentSlotIdx,
+                    day: d, month: m, year: y,
+                    action: action
+                });
 
-        function restoreAddTripSubmit() {
-            const oldSubmit = document.getElementById('btn-submit-pin');
-            if (oldSubmit) {
-                const newSubmit = oldSubmit.cloneNode(true);
-                newSubmit.onclick = () => submitExtraTripPin();
-                oldSubmit.parentNode.replaceChild(newSubmit, oldSubmit);
+            } else if (pinMode === 'addExtra') {
+                const dateStr = document.getElementById('target-date').value;
+                showLoading(true, "กำลังกู้คืนผังที่นั่งใน Google Sheet...");
+                google.script.run.withSuccessHandler(res => {
+                    showLoading(false);
+                    if (res.success) {
+                        showToast("✅ เพิ่มรถเสริมเรียบร้อยแล้ว!", "success");
+                        setTimeout(() => loadFleetData(), 500);
+                    } else {
+                        showToast("❌ " + res.error, "error");
+                    }
+                }).runSetupFromWeb(pinVal, dateStr);
+
+            } else if (pinMode === 'removeExtra') {
+                const dateStr = document.getElementById('target-date').value;
+                showLoading(true, "กำลังตรวจสอบและลบรอบเสริม...");
+                google.script.run.withSuccessHandler(res => {
+                    showLoading(false);
+                    if (res.success) {
+                        showToast("✅ " + (res.msg || "ลบรอบเสริมเรียบร้อยแล้ว!"), "success");
+                        setTimeout(() => loadFleetData(), 500);
+                    } else {
+                        showToast("❌ " + res.error, "error");
+                    }
+                }).runRemoveFromWeb(pinVal, dateStr, currentStation, currentSlotIdx);
             }
         }
+
+
 
         function selectSlot(idx) {
             currentSlotIdx = idx;
@@ -2378,6 +2428,7 @@
 
         function renderSeating(res) {
             const grid = document.getElementById('seating-grid');
+            grid.innerHTML = '';
             document.getElementById('fleet-banner').style.display = 'grid';
 
             const labelEl = document.getElementById('b-slot-label');
@@ -2406,7 +2457,26 @@
                 slotLabelItem.style.display = 'none';
             }
 
-            grid.innerHTML = '';
+            const isTripCut = res.header.isCut;
+            const captureArea = document.getElementById('capture-area');
+            
+            // ลบ overlay เก่าถ้ามี
+            const oldOverlay = document.querySelector('.trip-locked-overlay');
+            if (oldOverlay) oldOverlay.remove();
+            
+            if (isTripCut && captureArea) {
+                const overlay = document.createElement('div');
+                overlay.className = 'trip-locked-overlay';
+                overlay.innerHTML = `
+                    <div class="lock-badge">🔒 CLOSED</div>
+                    <div class="lock-desc">เที่ยวรถนี้ตัดวินแล้ว ไม่สามารถแก้ไขได้</div>
+                `;
+                captureArea.appendChild(overlay);
+                document.getElementById('btn-confirm-booking').style.display = 'none';
+            } else {
+                document.getElementById('btn-confirm-booking').style.display = 'block';
+            }
+
             const rows = [1, 2, 3, 4, 5, 6, 7, 8, 9];
             const cols = ['A', 'B', 'aisle', 'C', 'D'];
 
@@ -4051,6 +4121,23 @@
         }
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Admin PIN Modal -->
+    <div id="pin-modal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); z-index:99999; align-items:center; justify-content:center;">
+        <div style="background:#fff; border-radius:24px; padding:35px 30px; max-width:420px; width:90%; box-shadow:0 25px 50px rgba(0,0,0,0.3); text-align:center;">
+            <div style="font-size:32px; margin-bottom:15px;">🔐</div>
+            <h3 id="pin-title-text" style="margin:0 0 10px; font-size:18px; font-weight:800; color:#0f172a;">ใส่รหัสผ่านเพื่อดำเนินการ</h3>
+            <p id="pin-desc-text" style="margin:0 0 25px; font-size:13px; color:#64748b; line-height:1.5;">กรุณาใส่รหัส PIN Admin 4 หลัก</p>
+            
+            <input type="password" id="admin-pin-input" maxlength="4" placeholder="••••" 
+                style="width:140px; height:60px; text-align:center; font-size:32px; letter-spacing:10px; border:2px solid #e2e8f0; border-radius:16px; background:#f8fafc; color:#1e293b; outline:none; margin-bottom:30px; transition:0.2s;">
+            
+            <div style="display:flex; gap:12px;">
+                <button onclick="closePinModal()" style="flex:1; padding:14px; border-radius:14px; border:2px solid #e2e8f0; background:#f8fafc; color:#64748b; font-weight:700; cursor:pointer; font-size:15px;">ยกเลิก</button>
+                <button id="btn-confirm-pin" onclick="handleAdminPinSubmit()" style="flex:1; padding:14px; border-radius:14px; border:2px solid #000; background:linear-gradient(135deg,#f59e0b,#f97316); color:#fff; font-weight:700; cursor:pointer; font-size:15px; box-shadow:0 8px 15px rgba(245,158,11,0.3);">ตกลง</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // ── Custom Confirm Modal Helpers ──
         let _customConfirmCb = null;
