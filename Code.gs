@@ -79,17 +79,19 @@ const OFF_DAY_SEP      = 11;        // แถวสีน้ำเงินค�
 // ── สี ──────────────────────────────────────────────────────
 const COLOR_PREBOOK  = "#22c55e";   // เขียว = จองแล้ว (กรอกชื่อในชีทเอง)
 const COLOR_CONFIRM  = "#3b82f6";   // ฟ้า   = ยืนยันแล้ว (ผ่านเว็บ)
+const COLOR_PHUKET_PENDING = "#ff0000"; // แดง   = จองจาก ภก (ยังไม่จ่าย)
 const COLOR_VACANT   = "#ffffff";   // ขาว   = ว่าง
 const COLOR_STAIR    = "#2563eb";   // บันไดกลาง
 
 // ── Column Structure ─────────────────────────────────────────
-const SLOT_WIDTH = 6;  // แต่ละ Slot กว้าง 6 คอลัมน์ (A,B,gap,C,D,sep)
+const SLOT_WIDTH = 6;  // ทุกสถานีกว้าง 6 (A, B, Gap, C, D, Sep)
+const PHUKET_SLOT_WIDTH = 6; 
 
 const HATYAI_START_COL = 2;  // Column B
 const HATYAI_TIMES     = ["09:00", "12:40", "14:00", "16:00", "22:00", "คันที่ 1", "คันที่ 2", "คันที่ 3", "คันที่ 4", "คันที่ 5"];
 
-const PHUKET_START_COL = 38; // กลับมาใช้ 38 เป็นค่าเริ่มต้น
-const PHUKET_TIMES     = ["07:45", "09:45", "11:45", "14:00", "22:30", "รอบเสริม"];
+const PHUKET_START_COL = 38; 
+const PHUKET_TIMES     = ["07:45", "09:45", "11:45", "14:00", "22:30", "คันที่ 1", "คันที่ 2", "คันที่ 3"];
 
 // ── ฟังก์ชันช่วย ─────────────────────────────────────────────
 function getSS() {
@@ -106,12 +108,31 @@ function getSlotStartCol(station, slotIndex, sheet) {
   if (station === 'hatyai') {
     return HATYAI_START_COL + (slotIndex * SLOT_WIDTH);
   } else {
-    // ภูเก็ตจะเริ่มต่อจากหาดใหญ่รอบสุดท้าย
-    // จำนวนรอบหาดใหญ่ (hCount) = (จำนวนคอลัมน์ทั้งหมด - คอลัมน์เริ่มต้น - จำนวนคอลัมน์ภูเก็ต 6 รอบ) / ความกว้าง slot
-    const maxCols = sheet ? sheet.getMaxColumns() : 74;
-    const hCount = Math.max(6, Math.floor((maxCols - 2 - 36) / 6));
-    const phuketStart = 2 + (hCount * 6);
-    return phuketStart + (slotIndex * SLOT_WIDTH);
+    // 🔍 ระบบค้นหาจุดเริ่มภูเก็ตอัตโนมัติ (Smart Auto-Detection)
+    // เราจะหาช่องที่ Row 4 (เวลา) มีค่า "07:45" หรือ "7:45"
+    if (!sheet) {
+      const ss = getSS();
+      const now = new Date();
+      const sheetName = getSeatSheetName(now.getMonth() + 1, now.getFullYear());
+      sheet = ss.getSheetByName(sheetName);
+    }
+    if (!sheet) return PHUKET_START_COL + (slotIndex * PHUKET_SLOT_WIDTH); // Fallback
+
+    // ค้นหาตำแหน่ง 07:45 ในแถวที่ 4 (Row ของเวลา) ของวันที่ 1
+    const day1Row4 = sheet.getRange(getDayStartRow(1) + 1, 1, 1, sheet.getMaxColumns()).getValues()[0];
+    let autoPhuketStart = -1;
+    for (let c = 0; c < day1Row4.length; c++) {
+      const val = day1Row4[c].toString();
+      if (val.includes("7:45") || val.includes("07:45")) {
+        // เวลาจะอยู่ที่คอลัมน์ที่ 5 ของสล็อต (Index +4)
+        // ดังนั้นจุดเริ่มสล็อต (StartCol) คือ c + 1 - 4
+        autoPhuketStart = (c + 1) - 4;
+        break;
+      }
+    }
+
+    const finalStart = (autoPhuketStart !== -1) ? autoPhuketStart : PHUKET_START_COL;
+    return finalStart + (slotIndex * PHUKET_SLOT_WIDTH);
   }
 }
 
@@ -326,6 +347,7 @@ function getSeatMap(day, month, year, station, slotIndex) {
           if (bg === '#3b82f6' || bg === '#4285f4' || bg === '#cfe2f3' || bg === '#0000ff') status = 'confirmed';
           else if (bg === '#22c55e' || bg === '#34a853' || bg === '#b7e1cd' || bg === '#00ff00') status = 'prebooked';
           else if (bg === '#f59e0b' || bg === '#ff9900') status = 'locked';
+          else if (bg === '#ff0000' || bg === 'red' || bg === '#ff4d4d' || bg === '#e06666') status = 'WAITING_PHUKET';
           
           seats[seatId] = { 
             status: status, 
@@ -345,7 +367,8 @@ function getSeatMap(day, month, year, station, slotIndex) {
         phone:  driverPhone,
         time:   timeValue,
         day, month, year, station, slotIndex,
-        isCut: isCut
+        isCut: isCut,
+        platform: (station === 'phuket' ? '18' : '7')
       },
       seats: seats,
       isExpanded: sheet.getMaxColumns() >= 90
@@ -368,12 +391,18 @@ function getSlotSummary(day, month, year, station) {
     const results = [];
 
     const maxCols = sheet.getMaxColumns();
-    const hCount = Math.max(6, Math.floor((maxCols - 2 - 36) / 6));
-    const loopLimit = (station === 'hatyai') ? Math.min(times.length, hCount) : times.length;
+    const phuketStart = getSlotStartCol('phuket', 0, sheet);
+    const hCount = Math.floor((phuketStart - 2) / 6);
+    const pCount = Math.floor((maxCols - phuketStart + 6) / 6); // ปรับการนับให้คลุมถึงคอลัมน์สุดท้าย
+
+    const loopLimit = (station === 'hatyai') ? Math.min(times.length, hCount) : Math.min(times.length, pCount);
 
     for (let i = 0; i < loopLimit; i++) {
       const startRow = getDayStartRow(day);
       const startCol = getSlotStartCol(station, i, sheet);
+
+      // ตรวจสอบว่าคอลัมน์เกินขอบเขต Sheet หรือไม่ (Safety Check)
+      if (startCol + 5 > maxCols) break;
 
       let vacant = 0, prebooked = 0, confirmed = 0;
       for (let r = 1; r <= 9; r++) {
@@ -714,11 +743,13 @@ function _processSingleBooking(ss, params) {
         }
       });
     } else {
+      const isPhuket = (params.isPhuketBooking === true || params.isPhuketBooking === "true");
       seatList.forEach(s => {
         const pos = _getSeatCellPos(s, startRow, startCol);
         if (pos) {
+          const color = isPhuket ? COLOR_PHUKET_PENDING : COLOR_CONFIRM;
           sheet.getRange(pos.row, pos.col).clearDataValidations()
-               .setValue(passengerName).setBackground(COLOR_CONFIRM).setFontColor('#ffffff').setFontWeight('bold');
+               .setValue(passengerName).setBackground(color).setFontColor('#ffffff').setFontWeight('bold');
         }
       });
     }
@@ -835,8 +866,12 @@ function _processSingleBooking(ss, params) {
     const normalizedDest = normalizeLocation(destination);
 
     let finalStatus = "CONFIRMED";
+    const isPhuket = (params.isPhuketBooking === true || params.isPhuketBooking === "true");
+    
     if (params.isLock) {
       finalStatus = "LOCKED";
+    } else if (isPhuket) {
+      finalStatus = "WAITING_PHUKET";
     }
 
     // มีทั้งหมด 23 คอลัมน์ ไม่รวม AgentName แล้ว
@@ -1011,10 +1046,10 @@ function processManualTicket(data) {
     const normalizedTo   = normalizeLocation(data.to);
     const normalizedTime = normalizeTime(data.time);
 
-    // Full 23-column structure 
+    const defaultPlatform = (normalizedFrom && normalizedFrom.includes('ภูเก็ต')) ? '18' : '7';
     const rowData = [
       ticketId, data.name, data.phone, dateStr, formattedTravelDate, normalizedFrom, normalizedTo, data.boarding, normalizedTime, data.seatNo,
-      data.platform || '7', data.busNo, data.price, isCash, isQR, isAgent, isCard, isInsp, data.issuer, timestampStr, (data.gender || ""), "ACTIVE", (data.remarks || "")
+      data.platform || defaultPlatform, data.busNo, data.price, isCash, isQR, isAgent, isCard, isInsp, data.issuer, timestampStr, (data.gender || ""), "ACTIVE", (data.remarks || "")
     ];
 
     const dataA = custSheet.getRange("A:A").getValues();
@@ -1049,6 +1084,49 @@ function processManualTicket(data) {
 
     return { success: true, printData: printData };
   } catch(e) {
+    return { success: false, error: e.toString() };
+  }
+}
+
+/**
+ * ยืนยันการจ่ายเงินจาก Phuket Booking
+ */
+function confirmPhuketPayment(params) {
+  try {
+    const ss = getSS();
+    const custSheet = ss.getSheetByName(SHEET_CUST);
+    const { ticketId, seatId, day, month, year, station, slotIndex } = params;
+    
+    // 1. อัปเดตในฐานข้อมูลลูกค้า
+    const data = custSheet.getRange("A:A").getValues();
+    let targetRow = -1;
+    for (let i = data.length - 1; i >= 1; i--) {
+      if (data[i][0].toString() === ticketId.toString()) {
+        targetRow = i + 1;
+        break;
+      }
+    }
+    
+    if (targetRow === -1) return { success: false, error: 'ไม่พบรหัสตั๋ว' };
+    
+    custSheet.getRange(targetRow, 22).setValue("CONFIRMED"); // Column V
+    
+    // 2. อัปเดตสีในผังที่นั่ง (เปลี่ยนจากแดงเป็นฟ้า)
+    const sheetName = getSeatSheetName(month, year);
+    const sheet = ss.getSheetByName(sheetName);
+    const startRow = getDayStartRow(day);
+    const startCol = getSlotStartCol(station, slotIndex);
+    
+    const seatList = seatId.toString().split(/[\s,]+/).filter(s => s.trim() !== "");
+    seatList.forEach(s => {
+      const pos = _getSeatCellPos(s, startRow, startCol);
+      if (pos) {
+        sheet.getRange(pos.row, pos.col).setBackground(COLOR_CONFIRM);
+      }
+    });
+    
+    return { success: true };
+  } catch (e) {
     return { success: false, error: e.toString() };
   }
 }
@@ -1365,32 +1443,33 @@ function getColumnLetter(colIndex) {
   return letter;
 }
 
-function setupExtraSlots(targetSheet, targetDay) {
+function setupExtraSlots(targetSheet, targetDay, station = 'hatyai') {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = targetSheet || ss.getActiveSheet(); 
-  const sheetName = sheet.getName();
-  
-  if (!targetSheet && !sheetName.startsWith("ผังที่นั่ง")) {
-    Browser.msgBox("❌ ผิดชีต!", "คำสั่งนี้ใช้ได้กับชีตที่มีชื่อขึ้นต้นด้วย 'ผังที่นั่ง' เท่านั้นครับ", Browser.Buttons.OK);
-    return;
-  }
-
-  // 1. คำนวณจำนวนรอบหาดใหญ่ปัจจุบัน
+  const isHatyai = (station === 'hatyai');
+  const sWidth = 6; 
+  const phuketStart = getSlotStartCol('phuket', 0, sheet);
   const maxCols = sheet.getMaxColumns();
-  let hCount = Math.floor((maxCols - 2 - 36) / 6);
+
+  // คำนวณจำนวนสล็อตปัจจุบัน
+  const hCount = Math.floor((phuketStart - 2) / 6);
+  const pCount = Math.floor((maxCols - phuketStart + 6) / 6);
+  
   const startRow = targetDay ? getDayStartRow(targetDay) : null;
 
   // --- LOGIC SMART ADD: ค้นหา Slot ที่ว่างอยู่ในวันนั้นก่อน ---
   let useSlotIdx = -1;
   let insertNewCols = false;
 
+  const currentCount = isHatyai ? hCount : pCount;
+  const times = isHatyai ? HATYAI_TIMES : PHUKET_TIMES;
+
   if (targetDay) {
-    // วนลูปรอบเสริมที่มีอยู่แล้ว (รอบที่ 6 เป็นต้นไป คือ Index 5)
-    // หมายเหตุ: โค้ดเก่าคุณเริ่มเช็คที่ Index 5 (รอบที่ 6)
-    for (let i = 5; i < hCount; i++) {
-      const col = getSlotStartCol('hatyai', i, sheet);
-      const seatVal = sheet.getRange(startRow + OFF_SEATS_START, col).getValue();
-      if (!seatVal || seatVal === "") {
+    // วนลูปรอบเสริมที่มีอยู่แล้ว (เริ่มที่รอบที่ 6 คือ Index 5)
+    for (let i = 5; i < currentCount; i++) {
+      const col = getSlotStartCol(station, i, sheet);
+      const seatVal = sheet.getRange(startRow + OFF_SEATS_START, col).getDisplayValue().trim();
+      if (!seatVal || seatVal === "" || seatVal === "1A") {
         useSlotIdx = i;
         break;
       }
@@ -1399,22 +1478,30 @@ function setupExtraSlots(targetSheet, targetDay) {
 
   // ถ้าไม่มี Slot ว่างเลย ค่อยเพิ่มคอลัมน์ใหม่
   if (useSlotIdx === -1) {
-    if (hCount >= 10) {
-      if (!targetSheet) Browser.msgBox("ℹ️ แจ้งเตือน", "รอบเสริมหาดใหญ่เต็มแล้ว (สูงสุด 10 รอบ)", Browser.Buttons.OK);
-      return { success: false, error: "รอบเสริมหาดใหญ่เต็มแล้ว (สูงสุด 10 รอบ)" };
-    }
+    if (isHatyai && hCount >= 10) return { success: false, error: "รอบเสริมหาดใหญ่เต็มแล้ว (สูงสุด 10 รอบ)" };
+    if (!isHatyai && pCount >= 8) return { success: false, error: "รอบเสริมภูเก็ตเต็มแล้ว (สูงสุด 8 รอบ)" };
+    
     insertNewCols = true;
-    useSlotIdx = hCount;
+    useSlotIdx = currentCount;
   }
 
-  const insertPos = 2 + (useSlotIdx * 6);
-  const sourceBase = 32; // รอบเสริม 1 (AF-AK) เป็นแม่แบบ
+  // ตำแหน่งที่จะแทรก/ใช้งาน
+  const insertPos = getSlotStartCol(station, useSlotIdx, sheet);
+  // ก๊อปปี้จากรอบเสริมที่ 1 (Index 5) ของสถานีนั้นๆ มาเป็นแม่แบบ
+  const sourceBase = getSlotStartCol(station, 5, sheet); 
 
   // 2. แทรกคอลัมน์ (เฉพาะกรณีจำเป็น)
   if (insertNewCols) {
-    sheet.insertColumnsAfter(insertPos - 1, 6); 
-    // ก๊อปปี้ความกว้างคอลัมน์
-    for (let i = 0; i < 6; i++) {
+    if (isHatyai) {
+       // หาดใหญ่: แทรกที่จุดเริ่มภูเก็ต (ดันภูเก็ตไปขวา)
+       sheet.insertColumnsBefore(phuketStart, sWidth);
+    } else {
+       // ภูเก็ต: แทรกต่อท้ายสุด
+       sheet.insertColumnsAfter(maxCols, sWidth);
+    }
+    
+    // ก๊อปปี้ความกว้างคอลัมน์จากแม่แบบ
+    for (let i = 0; i < sWidth; i++) {
       const sourceWidth = sheet.getColumnWidth(sourceBase + i);
       sheet.setColumnWidth(insertPos + i, sourceWidth);
     }
@@ -1422,16 +1509,16 @@ function setupExtraSlots(targetSheet, targetDay) {
 
   // 3. วาดผังที่นั่ง "เฉพาะวันที่เลือก"
   if (targetDay) {
-    const sourceRange = sheet.getRange(startRow, sourceBase, ROWS_PER_DAY, 6);
-    
-    // ก๊อปปี้มาวาง
+    // ก๊อปปี้จากแม่แบบ (รอบที่ 1 ของเดือน) มาวาง
+    const templateRow = getDayStartRow(1);
+    const sourceRange = sheet.getRange(templateRow, sourceBase, ROWS_PER_DAY, sWidth);
     sourceRange.copyTo(sheet.getRange(startRow, insertPos));
     
     // ล้างข้อมูลเก่า (ทะเบียนรถ/พขร)
     sheet.getRange(startRow, insertPos).setValue("");
     sheet.getRange(startRow, insertPos + 2).setValue("");
 
-    // รีเซ็ตที่นั่งให้ว่าง
+    // รีเซ็ตที่นั่งให้ว่างและคืนสีมาตรฐาน
     for (let r = 1; r <= 9; r++) {
       const rowNum = startRow + OFF_SEATS_START + (r - 1);
       const isStair = (r === 5 || r === 6);
@@ -1449,30 +1536,22 @@ function setupExtraSlots(targetSheet, targetDay) {
       });
     }
 
-    // --- จัดการสูตร ---
-    const idColLetter = getColumnLetter(insertPos + 2); 
-    let baseDriverFormula = sheet.getRange(startRow, sourceBase + 3).getFormula();
-    
-    if (baseDriverFormula) {
-        const sourceIdColLetter = getColumnLetter(sourceBase + 2); 
-        const regex = new RegExp('\\$' + sourceIdColLetter, 'g');
-        const newFormula = baseDriverFormula.replace(regex, '$' + idColLetter);
-        sheet.getRange(startRow, insertPos + 3).setFormula(newFormula);
-    }
-    
     // ใส่เวลาให้ Slot ใหม่
-    sheet.getRange(startRow + 1, insertPos + 4).setValue(HATYAI_TIMES[useSlotIdx] || "คันที่ " + (useSlotIdx - 4));
+    const timeLabel = times[useSlotIdx] || "คันที่ " + (useSlotIdx - 4);
+    sheet.getRange(startRow + 1, insertPos + 4).setValue(timeLabel); 
     
     // ใส่สูตรวันที่
     sheet.getRange(startRow + 1, insertPos + 1).setFormula(`=$C${startRow + 1}`);
   }
+  
+  SpreadsheetApp.flush();
   return { success: true };
 }
 
 /**
  * ฟังก์ชันรับคำสั่งจากหน้าเว็บ Dashboard เพื่อรัน Setup
  */
-function runSetupFromWeb(pin, dateString) {
+function runSetupFromWeb(pin, dateString, station = 'hatyai') {
   if (pin !== ADMIN_PIN) return { success: false, error: "รหัส PIN ไม่ถูกต้อง" };
   
   try {
@@ -1483,7 +1562,7 @@ function runSetupFromWeb(pin, dateString) {
     
     if (!sheet) return { success: false, error: "ไม่พบ Sheet ชื่อ: " + sheetName + " กรุณาสร้างชีตเดือนนี้ก่อนกดเพิ่มรอบครับ" };
     
-    setupExtraSlots(sheet, d);
+    setupExtraSlots(sheet, d, station);
     return { success: true };
   } catch (e) {
     return { success: false, error: e.toString() };
@@ -1581,19 +1660,19 @@ function removeExtraSlots() {
     return;
   }
 
-  // 1. คำนวณจำนวนรอบหาดใหญ่ปัจจุบัน
-  const maxCols = sheet.getMaxColumns();
-  const hCount = Math.floor((maxCols - 2 - 36) / 6);
+  // 1. คำนวณจำนวนรอบหาดใหญ่ปัจจุบันแบบไดนามิก
+  const phuketStart = getSlotStartCol('phuket', 0, sheet);
+  const hCount = (phuketStart - 2) / 6;
 
   // ถ้ารอบมีแค่ 6 หรือน้อยกว่า แปลว่าไม่มีรอบเสริมให้ลบ
   if (hCount <= 6) {
-    Browser.msgBox("ℹ️ แจ้งเตือน", "ไม่มียังรอบเสริม (รอบที่ 7 เป็นต้นไป) ให้ลบครับ", Browser.Buttons.OK);
+    Browser.msgBox("ℹ️ แจ้งเตือน", "ไม่มียังรอบเสริมของหาดใหญ่ (รอบที่ 7 เป็นต้นไป) ให้ลบครับ", Browser.Buttons.OK);
     return;
   }
 
   const extraSlotsCount = hCount - 6;
-  const confirm = Browser.msgBox("⚠️ ยืนยันการลบทิ้งทั้งหมด", 
-    "คุณต้องการลบรอบเสริมทั้งหมดจำนวน " + extraSlotsCount + " รอบทิ้งทันทีใช่หรือไม่?\n" +
+  const confirm = Browser.msgBox("⚠️ ยืนยันการลบรอบเสริมหาดใหญ่", 
+    "คุณต้องการลบรอบเสริมหาดใหญ่ทั้งหมดจำนวน " + extraSlotsCount + " รอบทิ้งทันทีใช่หรือไม่?\n" +
     "(รอบที่ 7 เป็นต้นไปจะถูกลบออกทั้งหมด ข้อมูลทุกวันในรอบเหล่านี้จะหายไป)", 
     Browser.Buttons.YES_NO);
 
@@ -1625,16 +1704,20 @@ function smartRemoveSlotLogic(pin, dateString, station, slotIndex) {
 
     const startCol = getSlotStartCol(station, slotIndex, sheet);
     const maxCols = sheet.getMaxColumns();
-    const hCount = Math.floor((maxCols - 2 - 36) / 6);
-    const phuketStartCol = 2 + (hCount * 6); // จุดเริ่มของภูเก็ต
+    const phuketStartCol = getSlotStartCol('phuket', 0, sheet); 
 
-    // 1. ระบบป้องกันฝั่งภูเก็ต (Hard Boundary)
+    // 1. ระบบป้องกัน (Hard Boundary)
     if (station === 'hatyai') {
       if (startCol >= phuketStartCol) {
-         return { success: false, error: "❌ ผิดพลาด: ตำแหน่งที่ระบุอยู่ในเขตของฝั่งภูเก็ต ระบบได้ทำการระงับการลบเพื่อป้องกันข้อมูลเสียหายครับ" };
+         return { success: false, error: "❌ ผิดพลาด: ตำแหน่งที่ระบุอยู่ในเขตของฝั่งภูเก็ต" };
       }
       if (slotIndex <= 5) {
-         return { success: false, error: "❌ รอบที่ 1-6 ของหาดใหญ่เป็นรอบมาตรฐาน/แม่แบบ ไม่สามารถลบได้ครับ" };
+         return { success: false, error: "❌ รอบที่ 1-6 ของหาดใหญ่เป็นรอบมาตรฐาน ไม่สามารถลบได้ครับ" };
+      }
+    } else {
+      // ภูเก็ต มีรอบปกติ 5 รอบ (Index 0-4)
+      if (slotIndex <= 4) {
+         return { success: false, error: "❌ รอบที่ 1-5 ของภูเก็ตเป็นรอบมาตรฐาน ไม่สามารถลบได้ครับ" };
       }
     }
 
@@ -1721,17 +1804,16 @@ function smartRemoveSlotLogic(pin, dateString, station, slotIndex) {
  * ฟังก์ชันรับคำสั่งลบรอบเสริมจากหน้าเว็บ (ปรับเป็น Smart Remove)
  */
 function runRemoveFromWeb(pin, dateString, station, slotIndex) {
-  if (station === 'phuket') return { success: false, error: "ยังไม่รองรับการลบรอบเสริมฝั่งภูเก็ตผ่านหน้าเว็บครับ" };
+  // เปิดให้รองรับทั้ง หาดใหญ่ และ ภูเก็ต
   
   // ถ้าไม่ได้ระบุ slotIndex มา ให้ลบรอบสุดท้าย
   if (slotIndex === undefined || slotIndex === null) {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const [y, m, d] = dateString.split('-').map(Number);
-    const sheet = ss.getSheetByName(getSeatSheetName(m, y));
-    if (!sheet) return { success: false, error: "ไม่พบ Sheet" };
+    const phuketStart = getSlotStartCol('phuket', 0, sheet);
     const maxCols = sheet.getMaxColumns();
-    const hCount = Math.floor((maxCols - 2 - 36) / 6);
-    slotIndex = hCount - 1;
+    const currentCount = (station === 'hatyai') ? Math.floor((phuketStart - 2) / 6) : Math.floor((maxCols - phuketStart + 6) / 6);
+    slotIndex = currentCount - 1;
   }
   
   return smartRemoveSlotLogic(pin, dateString, station, slotIndex);
@@ -1741,9 +1823,6 @@ function getDateString() {
   const now = new Date();
   return now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate();
 }
-/**
- * ฟังก์ชันสลับสถานะการตัดวิน (เปิด/ปิด)
- */
 function toggleCutWinStatus(params) {
   try {
     const { station, slotIndex, day, month, year, action } = params;
@@ -1753,93 +1832,71 @@ function toggleCutWinStatus(params) {
 
     const startRow = getDayStartRow(day);
     const startCol = getSlotStartCol(station, slotIndex, sheet);
-
-    // สีเป้าหมาย
-    const cutColor = "#ff0000"; // แดง
-    const openColor = "#3b82f6"; // น้ำเงิน (สีมาตรฐาน)
-
-    const targetColor = (action === 'cut') ? cutColor : openColor;
-    const fontColor = "#ffffff"; // ขาวเสมอเพื่อให้มองเห็นตัวหนังสือ
-
-    // เปลี่ยนสีพื้นหลังของแถวหัวตาราง (แถว 3 และ 4 ของ Slot)
-    // คลุมพื้นที่ทะเบียนรถ และ วันที่/เวลา
-    sheet.getRange(startRow + 1, startCol, 2, 5)
-         .setBackground(targetColor)
-         .setFontColor(fontColor);
-
-    return { success: true, isCut: (action === 'cut') };
-  } catch (e) {
-    return { success: false, error: e.toString() };
-  }
-}
-/**
- * ฟังก์ชันสลับสถานะการตัดวิน (เปิด/ปิด)
- */
-function toggleCutWinStatus(params) {
-  try {
-    const { station, slotIndex, day, month, year, action } = params;
-    const sheetName = getSeatSheetName(month, year);
-    const sheet = getSS().getSheetByName(sheetName);
-    if (!sheet) throw new Error("ไม่พบแผ่นงานผังที่นั่ง");
-
-    const startRow = getDayStartRow(day);
-    const startCol = getSlotStartCol(station, slotIndex, sheet);
+    const isHatyai = (station === 'hatyai');
+    const sWidth   = 5; // ระบายสีแค่ 5 คอลัมน์ (เว้นช่องคั่นคอลัมน์ที่ 6 ไว้)
 
     if (action === 'cut') {
-      // กรณี "ตัดวิน" -> ระบายสีแดงทับทั้งแผงหัวตาราง
-      sheet.getRange(startRow, startCol, 2, 5)
+      // 🔴 กรณี "ตัดวิน" -> ระบายสีแดงทับแผงหัวตาราง 2 แถว x 5 ช่อง
+      sheet.getRange(startRow, startCol, 2, sWidth)
            .setBackground("#ff0000")
-           .setFontColor("#ffffff");
+           .setFontColor("#ffffff")
+           .setFontWeight("bold");
     } else {
-      // กรณี "ปลดล็อก"
+      // 🟢 กรณี "ปลดล็อก" -> ก๊อปปี้รูปแบบดั้งเดิมมาจาก "วันที่ 1"
       const templateRow = getDayStartRow(1);
-      const sourceRange = sheet.getRange(templateRow, startCol, 2, 5);
-      const targetRange = sheet.getRange(startRow, startCol, 2, 5);
+      const sourceRange = sheet.getRange(templateRow, startCol, 2, sWidth);
+      const targetRange = sheet.getRange(startRow, startCol, 2, sWidth);
       
-      // 1. ก๊อปปี้รูปแบบมาจากวันที่ 1 เพื่อเอาเส้นขอบและฟอนต์
-      sourceRange.copyTo(targetRange, {formatOnly: true});
+      // ก๊อปปี้เฉพาะรูปแบบ (สี, เส้นขอบ, ฟอนต์)
+      sourceRange.copyTo(targetRange, SpreadsheetApp.CopyPasteType.PASTE_FORMAT);
       
-      // 2. ตรวจสอบสีพื้นหลังของช่องแรก (หัวตาราง)
-      const checkBg = targetRange.getCell(1,1).getBackground();
-      
-      // 3. ถ้าสีที่ก๊อปมาเป็น "สีแดง" หรือ "สีขาว/ว่างเปล่า" (ซึ่งคือรูปแบบที่ไม่ถูกต้องสำหรับการปลดล็อก)
-      // ให้บังคับพ่นสีมาตรฐานกลับไปให้ทันที
-      if (checkBg === '#ff0000' || checkBg === '#ffffff' || checkBg === 'white' || checkBg === 'rgba(0, 0, 0, 0)') {
-         if (station === 'hatyai' && slotIndex >= 5) {
-            // --- รอบเสริม (ภาพที่ 2) ---
-            // แถวที่ 1 (ทะเบียน/พขร)
-            targetRange.getCell(1,1).setBackground("#000000").setFontColor("#00ffff"); // คันที่
-            targetRange.getCell(1,2).setBackground("#ffff00").setFontColor("#000000"); // ทะเบียน1
-            targetRange.getCell(1,3).setBackground("#ffff00").setFontColor("#000000"); // ทะเบียน2
-            targetRange.getCell(1,4).setBackground("#c9daf8").setFontColor("#000000"); // ชื่อ พขร
-            targetRange.getCell(1,5).setBackground("#c9daf8").setFontColor("#000000"); // เบอร์โทร
-
-            // แถวที่ 2 (วันที่/เวลา)
-            let r2 = sheet.getRange(startRow + 1, startCol, 1, 5);
-            r2.getCell(1,1).setBackground("#6d9eeb").setFontColor("#000000"); // วันที่ (Label)
-            r2.getCell(1,2).setBackground("#6d9eeb").setFontColor("#000000"); // 1-5-69 (Value)
-            r2.getCell(1,3).setBackground("#ffffff").setFontColor("#000000");    // (ช่องว่างคั่นกลาง)
-            r2.getCell(1,4).setBackground("#c9daf8").setFontColor("#000000"); // เวลา (Label)
-            r2.getCell(1,5).setBackground("#c9daf8").setFontColor("#000000"); // 19:45 (Value)
-         } else {
-            // --- รอบปกติ (ภาพที่ 1) ---
-            // แถวที่ 1 (ทะเบียน/พขร)
-            targetRange.getCell(1,1).setBackground("#3c78d8").setFontColor("#000000"); // 443-
-            targetRange.getCell(1,2).setBackground("#3c78d8").setFontColor("#000000"); // 2
-            targetRange.getCell(1,3).setBackground("#c9daf8").setFontColor("#000000"); // ชื่อ พขร
-            targetRange.getCell(1,4).setBackground("#c9daf8").setFontColor("#000000"); // เบอร์โทร
-            targetRange.getCell(1,5).setBackground("#c9daf8").setFontColor("#000000"); // ว่าง
-
-            // แถวที่ 2 (วันที่/เวลา)
-            let r2 = sheet.getRange(startRow + 1, startCol, 1, 5);
-            r2.getCell(1,1).setBackground("#6d9eeb").setFontColor("#000000"); // วันที่ (Label)
-            r2.getCell(1,2).setBackground("#6d9eeb").setFontColor("#000000"); // 1-5-69 (Value)
-            r2.getCell(1,3).setBackground("#ffffff").setFontColor("#000000");    // (ช่องว่างคั่นกลาง)
-            r2.getCell(1,4).setBackground("#c9daf8").setFontColor("#000000"); // เวลา (Label)
-            r2.getCell(1,5).setBackground("#c9daf8").setFontColor("#000000"); // 12:40 (Value)
-         }
+      // ตรวจสอบความปลอดภัย: ถ้าก๊อปมาแล้วเป็นสีแดง หรือเป็นสีพื้นหลังว่างๆ (#1155cc)
+      const checkBg = targetRange.getBackground().toLowerCase();
+      if (checkBg === "#ff0000" || checkBg === "#1155cc" || checkBg === "#ffffff" || checkBg === "white") {
+          const isExtra = (slotIndex >= 5);
+          if (isExtra) {
+              // --- คืนสีรอบเสริม (ดำ-เหลือง) ---
+              targetRange.getCell(1,1).setBackground("#000000").setFontColor("#00ffff");
+              targetRange.getCell(1,2).setBackground("#ffff00").setFontColor("#000000");
+              targetRange.getCell(1,3).setBackground("#ffff00").setFontColor("#000000"); // พขร
+              targetRange.getCell(1,4).setBackground("#c9daf8").setFontColor("#000000");
+              targetRange.getCell(1,5).setBackground("#c9daf8").setFontColor("#000000"); // ช่องว่าง
+              // แถวที่ 2
+              sheet.getRange(startRow + 1, startCol, 1, 5).setBackground("#6d9eeb").setFontColor("#ffffff");
+              sheet.getRange(startRow + 1, startCol + 4).setBackground("#ffffff").setFontColor("#000000"); // ช่องเวลา
+          } else {
+              // --- คืนสีรอบปกติ (แยกสาขาและแยกสีรายคอลัมน์) ---
+              if (isHatyai) {
+                  // --- หาดใหญ่ ---
+                  targetRange.getCell(1,1).setBackground("#3c78d8").setFontColor("#ffffff");
+                  targetRange.getCell(1,2).setBackground("#3c78d8").setFontColor("#ffffff");
+                  targetRange.getCell(1,3).setBackground("#c9daf8").setFontColor("#000000"); // พขร
+                  targetRange.getCell(1,4).setBackground("#c9daf8").setFontColor("#000000");
+                  targetRange.getCell(1,5).setBackground("#c9daf8").setFontColor("#000000");
+                  
+                  let r2 = sheet.getRange(startRow + 1, startCol, 1, 5);
+                  r2.getCell(1,1).setBackground("#6d9eeb").setFontColor("#ffffff");
+                  r2.getCell(1,2).setBackground("#6d9eeb").setFontColor("#ffffff");
+                  r2.getCell(1,3).setBackground("#ffffff").setFontColor("#000000");
+                  r2.getCell(1,4).setBackground("#ffffff").setFontColor("#000000");
+                  r2.getCell(1,5).setBackground("#ffffff").setFontColor("#000000");
+              } else {
+                  // --- ภูเก็ต ---
+                  targetRange.getCell(1,1).setBackground("#93c47d").setFontColor("#ffffff"); // ทะเบียน
+                  targetRange.getCell(1,2).setBackground("#93c47d").setFontColor("#ffffff"); // พขร (ภูเก็ตอยู่ช่อง 2)
+                  targetRange.getCell(1,3).setBackground("#ffffff").setFontColor("#000000"); // ช่องว่าง (Gap)
+                  targetRange.getCell(1,4).setBackground("#c9daf8").setFontColor("#000000"); // ป้าย "เวลา"
+                  targetRange.getCell(1,5).setBackground("#c9daf8").setFontColor("#000000");
+                  
+                  let r2 = sheet.getRange(startRow + 1, startCol, 1, 5);
+                  r2.getCell(1,1).setBackground("#6d9eeb").setFontColor("#ffffff"); // ป้าย "วันที่"
+                  r2.getCell(1,2).setBackground("#6d9eeb").setFontColor("#ffffff"); // วันที่จริง
+                  r2.getCell(1,3).setBackground("#ffffff").setFontColor("#000000"); // Gap
+                  r2.getCell(1,4).setBackground("#6d9eeb").setFontColor("#ffffff"); // ป้าย "เวลา"
+                  r2.getCell(1,5).setBackground("#ffffff").setFontColor("#000000"); // เวลาจริง
+              }
+          }
       }
-    
     }
 
     return { success: true, isCut: (action === 'cut') };
