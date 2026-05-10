@@ -27,9 +27,10 @@
         .manifest-page {
             width: 210mm;
             min-height: 297mm;
+            /* กลับมาเป็น min-height เพื่อให้ยืดหยุ่นตอนปริ้น */
             margin: 0 auto;
-            padding: 0.7cm 1.5cm;
-            /* ลดขอบบน-ล่างลงเพื่อคืนพื้นที่ */
+            padding: 1.2cm 1.5cm 0.5cm;
+            /* เพิ่มขอบบนเพื่อให้สมดุลกับพื้นที่ว่างด้านล่าง */
             background: #fff;
             display: flex;
             flex-direction: column;
@@ -81,8 +82,8 @@
         /* ── Seat Grid ── */
         .m-seat-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 10px 1fr 1fr;
-            /* Reduced aisle to 10px */
+            grid-template-columns: 1fr 1fr 20px 1fr 1fr;
+            /* ปรับทางเดินกลางให้เท่ากับ 20px เพื่อให้ขอบบน-ล่างตรงกัน */
             gap: 2px;
             margin-bottom: 8px;
             width: 100%;
@@ -104,16 +105,20 @@
 
         .m-seat {
             border: 1px solid #cbd5e1;
-            padding: 4px 8px;
-            height: 78px;
-            /* Adjusted to ensure A4 fit while remaining large */
+            border-radius: 4px;
+            height: 72px;
+            /* ลดลงอีกนิดเพื่อให้ทุกอย่างอยู่ในหน้าเดียวแน่ๆ */
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
-            background: #fff;
+            justify-content: space-between;
+            padding: 6px 8px;
             position: relative;
-            overflow: visible;
-            min-width: 0;
+            background: #fff;
+            transition: 0.2s;
+            overflow: hidden;
+            /* กันเนื้อหาล้นออกนอกกล่อง */
+            width: 100%;
+            /* ล็อกความกว้างตามระบบ Grid */
         }
 
         .m-seat.empty {
@@ -131,28 +136,43 @@
 
         .s-id {
             font-weight: 800;
-            font-size: 12px;
+            font-size: 11px;
             color: #1e3a8a;
             width: 25px;
+        }
+
+        .seat-name {
+            font-size: 10px;
+            font-weight: 800;
+            color: #ef4444;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1;
+            margin-top: -2px;
         }
 
         .s-name {
             font-weight: 800;
             flex: 1;
-            font-size: 12px;
+            font-size: 11px;
             white-space: nowrap;
-            overflow: visible;
+            overflow: hidden;
+            /* เปลี่ยนจาก visible เป็น hidden เพื่อตัดชื่อที่ยาวเกิน */
             text-overflow: ellipsis;
+            /* ใส่จุดไข่ปลา (...) เมื่อชื่อยาวล้น */
             text-align: left;
             padding-left: 4px;
             color: #000;
+            min-width: 0;
+            /* สำคัญ: เพื่อให้ flex-child ยอมหดตัว */
         }
 
         .s-qty {
             font-weight: 700;
             color: #64748b;
             font-size: 11px;
-            width: 15px;
+            width: 20px;
             text-align: right;
         }
 
@@ -161,7 +181,7 @@
             justify-content: space-between;
             align-items: center;
             position: relative;
-            font-size: 12px;
+            font-size: 11px;
             color: #000;
             white-space: nowrap;
             overflow: hidden;
@@ -180,7 +200,7 @@
         .s-mid .s-phone-normal {
             text-align: left;
             color: #000;
-            font-size: 12px;
+            font-size: 10px;
             font-weight: 800;
         }
 
@@ -198,7 +218,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            font-size: 12px;
+            font-size: 11px;
             color: #000;
             z-index: 2;
             padding-left: 25px;
@@ -214,7 +234,7 @@
         .s-price {
             color: #000;
             font-weight: 900;
-            font-size: 12px;
+            font-size: 11px;
             width: 55px;
             /* Increased */
             text-align: right;
@@ -241,11 +261,24 @@
             /* Reduced gap from grid */
             width: 100%;
             align-items: flex-start;
+            page-break-inside: avoid;
+            /* กันตารางสรุปขาดออกเป็นสองหน้า */
         }
 
         .finance-wrapper {
             grid-column: 1;
             width: 100%;
+        }
+
+        /* Hide Spinners for Number Input */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
         }
 
         .finance-summary {
@@ -259,7 +292,7 @@
             width: 100%;
             border-bottom: 1px solid #1e3a8a;
             background: #eff6ff;
-            height: 28px;
+            height: 26px;
             /* Slightly increased for clarity */
             align-items: stretch;
         }
@@ -271,40 +304,48 @@
         .finance-row .label {
             flex: 1;
             color: #1e3a8a;
-            padding-left: 8px;
+            padding-left: 6px;
             display: flex;
             align-items: center;
             font-weight: 700;
-            font-size: 13px;
+            font-size: 11px;
+            white-space: nowrap;
+            /* ห้ามขึ้นบรรทัดใหม่ */
         }
 
         .finance-row .value-group {
-            width: 130px;
+            width: 150px;
+            /* ขยายให้กว้างขึ้นเพื่อความขนาน */
             display: flex;
             border-left: 1.5px solid #1e3a8a;
             background: #fff;
-            /* White background for values like Image 1 */
         }
 
         .finance-row .value {
-            flex: 1;
+            width: 100px;
+            /* ล็อกความกว้างช่องตัวเลขเพื่อให้ขนานกันเป๊ะ */
             text-align: right;
-            padding-right: 5px;
+            padding-right: 20px !important;
+            /* ระยะห่างมาตรฐาน */
             color: #1e293b;
             font-weight: 800;
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            font-size: 14px;
+            font-size: 12px;
+            /* ปรับลดขนาดฟอนต์ลงตามที่ต้องการ */
+            font-variant-numeric: tabular-nums;
+            border: none;
+            outline: none;
         }
 
         .finance-row .unit {
-            width: 40px;
-            text-align: center;
+            width: 50px;
+            text-align: left;
+            padding-left: 8px;
             color: #1e293b;
             display: flex;
             align-items: center;
-            justify-content: center;
             font-weight: 700;
             font-size: 13px;
         }
@@ -314,10 +355,21 @@
         }
 
         .row-highlight-red {
-            outline: 2px solid #ef4444;
-            outline-offset: -2px;
             z-index: 10;
             background: #fff !important;
+            position: relative;
+        }
+
+        .row-highlight-red::after {
+            content: '';
+            position: absolute;
+            top: -1px;
+            bottom: -1px;
+            left: -1.5px;
+            right: -1.5px;
+            border: 2px solid #ef4444;
+            pointer-events: none;
+            z-index: 20;
         }
 
         .row-highlight-red .label {
@@ -367,25 +419,30 @@
 
         .receives-table td {
             height: 26px;
-            /* Slightly reduced to save space */
             border: 1px solid #1e3a8a;
-            padding: 0 10px;
+            padding: 0;
+            text-align: center;
+            /* จัดตัวเลขไว้ตรงกลางช่อง */
             background: #fff;
+            font-weight: bold;
         }
 
         .sign-wrapper {
-            margin-top: 10px;
+            margin-top: 15px;
+            /* Increased margin */
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
+            /* Better distribution in narrow column */
             width: 100%;
-            padding: 0 5px;
+            padding: 0;
         }
 
         .sign-box {
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 150px;
+            width: 110px;
+            /* Reduced to ensure separation */
             gap: 0;
         }
 
@@ -393,12 +450,11 @@
             font-family: 'Sriracha', cursive;
             font-size: 22px;
             color: #2563eb;
-            height: 32px;
+            height: 35px;
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             justify-content: center;
-            margin-bottom: -5px;
-            /* Pull down to touch the line */
+            margin-bottom: -2px;
             width: 100%;
             text-align: center;
             white-space: nowrap;
@@ -434,6 +490,17 @@
         .editable-input:focus {
             border: 1px solid #3b82f6;
             background: #eff6ff;
+        }
+
+        /* ซ่อนปุ่มลูกศรในช่องตัวเลขเพื่อให้เลขขนานกันพอดี */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type=number] {
+            -moz-appearance: textfield;
         }
 
         .editable-cell {
@@ -590,11 +657,9 @@
                     <div class="finance-row">
                         <span class="label">หักเบี้ยเลี้ยง/ใบเวลา/ลานจอด</span>
                         <div class="value-group">
-                            <span class="value">
-                                <input type="number" id="sum-expense"
-                                    style="width: 70px; text-align: right; border: none; font-family: inherit; font-size: 14px; font-weight: 800; color: #ef4444; outline: none; background: transparent;"
-                                    value="0">
-                            </span>
+                            <input type="number" id="sum-expense" class="value"
+                                style="border: none; font-family: inherit; font-weight: 800; color: #ef4444; outline: none; background: transparent; margin: 0; height: 100%;"
+                                value="0">
                             <span class="unit">บาท</span>
                         </div>
                     </div>
@@ -621,23 +686,19 @@
                     <tbody>
                         <tr>
                             <td id="r-stop-1" contenteditable="true" class="editable-cell"></td>
-                            <td id="r-amt-1" contenteditable="true" class="editable-cell"
-                                style="text-align:right; font-weight:bold;"></td>
+                            <td id="r-amt-1" contenteditable="true" class="editable-cell"></td>
                         </tr>
                         <tr>
                             <td id="r-stop-2" contenteditable="true" class="editable-cell"></td>
-                            <td id="r-amt-2" contenteditable="true" class="editable-cell"
-                                style="text-align:right; font-weight:bold;"></td>
+                            <td id="r-amt-2" contenteditable="true" class="editable-cell"></td>
                         </tr>
                         <tr>
                             <td id="r-stop-3" contenteditable="true" class="editable-cell"></td>
-                            <td id="r-amt-3" contenteditable="true" class="editable-cell"
-                                style="text-align:right; font-weight:bold;"></td>
+                            <td id="r-amt-3" contenteditable="true" class="editable-cell"></td>
                         </tr>
                         <tr>
                             <td id="r-stop-4" contenteditable="true" class="editable-cell"></td>
-                            <td id="r-amt-4" contenteditable="true" class="editable-cell"
-                                style="text-align:right; font-weight:bold;"></td>
+                            <td id="r-amt-4" contenteditable="true" class="editable-cell"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -762,7 +823,7 @@
             rows.forEach(r => {
                 const isStair = (r === 5 || r === 6);
                 if (isStair) {
-                    if (r === 5) html += `<div class="stair-box" style="height:162px; grid-row: span 2;">บันไดกลาง</div>`;
+                    if (r === 5) html += `<div class="stair-box" style="height:146px; grid-row: span 2;">บันไดกลาง</div>`;
                 } else {
                     html += buildCell(r, 'A') + buildCell(r, 'B');
                 }
@@ -826,6 +887,26 @@
             const oldText = btn.innerText;
             btn.innerText = "⏳ กำลังสร้างรูปภาพ...";
 
+            // 🛠️ Trick: เปลี่ยน Input เป็น Span ชั่วคราวเพื่อให้ html2canvas วาดภาพออกมาเนียน (ไม่ลอย)
+            const expInput = document.getElementById('sum-expense');
+            const expVal = expInput.value || "0";
+            const expParent = expInput.parentNode;
+            const tempSpan = document.createElement('span');
+            tempSpan.className = "value";
+            tempSpan.innerText = parseFloat(expVal).toLocaleString();
+            tempSpan.style.color = "#ef4444";
+            tempSpan.style.fontWeight = "800";
+            tempSpan.style.fontSize = "14px";
+            tempSpan.style.paddingRight = "20px";
+            tempSpan.style.textAlign = "right";
+            tempSpan.style.display = "flex";
+            tempSpan.style.alignItems = "center";
+            tempSpan.style.justifyContent = "flex-end";
+            tempSpan.style.width = "100px";
+            tempSpan.style.height = "100%";
+
+            expParent.replaceChild(tempSpan, expInput);
+
             // Temporary styling for image capture
             const originalMinHeight = el.style.minHeight;
             const originalPadding = el.style.padding;
@@ -834,7 +915,8 @@
 
             // ใช้ html2canvas แปลงหน้าจอเป็นรูปภาพ
             html2canvas(el, { scale: 2, useCORS: true }).then(canvas => {
-                // Restore original styling
+                // Restore original elements and styling
+                expParent.replaceChild(expInput, tempSpan);
                 el.style.minHeight = originalMinHeight;
                 el.style.padding = originalPadding;
 
@@ -847,6 +929,7 @@
                 btn.innerText = oldText;
             }).catch(err => {
                 console.error(err);
+                expParent.replaceChild(expInput, tempSpan); // คืนค่าถ้าพลาด
                 btn.innerText = "❌ เกิดข้อผิดพลาด";
                 setTimeout(() => btn.innerText = oldText, 2000);
             });

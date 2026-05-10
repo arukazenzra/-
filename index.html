@@ -896,13 +896,15 @@
         /* 🔴 Phuket Pending - SUPER PRIORITY (Wins over Gender colors) */
         div.seat-box.WAITING_PHUKET.WAITING_PHUKET,
         div.seat-box.pending-phuket.pending-phuket,
-        .seat-box.WAITING_PHUKET.male, .seat-box.WAITING_PHUKET.female, 
-        .seat-box.WAITING_PHUKET.monk, .seat-box.WAITING_PHUKET.soldier {
+        .seat-box.WAITING_PHUKET.male,
+        .seat-box.WAITING_PHUKET.female,
+        .seat-box.WAITING_PHUKET.monk,
+        .seat-box.WAITING_PHUKET.soldier {
             background: #ff0000 !important;
             border-color: #b91c1c !important;
             color: #ffffff !important;
         }
-        
+
         /* Ensure text/icons inside stay white */
         div.seat-box.WAITING_PHUKET * {
             color: #ffffff !important;
@@ -1145,7 +1147,7 @@
             font-size: 14px;
             box-shadow: var(--sh-lg);
             transition: 0.4s;
-            z-index: 2000;
+            z-index: 9999;
         }
 
         .toast.show {
@@ -1574,10 +1576,14 @@
                 <button id="btn-cancel-booking" onclick="cancelBooking()"
                     style="background:#fee2e2; color:#ef4444; padding:12px 24px; border-radius:14px; font-weight:700; border:none; cursor:pointer; display:none;">คืนที่นั่ง</button>
                 <button id="btn-confirm-phuket-pay" onclick="confirmPhuketPay()"
-                    style="background:#10b981; color:#fff; padding:12px 24px; border-radius:14px; font-weight:700; border:none; cursor:pointer; display:none;">💰 ยืนยันรับเงิน (ภก)</button>
+                    style="background:#10b981; color:#fff; padding:12px 24px; border-radius:14px; font-weight:700; border:none; cursor:pointer; display:none;">💰
+                    ยืนยันรับเงิน (ภก)</button>
                 <button id="btn-print-booking" onclick="printTicket(editTicketId)"
                     style="background:var(--primary); color:#fff; padding:12px 24px; border-radius:14px; font-weight:700; border:none; cursor:pointer; display:none;">🖨️
                     พิมพ์ตั๋ว</button>
+                <button id="btn-print-all-booking" onclick="printAllTickets()"
+                    style="background:#1e293b; color:#fff; padding:12px 24px; border-radius:14px; font-weight:700; border:none; cursor:pointer; display:none;">📑
+                    พิมพ์ตั๋วทั้งหมด</button>
                 <button id="btn-edit-booking" onclick="unlockModal()"
                     style="background:var(--info); color:#fff; padding:12px 24px; border-radius:14px; font-weight:700; border:none; cursor:pointer; display:none;">✏️
                     แก้ไขข้อมูล</button>
@@ -1806,7 +1812,7 @@
                                 </div>
                                 <div
                                     style="display: flex; justify-content: space-between; font-weight: 600; color: #475569; font-size: 14px;">
-                                    <span>หักภาษี (4%)</span>
+                                    <span>หักคอมฯการขาย (4%)</span>
                                     <span id="sum-tax" style="color: #ef4444; font-weight: 800;">0 ฿</span>
                                 </div>
                                 <div
@@ -1821,7 +1827,7 @@
                                         style="color: #ef4444; font-weight: 800; display: flex; align-items: center; gap: 8px;">
                                         - <input type="number" id="exp-total"
                                             style="width: 80px; text-align: right; padding: 6px 10px; border: 2px solid #e2e8f0; border-radius: 8px; color: #ef4444; font-weight: 800; font-family: inherit; font-size: 14px; outline: none; transition: 0.2s;"
-                                            value="0" oninput="calculateFinal()"
+                                            value="1436" oninput="calculateFinal()"
                                             onfocus="this.style.borderColor='#3b82f6'"
                                             onblur="this.style.borderColor='#e2e8f0'"> ฿
                                     </span>
@@ -1973,8 +1979,8 @@
                             <span
                                 style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8;">🔍</span>
                             <input type="text" id="history-search" class="premium-input"
-                                placeholder="ค้นหาชื่อ, เบอร์โทร, รหัสตั๋ว..." style="width: 350px; padding-left: 40px;"
-                                oninput="filterHistory()">
+                                placeholder="ค้นหาชื่อ, เบอร์โทร, วันที่, เวลา, รหัส..."
+                                style="width: 350px; padding-left: 40px;" oninput="filterHistory()">
                         </div>
                         <button onclick="loadBookingHistory()" class="btn-load" style="padding: 10px 20px;">
                             🔄 ดึงข้อมูลล่าสุด
@@ -2110,6 +2116,7 @@
         }
 
         let currentStation = 'hatyai';
+        let originalSeatList = [];
         let currentSlotIdx = 0;
         let currentData = null;
         let isExpanded = false; // Legacy, will remove if unused
@@ -2135,6 +2142,12 @@
             setInterval(updateLockTimers, 1000); // อัปเดตตัวนับถอยหลังทุกวินาที
             updateClock();
             loadPrices();
+
+            // ✅ ตั้งค่าผู้จัดทำเริ่มต้นทันทีที่โหลดหน้าเว็บ
+            const signer = document.getElementById('signer-prep');
+            if (signer) {
+                signer.value = (currentStation === 'hatyai') ? 'wan' : 'nana';
+            }
         });
 
         function updateLockTimers() {
@@ -2230,6 +2243,12 @@
             currentStation = s;
             document.getElementById('btn-hatyai').classList.toggle('active', s === 'hatyai');
             document.getElementById('btn-phuket').classList.toggle('active', s === 'phuket');
+
+            // ✅ ตั้งค่าผู้จัดทำเริ่มต้นตามสถานี
+            const signer = document.getElementById('signer-prep');
+            if (signer) {
+                signer.value = (s === 'hatyai') ? 'wan' : 'nana';
+            }
         }
 
         function loadFleetData() {
@@ -2616,7 +2635,7 @@
             if (selectedSeats.length > 0) {
                 const firstSeatId = selectedSeats[0];
                 const firstSeat = currentData.seats[firstSeatId] || { status: 'vacant' };
-                const isFirstBooked = (firstSeat.status === 'confirmed' || firstSeat.status === 'locked' || firstSeat.status === 'prebooked' || firstSeat.status === 'WAITING_PHUKET');
+                const isFirstBooked = (firstSeat.status === 'confirmed' || firstSeat.status === 'locked' || firstSeat.status === 'prebooked');
 
                 // ✨ ถ้าคลิกคนละประเภท -> ล้างของเก่าทิ้ง แล้วเริ่มเลือกประเภทใหม่ทันที (Smart Switch)
                 if (isFirstBooked !== isNewBooked) {
@@ -2793,6 +2812,10 @@
                             <label style="font-weight:700; font-size:14px; color:#64748b;">ชื่อผู้จอง (${selectedSeats.join(', ')})</label>
                             <input id="swal-pname" class="swal2-input" style="margin:5px 0 0 0; width:100%;" placeholder="เช่น ชื่อเล่น, ครอบครัวคุณ...">
                         </div>
+                        <div>
+                            <label style="font-weight:700; font-size:14px; color:#64748b;">ชื่อคนขาย</label>
+                            <input id="swal-pseller" class="swal2-input" style="margin:5px 0 0 0; width:100%;" placeholder="ระบุชื่อผู้ทำรายการ">
+                        </div>
                         <p style="font-size:12px; color:#94a3b8; margin:0;">ℹ️ ที่นั่งจะถูกล็อคจนกว่าจะทำการปลดล็อคเอง</p>
                     </div>`,
                 focusConfirm: false,
@@ -2802,31 +2825,37 @@
                 confirmButtonColor: '#f59e0b',
                 preConfirm: () => {
                     const name = document.getElementById('swal-pname').value;
+                    const seller = document.getElementById('swal-pseller').value;
                     if (!name) {
                         Swal.showValidationMessage('กรุณาระบุชื่อผู้จองด้วยครับ');
                         return false;
                     }
-                    return { name };
+                    if (!seller) {
+                        Swal.showValidationMessage('กรุณาระบุชื่อผู้ทำรายการครับ');
+                        return false;
+                    }
+                    return { name, seller };
                 }
             });
 
             if (formValues) {
-                const { name: pName } = formValues;
+                const { name: pName, seller: pSeller } = formValues;
                 const lockMinutes = 0; // ล็อคถาวร
-                const params = {
+                const bookings = selectedSeats.map(sId => ({
                     day: currentData.header.day,
                     month: currentData.header.month,
                     year: currentData.header.year,
                     station: currentData.header.station,
                     slotIndex: currentData.header.slotIndex,
                     passengerName: pName,
-                    seatId: selectedSeats.join(', '),
+                    seatId: sId,
                     isLock: true,
                     lockMinutes: lockMinutes,
-                    issuedBy: 'Admin'
-                };
+                    issuedBy: pSeller,
+                    activeStation: currentStation
+                }));
 
-                const bookings = [params];
+                const params = { bookings: bookings, isLock: true };
 
                 showLoading(true);
                 google.script.run.withSuccessHandler(res => {
@@ -2900,7 +2929,7 @@
                     return;
                 }
 
-                const originalSeatList = seatListOverride || sId.split(/[\s,]+/).filter(Boolean);
+                originalSeatList = seatListOverride || sId.split(/[\s,]+/).filter(Boolean);
 
                 if (isEdit) {
                     targetSeatId = initialMeta.allSeats || sId;
@@ -3041,8 +3070,10 @@
                     meta.status === 'ACTIVE' ||
                     meta.status === 'EDITED' ||
                     meta.status === 'CONFIRMED' ||
+                    meta.status === 'LOCKED' ||
                     meta.status === 'WAITING_PHUKET' ||
                     seatStatus === 'confirmed' ||
+                    seatStatus === 'locked' ||
                     seatStatus === 'prebooked' ||
                     seatStatus === 'WAITING_PHUKET'
                 );
@@ -3112,6 +3143,7 @@
 
                 document.getElementById('btn-edit-booking').style.display = isEdit ? 'block' : 'none';
                 document.getElementById('btn-print-booking').style.display = isEdit ? 'block' : 'none';
+                document.getElementById('btn-print-all-booking').style.display = (isEdit && originalSeatList.length > 1) ? 'block' : 'none';
                 document.getElementById('btn-confirm-booking').style.display = isEdit ? 'none' : 'block';
                 document.getElementById('btn-lock-booking').style.display = isEdit ? 'none' : 'block';
                 // lock-duration-group ถูกลบออกไปแล้ว (เปลี่ยนเป็น hidden input)
@@ -3160,7 +3192,7 @@
                         <input type="text" list="dest-list" class="premium-input group-seat-select" style="padding:6px 10px; font-size:13px;" data-seat="${s}" placeholder="ปลายทาง" oninput="updateGroupPrice()" onchange="updateGroupPrice()">
                     </div>
                     <div>
-                        <input type="text" class="premium-input group-seat-price" style="padding:6px 10px; font-size:13px; text-align:center;" value="0" data-seat="${s}">
+                        <input type="text" class="premium-input group-seat-price" style="padding:6px 10px; font-size:13px; text-align:center;" value="0" data-seat="${s}" oninput="calculateTotalOnly()">
                     </div>
                     ${isEditMode ? `
                     <button onclick="cancelSingleSeatFromGroup('${s}')" style="background:#fee2e2; color:#ef4444; border:none; padding:8px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="คืนที่นั่งนี้">
@@ -3254,40 +3286,51 @@
         }
 
         function updateGroupPrice() {
-            let total = 0;
             const selects = document.querySelectorAll('.group-seat-select');
             const prices = document.querySelectorAll('.group-seat-price');
-
-            // Priority for pricing: Agent > Inspector > Card > Full
             const status = getAgentStatus();
-            const isAgent = status.isAgent;
             const isInsp = status.isInspector;
             const isCard = status.isCard;
-
             let origin = document.getElementById('m-origin').value;
             if (origin.includes(' (')) origin = origin.split(' (')[0];
 
             selects.forEach((sel, idx) => {
                 let dest = sel.value;
-                if (dest.includes(' (')) dest = dest.split(' (')[0]; // strip English
-                // ตัดวงเล็บออกจาก origin ใน priceList ก่อนเปรียบเทียบ
+                if (!dest) return;
+                if (dest.includes(' (')) dest = dest.split(' (')[0];
+
                 const route = priceList.find(p => {
                     const pOrigin = p.origin ? p.origin.toString().trim() : '';
                     const pOriginClean = pOrigin.split(' (')[0].trim();
                     return pOriginClean === origin && p.destination === dest;
                 });
 
-                let p = Number(prices[idx].value) || 0;
                 if (route) {
-                    p = Number(route.fullPrice) || 0;
+                    let p = Number(route.fullPrice) || 0;
                     if (isInsp && route.inspectorPrice) p = Number(route.inspectorPrice);
                     else if (isCard && route.cardPrice) p = Number(route.cardPrice);
-                    // Note: Agents use fullPrice to allow later commission calculation
-                    prices[idx].value = p;
+
+                    // อัปเดตราคาเฉพาะกรณีที่ยังเป็น 0 หรือว่างอยู่ (ไม่ทับที่ผู้ใช้พิมพ์เอง)
+                    if (!prices[idx].value || prices[idx].value === "0") {
+                        prices[idx].value = p;
+                    }
                 }
-                total += p;
             });
-            document.getElementById('group-total-val').innerText = total.toLocaleString() + ' ฿';
+            calculateTotalOnly();
+        }
+
+        function calculateTotalOnly() {
+            let total = 0;
+            const prices = document.querySelectorAll('.group-seat-price');
+            prices.forEach(inp => {
+                let val = inp.value.toString();
+                if (val.includes('=')) val = val.split('=')[1]; // กรณีมีสูตร
+                total += (Number(val) || 0);
+            });
+            const totalEl = document.getElementById('group-total-val');
+            if (totalEl) {
+                totalEl.innerText = total.toLocaleString() + ' ฿';
+            }
         }
 
         // ✅ เก็บค่าปลายทาง/ต้นทางก่อนหน้า เพื่อตรวจจับการเปลี่ยนแปลง
@@ -3430,7 +3473,8 @@
 
         function confirmBooking() {
             const seatArr = activeSeatId.split(/[\s,]+/).filter(s => s.trim() !== "");
-            const isGroup = seatArr.length > 1 && !editTicketId;
+            // บังคับแยกแถว (Group) เสมอถ้ามีมากกว่า 1 ที่นั่ง
+            const isGroup = seatArr.length > 1;
 
             const status = getAgentStatus();
             let originFull = document.getElementById('m-origin').value;
@@ -3458,7 +3502,8 @@
                 platform: document.getElementById('b-platform').textContent,
                 busNo: document.getElementById('b-bus-no').textContent,
                 gender: selectedGender,
-                isPhuketBooking: isPhuketBooking // ใช้ค่าจาก Global Flag
+                isPhuketBooking: isPhuketBooking, // ใช้ค่าจาก Global Flag
+                activeStation: currentStation // เพิ่มเพื่อบอกว่าคนจองเปิดหน้าไหนอยู่
             };
 
             const nameInp = document.getElementById('m-name');
@@ -3488,6 +3533,25 @@
                     confirmButtonText: 'ตกลง'
                 });
             }
+            if (!commonData.phone) {
+                document.getElementById('m-phone').focus();
+                return Swal.fire({
+                    icon: 'warning',
+                    title: 'กรุณากรอกเบอร์โทรศัพท์',
+                    text: 'จำเป็นต้องระบุเบอร์โทรเพื่อใช้ในการติดต่อครับ',
+                    confirmButtonColor: '#3b82f6',
+                    confirmButtonText: 'ตกลง'
+                });
+            }
+            if (!commonData.origin) {
+                return Swal.fire({
+                    icon: 'warning',
+                    title: 'กรุณาระบุต้นทาง',
+                    text: 'กรุณาเลือกสถานีต้นทางครับ',
+                    confirmButtonColor: '#3b82f6',
+                    confirmButtonText: 'ตกลง'
+                });
+            }
             if (!commonData.issuedBy) {
                 sellerInp.classList.add('invalid');
                 sellerInp.focus();
@@ -3508,10 +3572,32 @@
                 const bookings = [];
                 const destSelects = document.querySelectorAll('.group-seat-select');
                 const priceInputs = document.querySelectorAll('.group-seat-price');
-
-                seatArr.forEach((s, idx) => {
+                for (let idx = 0; idx < seatArr.length; idx++) {
+                    const s = seatArr[idx];
                     const dest = destSelects[idx].value;
                     const priceVal = priceInputs[idx].value.toString();
+
+                    if (!dest) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'ข้อมูลไม่ครบ',
+                            text: `กรุณาเลือกปลายทางสำหรับที่นั่ง ${s} ครับ`,
+                            confirmButtonColor: '#3b82f6',
+                            confirmButtonText: 'ตกลง'
+                        });
+                        return; // หยุดการทำงานทันที
+                    }
+                    if (!priceVal || priceVal === "0") {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'ข้อมูลไม่ครบ',
+                            text: `กรุณาระบุราคาสำหรับที่นั่ง ${s} ครับ`,
+                            confirmButtonColor: '#3b82f6',
+                            confirmButtonText: 'ตกลง'
+                        });
+                        return; // หยุดการทำงานทันที
+                    }
+
                     let finalPrice = priceVal;
                     if (priceVal.includes('=')) finalPrice = priceVal.split('=')[1];
 
@@ -3538,14 +3624,33 @@
                         commission: comm,
                         isLock: false
                     });
-                });
-                params = { bookings: bookings };
+                }
+                params = { bookings: bookings, oldTicketId: editTicketId };
             } else {
                 const priceVal = document.getElementById('m-price').value.toString();
+                const dest = document.getElementById('m-dest').value;
+
+                if (!dest) {
+                    return Swal.fire({
+                        icon: 'warning',
+                        title: 'กรุณาเลือกปลายทาง',
+                        text: 'กรุณาระบุสถานีปลายทางที่ผู้โดยสารจะลงครับ',
+                        confirmButtonColor: '#3b82f6',
+                        confirmButtonText: 'ตกลง'
+                    });
+                }
+                if (!priceVal || priceVal === "0") {
+                    return Swal.fire({
+                        icon: 'warning',
+                        title: 'กรุณาระบุราคา',
+                        text: 'กรุณาระบุราคาตั๋วโดยสารครับ',
+                        confirmButtonColor: '#3b82f6',
+                        confirmButtonText: 'ตกลง'
+                    });
+                }
+
                 let finalPrice = priceVal;
                 if (priceVal.includes('=')) finalPrice = priceVal.split('=')[1];
-
-                const dest = document.getElementById('m-dest').value;
                 // ค้นหาเส้นทางโดยใช้ชื่อที่สะอาดแล้ว (ตัดวงเล็บออกก่อนเปรียบเทียบ)
                 const route = priceList.find(p => {
                     const pOrigin = p.origin ? p.origin.toString().trim() : '';
@@ -3582,17 +3687,19 @@
 
         function lockBooking() {
             const seatArr = activeSeatId.split(/[\s,]+/).filter(s => s.trim() !== "");
-            if (seatArr.length > 1) {
-                return showToast('การล็อคชั่วคราวรองรับทีละ 1 ที่นั่งเท่านั้นครับ', 'warning');
-            }
-
             const name = document.getElementById('m-name').value;
+            const seller = document.getElementById('m-issued-by').value;
+
             if (!name) {
                 document.getElementById('m-name').focus();
                 return showToast('กรุณากรอกชื่อลูกค้าที่จะล็อคให้ก่อนครับ', 'warning');
             }
+            if (!seller) {
+                document.getElementById('m-issued-by').focus();
+                return showToast('กรุณากรอกชื่อผู้ขาย/ผู้ทำรายการล็อคด้วยครับ', 'warning');
+            }
 
-            const params = {
+            const commonData = {
                 day: currentData.header.day,
                 month: currentData.header.month,
                 year: currentData.header.year,
@@ -3600,13 +3707,31 @@
                 slotIndex: currentData.header.slotIndex,
                 passengerName: name,
                 phone: document.getElementById('m-phone').value,
-                seatId: activeSeatId,
+                issuedBy: seller,
                 isLock: true,
-                lockMinutes: 0, // ล็อคถาวร - ไม่มีเวลาหมดอายุ
-                issuedBy: 'Admin'
+                lockMinutes: 0,
+                activeStation: currentStation
             };
 
-            executeConfirmBooking(params, false);
+            // บังคับแยกแถว (Group) เสมอถ้ามีมากกว่า 1 ที่นั่ง
+            const isGroup = seatArr.length > 1;
+            let params = {};
+
+            if (isGroup) {
+                const bookings = seatArr.map(s => ({
+                    ...commonData,
+                    seatId: s
+                }));
+                params = { bookings: bookings, isLock: true, oldTicketId: editTicketId };
+            } else {
+                params = {
+                    ...commonData,
+                    ticketId: editTicketId,
+                    seatId: activeSeatId
+                };
+            }
+
+            executeConfirmBooking(params, isGroup);
         }
 
         function executeConfirmBooking(params, isGroup) {
@@ -3621,15 +3746,35 @@
                 if (lockBtn) lockBtn.disabled = false;
                 showLoading(false);
                 if (res.success) {
+                    const seatLabel = isGroup ? params.bookings.map(b => b.seatId).join(', ') : params.seatId;
+
+                    // --- [1] กรณีล็อคที่นั่ง (isLock) ---
                     if (params.isLock) {
-                        showToast('🔒 ล็อคที่นั่งถาวรสำเร็จ (ไม่มีหมดอายุ)', 'success');
-                        selectedSeats = []; // เคลียร์ที่นั่งที่เลือก
-                        updateBookingButtonUI(); // ลบปุ่มจองด้านล่างออก
-                        closeBookingModal();
+                        if (isGroup) {
+                            params.bookings.forEach(b => {
+                                if (currentData.seats[b.seatId]) {
+                                    currentData.seats[b.seatId].status = 'locked';
+                                    currentData.seats[b.seatId].name = b.passengerName || 'ล็อคชั่วคราว';
+                                }
+                            });
+                        } else {
+                            if (currentData.seats[activeSeatId]) {
+                                currentData.seats[activeSeatId].status = 'locked';
+                                currentData.seats[activeSeatId].name = params.passengerName || 'ล็อคชั่วคราว';
+                            }
+                        }
+                        showToast(`🔒 ล็อคที่นั่ง ${seatLabel} สำเร็จเรียบร้อยแล้วครับ`, 'success');
+                        selectedSeats = [];
+                        updateBookingButtonUI();
                         silentRefresh();
-                        return;
+                        return; // จบงานสำหรับ Lock
                     }
-                    // --- อัปเดตข้อมูลในเครื่องทันทีเพื่อให้เห็นผลโดยไม่ต้องรอ Refresh ---
+
+                    // --- [2] กรณีบันทึกจอง (Confirm) ---
+                    const finalId = res.ticketId || editTicketId || '';
+                    showToast(`✅ บันทึกที่นั่ง ${seatLabel} สำเร็จ (รหัส: ${finalId})`, 'success');
+                    silentRefresh();
+
                     if (isGroup) {
                         params.bookings.forEach(b => {
                             if (currentData.seats[b.seatId]) {
@@ -3647,8 +3792,8 @@
                                     remark: b.remarks,
                                     issuedBy: b.issuedBy,
                                     gender: b.gender,
-                                    ticketId: res.ticketId.split(', ')[0],
-                                    status: 'CONFIRMED'  // ⚠️ Lock on reopen
+                                    ticketId: (res.ticketMap && res.ticketMap[b.seatId]) ? res.ticketMap[b.seatId] : (res.ticketId ? res.ticketId.split(', ')[0] : ''),
+                                    status: 'CONFIRMED'
                                 };
                             }
                         });
@@ -3668,15 +3813,18 @@
                                 remark: params.remarks,
                                 issuedBy: params.issuedBy,
                                 gender: params.gender,
-                                ticketId: res.ticketId,
-                                status: params.isPhuketBooking ? 'WAITING_PHUKET' : 'CONFIRMED'  // ⚠️ Lock on reopen
+                                ticketId: res.ticketId || editTicketId,
+                                status: params.isPhuketBooking ? 'WAITING_PHUKET' : 'CONFIRMED'
                             };
                         }
                     }
 
-                    isPhuketBooking = false; // Reset flag after success
-                    renderSeating(currentData);
+                    if (editTicketId) {
+                        return; // บันทึกเสร็จแล้ว จบงาน (Toast ขึ้นแล้วด้านบน)
+                    }
 
+                    isPhuketBooking = false;
+                    renderSeating(currentData);
                     selectedSeats = [];
                     updateBookingButtonUI();
                     document.getElementById('modal-form-body').style.display = 'none';
@@ -3906,6 +4054,23 @@
             window.open(url, '_blank');
         }
 
+        function printAllTickets() {
+            if (!originalSeatList || originalSeatList.length === 0) return;
+            const tIds = [];
+            originalSeatList.forEach(s => {
+                const tId = currentData.seats[s]?.metadata?.ticketId;
+                if (tId && !tIds.includes(tId)) {
+                    tIds.push(tId);
+                }
+            });
+            if (tIds.length === 0) {
+                showToast('ไม่พบรหัสตั๋วสำหรับที่นั่งเหล่านี้', 'error');
+                return;
+            }
+            const url = WEBAPP_URL + `?page=manual_ticket&id=${tIds.join(',')}`;
+            window.open(url, '_blank');
+        }
+
         function calculateFinal() {
             if (!currentData || !currentData.seats) return;
             let gross = 0;
@@ -4006,7 +4171,9 @@
                 h.name.toLowerCase().includes(query) ||
                 h.phone.includes(query) ||
                 h.ticketId.toLowerCase().includes(query) ||
-                h.seatId.toLowerCase().includes(query)
+                h.seatId.toLowerCase().includes(query) ||
+                (h.travelDate && h.travelDate.toLowerCase().includes(query)) ||
+                (h.time && h.time.toLowerCase().includes(query))
             );
             renderHistory(filtered);
         }
@@ -4049,11 +4216,14 @@
                 let statusBadge = '';
 
                 if (status === 'CANCELLED') {
-                    statusBadge = '<span style="background:#fee2e2; color:#ef4444; padding:4px 10px; border-radius:20px; font-weight:800; font-size:11px;">CANCELLED</span>';
+                    statusBadge = `<span style="background:#fee2e2; color:#ef4444; padding:4px 10px; border-radius:20px; font-weight:800; font-size:11px;">${status}</span>`;
+                } else if (status === 'LOCKED') {
+                    statusBadge = `<span style="background:#fef3c7; color:#d97706; padding:4px 10px; border-radius:20px; font-weight:800; font-size:11px;">${status}</span>`;
                 } else if (status === 'EDITED') {
-                    statusBadge = '<span style="background:#fef3c7; color:#d97706; padding:4px 10px; border-radius:20px; font-weight:800; font-size:11px;">EDITED</span>';
+                    statusBadge = `<span style="background:#e0f2fe; color:#0369a1; padding:4px 10px; border-radius:20px; font-weight:800; font-size:11px;">${status}</span>`;
                 } else {
-                    statusBadge = '<span style="background:#f0f9ff; color:#0ea5e9; padding:4px 10px; border-radius:20px; font-weight:800; font-size:11px;">ACTIVE</span>';
+                    // ทุกสถานะที่เหลือ (เช่น CONFIRMED, WAITING_PHUKET) ให้เป็นสีเขียว
+                    statusBadge = `<span style="background:#dcfce7; color:#16a34a; padding:4px 10px; border-radius:20px; font-weight:800; font-size:11px;">${status}</span>`;
                 }
 
                 const isCancelled = status === 'CANCELLED';
