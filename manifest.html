@@ -29,8 +29,8 @@
             min-height: 297mm;
             /* กลับมาเป็น min-height เพื่อให้ยืดหยุ่นตอนปริ้น */
             margin: 0 auto;
-            padding: 1.2cm 1.5cm 0.5cm;
-            /* เพิ่มขอบบนเพื่อให้สมดุลกับพื้นที่ว่างด้านล่าง */
+            padding: 0.7cm 1.5cm 0.5cm;
+            /* ปรับลดเพื่อให้ทุกอย่างอยู่ในหน้าเดียว */
             background: #fff;
             display: flex;
             flex-direction: column;
@@ -45,9 +45,9 @@
             /* Reduced */
             font-weight: 800;
             background: #bfdbfe;
-            padding: 4px;
+            padding: 2px;
             /* Reduced */
-            margin-bottom: 4px;
+            margin-bottom: 2px;
             width: 100%;
             color: #1e293b;
         }
@@ -55,8 +55,8 @@
         .m-info-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 6px;
-            font-size: 14px;
+            margin-bottom: 4px;
+            font-size: 13px;
             /* Reduced */
         }
 
@@ -106,8 +106,8 @@
         .m-seat {
             border: 1px solid #cbd5e1;
             border-radius: 4px;
-            height: 72px;
-            /* ลดลงอีกนิดเพื่อให้ทุกอย่างอยู่ในหน้าเดียวแน่ๆ */
+            height: 78px;
+            /* ปรับขนาดให้พอดี 1 แผ่น A4 (เล็กลงเล็กน้อยเพื่อไม่ให้ล้นไปหน้า 2) */
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -258,7 +258,7 @@
             display: grid;
             grid-template-columns: 1fr 20px 1fr;
             margin-top: 5px;
-            /* Reduced gap from grid */
+            /* Reduced gap */
             width: 100%;
             align-items: flex-start;
             page-break-inside: avoid;
@@ -292,8 +292,8 @@
             width: 100%;
             border-bottom: 1px solid #1e3a8a;
             background: #eff6ff;
-            height: 26px;
-            /* Slightly increased for clarity */
+            height: 23px;
+            /* กระชับพื้นที่ */
             align-items: stretch;
         }
 
@@ -308,14 +308,14 @@
             display: flex;
             align-items: center;
             font-weight: 700;
-            font-size: 11px;
+            font-size: 13px;
             white-space: nowrap;
             /* ห้ามขึ้นบรรทัดใหม่ */
         }
 
         .finance-row .value-group {
-            width: 150px;
-            /* ขยายให้กว้างขึ้นเพื่อความขนาน */
+            width: 180px;
+            /* ขยายให้กว้างขึ้น */
             display: flex;
             border-left: 1.5px solid #1e3a8a;
             background: #fff;
@@ -332,8 +332,8 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            font-size: 12px;
-            /* ปรับลดขนาดฟอนต์ลงตามที่ต้องการ */
+            font-size: 14px;
+            /* ปรับเพิ่มขนาดฟอนต์ตัวเลขสรุป */
             font-variant-numeric: tabular-nums;
             border: none;
             outline: none;
@@ -398,8 +398,8 @@
             text-align: center;
             font-weight: 800;
             color: #991b1b;
-            padding: 4px;
-            font-size: 14px;
+            padding: 2px;
+            font-size: 13px;
         }
 
         .receives-table {
@@ -418,7 +418,7 @@
         }
 
         .receives-table td {
-            height: 26px;
+            height: 23px;
             border: 1px solid #1e3a8a;
             padding: 0;
             text-align: center;
@@ -429,7 +429,6 @@
 
         .sign-wrapper {
             margin-top: 15px;
-            /* Increased margin */
             display: flex;
             justify-content: space-around;
             /* Better distribution in narrow column */
@@ -700,6 +699,11 @@
                             <td id="r-stop-4" contenteditable="true" class="editable-cell"></td>
                             <td id="r-amt-4" contenteditable="true" class="editable-cell"></td>
                         </tr>
+                        <tr id="r-total-row" style="background: #f1f5f9;">
+                            <td style="font-weight: 800; color: #1e3a8a; text-align: left; padding-left: 10px;">คงเหลือ
+                            </td>
+                            <td id="r-grand-total" style="color: #ef4444; font-weight: 800; font-size: 15px;">0</td>
+                        </tr>
                     </tbody>
                 </table>
                 <div class="sign-wrapper">
@@ -860,20 +864,60 @@
                 const currentExp = parseFloat(expInput.value) || 0;
                 const netFinal = net1 - currentExp;
                 document.getElementById('sum-final').textContent = netFinal.toLocaleString();
+                updateGrandTotal();
+            }
+
+            function updateGrandTotal() {
+                let amtSum = 0;
+                let hasInput = false;
+                for (let i = 1; i <= 4; i++) {
+                    const cell = document.getElementById(`r-amt-${i}`);
+                    if (cell) {
+                        const valStr = cell.textContent.trim();
+                        if (valStr !== "") {
+                            hasInput = true;
+                            const val = parseFloat(valStr.replace(/,/g, '')) || 0;
+                            amtSum += val;
+                        }
+                    }
+                }
+                const netFinal = parseFloat(document.getElementById('sum-final').textContent.replace(/,/g, '')) || 0;
+                const grandTotal = netFinal + amtSum;
+
+                if (hasInput) {
+                    document.getElementById('r-grand-total').textContent = grandTotal !== 0 ? grandTotal.toLocaleString() : '0';
+                } else {
+                    document.getElementById('r-grand-total').textContent = '';
+                }
             }
 
             expInput.addEventListener('input', updateFinal);
+
+            // Add listeners to amount cells for real-time calculation
+            for (let i = 1; i <= 4; i++) {
+                const amtCell = document.getElementById(`r-amt-${i}`);
+                if (amtCell) {
+                    amtCell.addEventListener('input', updateGrandTotal);
+                    amtCell.addEventListener('blur', () => {
+                        const val = parseFloat(amtCell.textContent.replace(/,/g, '')) || 0;
+                        amtCell.textContent = val !== 0 ? val.toLocaleString() : '';
+                    });
+                }
+            }
+
             updateFinal(); // Call once to set initial value
 
             // Populate Receives
             if (data.receives && Array.isArray(data.receives)) {
                 data.receives.forEach((r, idx) => {
                     const row = idx + 1;
+                    if (row > 4) return;
                     const stopCell = document.getElementById(`r-stop-${row}`);
                     const amtCell = document.getElementById(`r-amt-${row}`);
                     if (stopCell) stopCell.textContent = r.stop || '';
                     if (amtCell) amtCell.textContent = r.amount ? parseFloat(r.amount).toLocaleString() : '';
                 });
+                updateGrandTotal();
             }
 
             // Populate Signers

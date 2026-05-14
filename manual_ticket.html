@@ -1206,7 +1206,7 @@
 
             tickets.forEach(t => {
                 const seats = t.seatId ? t.seatId.toString().split(/[\s,]+/).filter(s => s.trim() !== "") : [];
-                const ids   = (t.ticketId || t.ticketNo || '').toString().split(/[\s,]+/).filter(s => s.trim() !== "");
+                const ids = (t.ticketId || t.ticketNo || '').toString().split(/[\s,]+/).filter(s => s.trim() !== "");
 
                 if (seats.length > 1) {
                     const totalBasePrice = parseFloat(t.price) || 0;
@@ -1242,7 +1242,7 @@
                 // ถ้ามี พ.ศ. อยู่แล้ว หรือเป็นรูปแบบที่พี่โอเคอยู่แล้ว ให้ส่งกลับเลย
                 return bookingTime;
             }
-            
+
             // Fallback: กรณีจองใหม่และยังไม่มีข้อมูลในชีท ให้ใช้เวลาปัจจุบัน
             const now = new Date();
             const d = now.getDate().toString().padStart(2, '0');
