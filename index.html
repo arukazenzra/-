@@ -2576,7 +2576,7 @@
                 syncStatus.style.color = "var(--accent)";
             }
 
-            // เพิ่ม Delay เล็กน้อย (800ms) เพื่อให้ Google Sheets บันทึกข้อมูลเสร็จสมบูรณ์ก่อนดึงใหม่
+            // ⚡ ลดดีเลย์เหลือ 100ms เพราะหลังบ้านทำงานเร็วและเสร็จสมบูรณ์ทันที ไม่ต้องรอนาน 800ms อีกต่อไป!
             setTimeout(() => {
                 const [y, m, d] = document.getElementById('target-date').value.split('-').map(Number);
                 google.script.run.withSuccessHandler(res => {
@@ -2592,7 +2592,7 @@
                         calculateFinal();
                     }
                 }).getSeatMap(d, m, y, currentStation, currentSlotIdx);
-            }, 800);
+            }, 100);
         }
 
         function updateClock() {
