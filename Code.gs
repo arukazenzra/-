@@ -2191,9 +2191,10 @@ function migrateCargoSheetIfNeeded(sheet) {
       "แมว/สัตว์เลี้ยง",
       "สัมภาระอื่นๆ",
       "หมายเหตุ",
-      "สล็อต"
+      "สล็อต",
+      "สาขาที่รับฝาก"
     ];
-    sheet.getRange(1, 1, 1, 9).setValues([newHeaders]).setBackground("#1e293b").setFontColor("#ffffff").setFontWeight("bold");
+    sheet.getRange(1, 1, 1, 10).setValues([newHeaders]).setBackground("#1e293b").setFontColor("#ffffff").setFontWeight("bold");
     sheet.setFrozenRows(1);
     SpreadsheetApp.flush();
     return;
@@ -2223,10 +2224,17 @@ function migrateCargoSheetIfNeeded(sheet) {
       "แมว/สัตว์เลี้ยง",
       "สัมภาระอื่นๆ",
       "หมายเหตุ",
-      "สล็อต"
+      "สล็อต",
+      "สาขาที่รับฝาก"
     ];
-    sheet.getRange(1, 1, 1, 9).setValues([newHeaders]).setBackground("#1e293b").setFontColor("#ffffff").setFontWeight("bold");
+    sheet.getRange(1, 1, 1, 10).setValues([newHeaders]).setBackground("#1e293b").setFontColor("#ffffff").setFontWeight("bold");
     SpreadsheetApp.flush();
+  } else {
+    const maxCols = sheet.getLastColumn();
+    if (maxCols < 10) {
+      sheet.getRange(1, 10).setValue("สาขาที่รับฝาก").setBackground("#1e293b").setFontColor("#ffffff").setFontWeight("bold");
+      SpreadsheetApp.flush();
+    }
   }
 }
 
@@ -2298,7 +2306,8 @@ function getCargoList(travelDate, origin, timeSlot) {
           cat: row[5] === true || row[5].toString().toLowerCase() === 'true',
           otherCargo: row[6] || "",
           remarks: row[7] || "",
-          slotId: row[8] || ""
+          slotId: row[8] || "",
+          issuerStation: row[9] || ""
         });
       }
     }
@@ -2330,9 +2339,10 @@ function saveCargoBooking(params) {
         "แมว/สัตว์เลี้ยง",
         "สัมภาระอื่นๆ",
         "หมายเหตุ",
-        "สล็อต"
+        "สล็อต",
+        "สาขาที่รับฝาก"
       ]);
-      sheet.getRange("A1:I1").setBackground("#1e293b").setFontColor("#ffffff").setFontWeight("bold");
+      sheet.getRange("A1:J1").setBackground("#1e293b").setFontColor("#ffffff").setFontWeight("bold");
     } else {
       migrateCargoSheetIfNeeded(sheet);
     }
@@ -2363,6 +2373,7 @@ function saveCargoBooking(params) {
       sheet.getRange(existingRowIndex, 6).setValue(params.cat ? true : false);
       sheet.getRange(existingRowIndex, 7).setValue(params.otherCargo || "");
       sheet.getRange(existingRowIndex, 8).setValue(params.remarks || "");
+      sheet.getRange(existingRowIndex, 10).setValue(params.issuerStation || "");
       return { success: true, updated: true };
     } else {
       if (existingList.length >= 5) {
@@ -2378,7 +2389,8 @@ function saveCargoBooking(params) {
         params.cat ? true : false,
         params.otherCargo || "",
         params.remarks || "",
-        slotId
+        slotId,
+        params.issuerStation || ""
       ];
 
       sheet.appendRow(newRow);
