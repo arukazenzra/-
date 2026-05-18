@@ -227,6 +227,8 @@
 
         .td-lbl {
             background: #f8fafc;
+            text-align: center !important;
+            vertical-align: middle !important;
         }
 
         .lbl {
@@ -512,6 +514,7 @@
             text-align: center !important;
             padding: 0 !important;
             width: 100% !important;
+            height: 100%;
         }
 
         .wg-input:focus {
@@ -1337,63 +1340,71 @@
 
                     <!-- Row 1: Name & Phone -->
                     <tr>
-                        <td class="td-lbl"><span class="lbl">ชื่อผู้โดยสาร</span><span class="lbl-en">Name</span></td>
+                        <td class="td-lbl" style="text-align: center; vertical-align: middle;"><span class="lbl">ชื่อผู้โดยสาร</span><span class="lbl-en">Name</span></td>
                         <td colspan="2"><input type="text" class="wg-input" id="f-name-${idx}" placeholder="ชื่อผู้โดยสาร" autocomplete="off" spellcheck="false" data-lpignore="true" readonly></td>
-                        <td class="td-lbl"><span class="lbl">เบอร์โทร</span><span class="lbl-en">Mobile Phone</span></td>
+                        <td class="td-lbl" style="text-align: center; vertical-align: middle;"><span class="lbl">เบอร์โทร</span><span class="lbl-en">Mobile Phone</span></td>
                         <td colspan="2"><input type="tel" class="wg-input" id="f-phone-${idx}" placeholder="0XX-XXX-XXXX" autocomplete="off" spellcheck="false" data-lpignore="true" oninput="formatPhone(this)" readonly></td>
                     </tr>
 
                     <!-- Row 2: From & To -->
                     <tr>
-                        <td class="td-lbl"><span class="lbl">จาก</span><span class="lbl-en">From</span></td>
+                        <td class="td-lbl" style="text-align: center; vertical-align: middle;"><span class="lbl">จาก</span><span class="lbl-en">From</span></td>
                         <td colspan="2"><input type="text" class="wg-input" id="f-from-${idx}" placeholder="ต้นทาง" autocomplete="off" spellcheck="false" data-lpignore="true" readonly></td>
-                        <td class="td-lbl"><span class="lbl">ถึง</span><span class="lbl-en">To</span></td>
+                        <td class="td-lbl" style="text-align: center; vertical-align: middle;"><span class="lbl">ถึง</span><span class="lbl-en">To</span></td>
                         <td colspan="2"><input type="text" class="wg-input" id="f-to-${idx}" placeholder="ปลายทาง" autocomplete="off" spellcheck="false" data-lpignore="true" readonly></td>
                     </tr>
 
                     <!-- Row 3: Issued Date, Departure Date, Time -->
                     <tr>
-                        <td class="td-lbl"><span class="lbl">วันที่ออกบัตร</span><span class="lbl-en">Date of Issued</span></td>
-                        <td><input type="text" class="wg-input" id="f-issued-date-${idx}" placeholder="DD/MM/YY" autocomplete="off" spellcheck="false" data-lpignore="true" readonly></td>
-                        <td class="td-lbl"><span class="lbl">วันเดินทาง</span><span class="lbl-en">Departure Date</span></td>
-                        <td>
-                            <input type="text" class="wg-input" id="f-date-display-${idx}" placeholder="DD/MM/YY" autocomplete="off" spellcheck="false" data-lpignore="true" readonly>
+                        <td class="td-lbl" style="text-align: center; vertical-align: middle;"><span class="lbl">วันที่ออกบัตร</span><span class="lbl-en">Date of Issued</span></td>
+                        <td style="text-align: center; vertical-align: middle;"><input type="text" class="wg-input center" id="f-issued-date-${idx}" placeholder="DD/MM/YY" autocomplete="off" spellcheck="false" data-lpignore="true" readonly></td>
+                        <td class="td-lbl" style="text-align: center; vertical-align: middle;"><span class="lbl">วันเดินทาง</span><span class="lbl-en">Departure Date</span></td>
+                        <td style="text-align: center; vertical-align: middle;">
+                            <input type="text" class="wg-input center" id="f-date-display-${idx}" placeholder="DD/MM/YY" autocomplete="off" spellcheck="false" data-lpignore="true" readonly>
                             <input type="date" id="f-date-${idx}" style="display:none;">
                         </td>
-                        <td class="td-lbl"><span class="lbl">เวลา</span><span class="lbl-en">Time</span></td>
-                        <td>
-                            <div id="f-time-display-${idx}" class="wg-input" style="font-size:16px; border:none; background:transparent; display:contents; align-items:center; justify-content:center; height:100%;">00:00</div>
+                        <td class="td-lbl" style="text-align: center; vertical-align: middle;"><span class="lbl">เวลา</span><span class="lbl-en">Time</span></td>
+                        <td style="text-align: center; vertical-align: middle;">
+                            <div id="f-time-display-${idx}" class="wg-input center" style="font-size:16px; border:none; background:transparent; display:flex; align-items:center; justify-content:center; height:100%;">00:00</div>
                             <input type="hidden" id="f-time-${idx}">
                         </td>
                     </tr>
 
                     <!-- Row 4: Platform, Bus, Seat -->
                     <tr>
-                        <td class="td-lbl"><span class="lbl">ชานชาลาที่</span><span class="lbl-en">P/F No.</span></td>
-                        <td class="center"><input type="text" class="wg-input center bold-val" id="f-platform-${idx}" placeholder="-" readonly></td>
-                        <td class="td-lbl"><span class="lbl">หมายเลขรถ</span><span class="lbl-en">Bus No.</span></td>
-                        <td><input type="text" class="wg-input" id="f-bus-${idx}" placeholder="443-" readonly></td>
-                        <td class="td-lbl"><span class="lbl">เลขที่นั่ง</span><span class="lbl-en">Seat No.</span></td>
-                        <td><input type="text" class="wg-input" id="f-seat-${idx}" placeholder="-" readonly></td>
+                        <td class="td-lbl" style="text-align: center; vertical-align: middle;"><span class="lbl">ชานชาลาที่</span><span class="lbl-en">P/F No.</span></td>
+                        <td class="center" style="text-align: center; vertical-align: middle;"><input type="text" class="wg-input center bold-val" id="f-platform-${idx}" placeholder="-" readonly></td>
+                        <td class="td-lbl" style="text-align: center; vertical-align: middle;"><span class="lbl">หมายเลขรถ</span><span class="lbl-en">Bus No.</span></td>
+                        <td style="text-align: center; vertical-align: middle;"><input type="text" class="wg-input center" id="f-bus-${idx}" placeholder="443-" readonly></td>
+                        <td class="td-lbl" style="text-align: center; vertical-align: middle;"><span class="lbl">เลขที่นั่ง</span><span class="lbl-en">Seat No.</span></td>
+                        <td style="text-align: center; vertical-align: middle;"><input type="text" class="wg-input center" id="f-seat-${idx}" placeholder="-" readonly></td>
                     </tr>
 
                     <!-- Row 5: Price, Payment, Issuer -->
                     <tr>
-                        <td class="td-lbl" rowspan="2"><span class="lbl">ราคา</span><span class="lbl-en">Price</span></td>
-                        <td class="center" rowspan="2"><input type="text" class="wg-input center" id="f-price-${idx}" placeholder="0" style="font-size:16px; height: 100%;" readonly></td>
-                        <td class="payment-mini-label">วิธีชำระ</td>
-                        <td id="m-pay-method-val-${idx}" class="payment-mini-value">-</td>
-                        <td class="td-lbl" rowspan="2"><span class="lbl">ผู้ขาย</span><span class="lbl-en">Issued by</span></td>
-                        <td rowspan="2"><input type="text" class="wg-input" id="f-issuer-${idx}" placeholder="Admin" style="height: 100%;" readonly></td>
+                        <td class="td-lbl" rowspan="2" style="text-align: center; vertical-align: middle;">
+                            <span class="lbl">ราคา</span><span class="lbl-en">Price</span>
+                        </td>
+                        <td class="center" rowspan="2" style="text-align: center; vertical-align: middle;">
+                            <input type="text" class="wg-input center" id="f-price-${idx}" placeholder="0" style="font-size:18px; font-weight: 800 !important; color: #1e3a8a;" readonly>
+                        </td>
+                        <td class="payment-mini-label" style="text-align: center; vertical-align: middle;">วิธีชำระ</td>
+                        <td id="m-pay-method-val-${idx}" class="payment-mini-value" style="text-align: center; vertical-align: middle;">-</td>
+                        <td class="td-lbl" rowspan="2" style="text-align: center; vertical-align: middle;">
+                            <span class="lbl">ผู้ขาย</span><span class="lbl-en">Issued by</span>
+                        </td>
+                        <td rowspan="2" style="text-align: center; vertical-align: middle;">
+                            <input type="text" class="wg-input center" id="f-issuer-${idx}" placeholder="Admin" style="font-size:16px; font-weight: 600 !important;" readonly>
+                        </td>
                     </tr>
                     <tr>
-                        <td class="payment-mini-label">ประเภท</td>
-                        <td id="m-pay-type-val-${idx}" class="payment-mini-value">-</td>
+                        <td class="payment-mini-label" style="text-align: center; vertical-align: middle;">ประเภท</td>
+                        <td id="m-pay-type-val-${idx}" class="payment-mini-value" style="text-align: center; vertical-align: middle;">-</td>
                     </tr>
 
                     <!-- Row 6: Remark -->
                     <tr>
-                        <td class="td-lbl"><span class="lbl">หมายเหตุ</span></td>
+                        <td class="td-lbl" style="text-align: center; vertical-align: middle;"><span class="lbl">หมายเหตุ</span></td>
                         <td colspan="5"><input type="text" class="wg-input" id="f-remark-${idx}" placeholder="หมายเหตุ (ถ้ามี)" style="font-size:12px; padding-left:10px;" readonly></td>
                     </tr>
                 </table>

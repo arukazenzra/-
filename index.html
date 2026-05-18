@@ -568,6 +568,94 @@
             color: #1e3a8a;
         }
 
+        /* ── Cross-Branch Status Colors ── */
+        /* 🟣 ภูเก็ตจอง (ม่วง) */
+        .seat-box.PAID_PHUKET {
+            background: #6b21a8 !important;
+            /* ม่วงเข้ม */
+            color: white !important;
+            border-color: #581c87;
+        }
+
+        .seat-box.PAID_PHUKET .seat-label,
+        .seat-box.PAID_PHUKET .seat-name {
+            color: white !important;
+        }
+
+        .seat-box.WAITING_PHUKET {
+            background: #f3e8ff !important;
+            /* ม่วงอ่อน */
+            border: 2px solid #9333ea;
+            color: #7e22ce;
+        }
+
+        .seat-box.WAITING_PHUKET .seat-label {
+            color: #581c87;
+        }
+
+        .seat-box.WAITING_PHUKET .seat-name {
+            color: #7e22ce;
+        }
+
+        /* 🔵 หาดใหญ่จอง (น้ำเงิน) */
+        .seat-box.PAID_HATYAI {
+            background: #1e40af !important;
+            /* น้ำเงินเข้ม */
+            color: white !important;
+            border-color: #1e3a8a;
+        }
+
+        .seat-box.PAID_HATYAI .seat-label,
+        .seat-box.PAID_HATYAI .seat-name {
+            color: white !important;
+        }
+
+        .seat-box.WAITING_HATYAI {
+            background: #e0f2fe !important;
+            /* ฟ้าอ่อน */
+            border: 2px solid #3b82f6;
+            color: #1d4ed8;
+        }
+
+        .seat-box.WAITING_HATYAI .seat-label {
+            color: #1e3a8a;
+        }
+
+        .seat-box.WAITING_HATYAI .seat-name {
+            color: #1d4ed8;
+        }
+
+        /* 🟢 สถานะ WAITING ปกติ (สาขาตัวเองจองแต่ยังไม่จ่าย) */
+        .seat-box.WAITING {
+            background: #f1f5f9;
+            border: 2px dashed #94a3b8;
+            color: #64748b;
+        }
+
+        /* 🔵 ธีมหาดใหญ่: จองปกติ (Confirmed) เป็นน้ำเงิน */
+        .hatyai-theme .seat-box.confirmed {
+            background: #1e40af !important;
+            color: white !important;
+            border-color: #1e3a8a;
+        }
+
+        .hatyai-theme .seat-box.confirmed .seat-label,
+        .hatyai-theme .seat-box.confirmed .seat-name {
+            color: white !important;
+        }
+
+        /* 🟣 ธีมภูเก็ต: จองปกติ (Confirmed) เป็นม่วง */
+        .phuket-theme .seat-box.confirmed {
+            background: #6b21a8 !important;
+            color: white !important;
+            border-color: #581c87;
+        }
+
+        .phuket-theme .seat-box.confirmed .seat-label,
+        .phuket-theme .seat-box.confirmed .seat-name {
+            color: white !important;
+        }
+
         .seat-timer {
             position: absolute;
             bottom: 4px;
@@ -849,27 +937,28 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
-        /* Payment Method Toggle Buttons */
+        /* ── Payment Method Toggle Buttons (Top Section) ── */
         .pay-method-toggle {
             display: flex;
             gap: 10px;
+            margin-bottom: 5px;
         }
 
         .pay-method-btn {
             flex: 1;
-            padding: 10px 16px;
-            border-radius: 10px;
+            padding: 12px 16px;
+            border-radius: 12px;
             border: 2px solid #e2e8f0;
             background: #f8fafc;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 700;
             color: #64748b;
             transition: 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .pay-method-btn:hover:not(:disabled) {
@@ -892,31 +981,73 @@
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
         }
 
+        /* ── Modal Footer Action Buttons (Bottom Section) ── */
+        .modal-footer {
+            display: flex;
+            gap: 8px; 
+            justify-content: center;
+            align-items: stretch;
+            flex-wrap: nowrap;
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 15px;
+        }
+
+        .modal-footer button {
+            flex: 1; /* บังคับให้ทุกปุ่มกว้างเท่ากัน และเฉลี่ยพื้นที่กันเอง */
+            min-width: 0; /* ป้องกันปุ่มดันกันจนล้น */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 4px;
+            font-size: 13px; /* ปรับขนาดฟอนต์ให้กะทัดรัด */
+            line-height: 1.2;
+            height: auto;
+            min-height: 80px;
+        }
+
+        .modal-footer button i, 
+        .modal-footer button span.emoji {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
         .gender-btn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             background: #f1f5f9;
         }
 
-        .seat-box.confirmed.male {
+        .seat-box.confirmed.male,
+        .seat-box.PAID_PHUKET.male,
+        .seat-box.PAID_HATYAI.male {
             background: #0ea5e9 !important;
             /* Sky Blue */
             border-color: #0284c7 !important;
         }
 
-        .seat-box.confirmed.female {
+        .seat-box.confirmed.female,
+        .seat-box.PAID_PHUKET.female,
+        .seat-box.PAID_HATYAI.female {
             background: #ec4899 !important;
             /* Pink */
             border-color: #db2777 !important;
         }
 
-        .seat-box.confirmed.monk {
+        .seat-box.confirmed.monk,
+        .seat-box.PAID_PHUKET.monk,
+        .seat-box.PAID_HATYAI.monk {
             background: #f59e0b !important;
             /* Orange */
             border-color: #d97706 !important;
         }
 
-        .seat-box.confirmed.soldier {
+        .seat-box.confirmed.soldier,
+        .seat-box.PAID_PHUKET.soldier,
+        .seat-box.PAID_HATYAI.soldier {
             background: #15803d !important;
             /* Dark Green */
             border-color: #166534 !important;
@@ -957,12 +1088,8 @@
             color: #ffffff !important;
         }
 
-        /* 🟣 Phuket Paid - Deep Purple */
-        div.seat-box.PAID_PHUKET.PAID_PHUKET,
-        .seat-box.PAID_PHUKET.male,
-        .seat-box.PAID_PHUKET.female,
-        .seat-box.PAID_PHUKET.monk,
-        .seat-box.PAID_PHUKET.soldier {
+        /* 🟣 Phuket Paid - Deep Purple (Fallback) */
+        .seat-box.PAID_PHUKET {
             background: #6b21a8 !important;
             border-color: #581c87 !important;
             color: #ffffff !important;
@@ -979,12 +1106,8 @@
             color: #1e3a8a !important;
         }
 
-        /* 🔵 Hatyai Paid - Standard Blue */
-        div.seat-box.PAID_HATYAI.PAID_HATYAI,
-        .seat-box.PAID_HATYAI.male,
-        .seat-box.PAID_HATYAI.female,
-        .seat-box.PAID_HATYAI.monk,
-        .seat-box.PAID_HATYAI.soldier {
+        /* 🔵 Hatyai Paid - Standard Blue (Fallback) */
+        .seat-box.PAID_HATYAI {
             background: #3b82f6 !important;
             border-color: #2563eb !important;
             color: #ffffff !important;
@@ -1507,10 +1630,39 @@
                 opacity: 0.8;
             }
 
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+        }
+
+        /* ── Cargo Features ── */
+        .quick-cargo-chips button.active {
+            border-color: #3b82f6 !important;
+            background: #eff6ff !important;
+            color: #1d4ed8 !important;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15) !important;
+        }
+        .quick-cargo-chips button:hover:not(.active) {
+            border-color: var(--info) !important;
+            background: #f8fafc !important;
+            transform: translateY(-2px);
+        }
+        
+        .index-vacant-cargo-slot {
+            transition: all 0.2s ease;
+        }
+        
+        .index-vacant-cargo-slot:hover {
+            border-color: #8b5cf6 !important;
+            background: #fbfbfe !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.08);
+        }
+        
+        #index-cargo-grid > div {
+            transition: all 0.2s ease;
+        }
+        
+        #index-cargo-grid > div:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.08);
         }
     </style>
 </head>
@@ -1571,13 +1723,6 @@
                     </div>
                 </div>
 
-                <!-- สาขาที่ทำการจอง (Display Only) -->
-                <div id="branch-info-badge"
-                    style="margin-bottom: 20px; padding: 10px 15px; background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
-                    <span style="font-size: 14px; font-weight: 700; color: #64748b;">สาขาที่ทำการจอง:</span>
-                    <span id="branch-text-display"
-                        style="font-size: 15px; font-weight: 800; padding: 4px 12px; border-radius: 20px;">-</span>
-                </div>
                 <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
                     <div class="input-group">
                         <label for="m-name">ชื่อผู้โดยสาร</label>
@@ -1619,12 +1764,12 @@
                     <div class="input-group" style="grid-column: span 2;">
                         <label id="label-pay-method">วิธีชำระเงิน</label>
                         <div class="pay-method-toggle" role="group" aria-labelledby="label-pay-method">
-                            <button type="button" id="pay-btn-cash" class="pay-method-btn active cash"
+                            <button type="button" id="pay-btn-cash" class="pay-method-btn cash"
                                 onclick="setPayMethod('cash')">💵 เงินสด</button>
                             <button type="button" id="pay-btn-qr" class="pay-method-btn qr"
                                 onclick="setPayMethod('qr')">📱 โอน (QR)</button>
                         </div>
-                        <input type="hidden" id="m-pay-method" value="cash">
+                        <input type="hidden" id="m-pay-method" value="">
                     </div>
                     <div class="input-group" style="grid-column: span 2;">
                         <label for="m-pay-type-selector">ประเภทตั๋ว</label>
@@ -1888,11 +2033,30 @@
                         </div>
                     </div>
 
-                    <div style="display:flex; justify-content:center; margin-top: 25px; margin-bottom: 10px;">
+                    <div style="display:flex; justify-content:center; margin-top: 25px; margin-bottom: 10px; gap: 15px; flex-wrap: wrap;">
                         <button onclick="downloadSeatPlan()"
                             style="background: white; border: 1px solid #e2e8f0; color: #475569; padding: 10px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 15px; transition: 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.06);">
                             <span>📸</span> บันทึกรูปผังที่นั่ง
                         </button>
+                    </div>
+
+                    <!-- Cargo & Luggage Visual 5-Slot Dashboard Panel -->
+                    <div id="index-cargo-section" style="background: #fffdf0; border: 1.5px solid #fef3c7; border-radius: 20px; padding: 22px; margin-top: 25px; box-shadow: 0 4px 20px rgba(251, 191, 36, 0.05);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div style="font-size: 24px;">🏍️</div>
+                                <div style="text-align: left;">
+                                    <div style="font-size: 16px; font-weight: 800; color: #854d0e;">ฝากมอเตอร์ไซค์ / สัตว์เลี้ยง / สัมภาระ (ช่องเก็บสัมภาระท้ายรถ)</div>
+                                    <div style="font-size: 12px; font-weight: 700; color: #b45309; margin-top: 2px;">จำกัดสูงสุด 5 ช่องต่อรอบเดินทาง (M1 - M5)</div>
+                                </div>
+                            </div>
+                            <div style="background: #fef3c7; color: #b45309; padding: 6px 16px; border-radius: 50px; font-size: 12px; font-weight: 800; border: 1px solid #fde047;" id="index-cargo-count-badge">
+                                ฝากแล้ว 0 ช่อง
+                            </div>
+                        </div>
+                        <div id="index-cargo-grid" style="display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap;">
+                            <!-- Dynamic 5 M-Slots will be rendered here -->
+                        </div>
                     </div>
                 </div>
 
@@ -2180,6 +2344,86 @@
         </div>
     </div>
 
+    <!-- Cargo Modal (บันทึกฝากของ) -->
+    <div id="cargo-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 600px; padding: 0; border-radius: 24px; overflow: hidden; display: flex; flex-direction: column;">
+            <!-- Modal Header -->
+            <div class="modal-header" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); padding: 22px 28px; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <h2 style="margin: 0; font-size: 19px; font-weight: 800; display: flex; align-items: center; gap: 10px; color: #f8fafc;">
+                        <span>📦</span> <span>บันทึกฝากสัมภาระ / สัตว์เลี้ยง</span>
+                    </h2>
+                    <div style="background: rgba(255,255,255,0.08); padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #cbd5e1; width: fit-content; border: 1px solid rgba(255,255,255,0.08);">
+                        CARGO BOOKING SYSTEM
+                    </div>
+                </div>
+                <button onclick="closeCargoModal()" style="background: rgba(255,255,255,0.1); border:none; color:white; width:36px; height:36px; border-radius:10px; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition: 0.2s;">&times;</button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="modal-body" style="padding: 24px 28px; overflow-y: auto; max-height: 70vh;">
+                <!-- Trip Context Info -->
+                <div style="background: #f8fafc; border-radius: 16px; padding: 14px 18px; border: 1px solid #e2e8f0; margin-bottom: 20px; font-size: 13px; color: #64748b; line-height: 1.6;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                        <span>📅 วันที่เดินทาง: <strong id="cargo-meta-date" style="color: #334155; font-weight: 700;">-</strong></span>
+                        <span>🕒 รอบเวลา: <strong id="cargo-meta-time" style="color: #334155; font-weight: 700;">-</strong></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>🏠 ต้นทาง: <strong id="cargo-meta-origin" style="color: #334155; font-weight: 700;">-</strong></span>
+                    </div>
+                </div>
+                
+                <!-- Quick Selection Chips (มอเตอร์ไซค์ / แมว) -->
+                <label style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 10px; display: block; text-transform: uppercase; letter-spacing: 0.5px;">⚡ เลือกด่วน (Quick Selection)</label>
+                <div class="quick-cargo-chips" style="display: flex; gap: 15px; margin-bottom: 22px;">
+                    <button type="button" id="chip-motorcycle" onclick="toggleCargoChip('motorcycle')" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px; border-radius: 16px; border: 2px solid #e2e8f0; background: #fff; cursor: pointer; transition: all 0.2s ease; font-weight: 700; font-size: 14px; color: #64748b;">
+                        <span style="font-size: 32px; margin-bottom: 6px;">🏍️</span>
+                        มอเตอร์ไซค์
+                    </button>
+                    <button type="button" id="chip-cat" onclick="toggleCargoChip('cat')" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 14px; border-radius: 16px; border: 2px solid #e2e8f0; background: #fff; cursor: pointer; transition: all 0.2s ease; font-weight: 700; font-size: 14px; color: #64748b;">
+                        <span style="font-size: 32px; margin-bottom: 6px;">🐱</span>
+                        แมว / สัตว์เลี้ยง
+                    </button>
+                </div>
+                
+                <!-- Searchable Combo-box for Other Items -->
+                <div class="input-group" style="margin-bottom: 20px;">
+                    <label style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">📦 ฝากสัมภาระอื่นๆ (เลือกหรือพิมพ์เอง)</label>
+                    <input type="text" id="cargo-other" list="cargo-presets" class="premium-input" placeholder="ระบุสิ่งของอื่นๆ ที่ต้องการฝากส่ง..." style="width: 100%; box-sizing: border-box;">
+                    <datalist id="cargo-presets">
+                        <option value="🚲 จักรยาน"></option>
+                        <option value="❄️ ถังน้ำแข็ง"></option>
+                        <option value="📦 กล่องพัสดุขนาดเล็ก"></option>
+                        <option value="📦 กล่องพัสดุขนาดกลาง"></option>
+                        <option value="📦 กล่องพัสดุขนาดใหญ่"></option>
+                        <option value="📺 โทรทัศน์ / เครื่องใช้ไฟฟ้า"></option>
+                        <option value="👜 กระเป๋าเดินทางใบใหญ่"></option>
+                        <option value="🪵 ลังผลไม้ / ตะกร้า"></option>
+                    </datalist>
+                </div>
+                
+                <!-- Remarks -->
+                <div class="input-group" style="margin-bottom: 22px;">
+                    <label style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">✍️ หมายเหตุ (Remarks)</label>
+                    <input type="text" id="cargo-remarks" class="premium-input" placeholder="ระบุหมายเหตุเพิ่มเติม เช่น สี, ยี่ห้อ, ทะเบียนรถ, เบอร์โทร..." style="width: 100%; box-sizing: border-box;">
+                </div>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="modal-footer" style="background: #f8fafc; padding: 18px 28px; border-top: 1px solid #f1f5f9; display: flex; justify-content: center; gap: 12px; margin-top: 0; border-radius: 0; align-items: center; flex-wrap: wrap;">
+                <button id="cargo-delete-btn" onclick="deleteCargoFromModal()" style="display: none; background: #ef4444; color: white; padding: 11px 24px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; font-size: 14px; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);">
+                    ❌ ลบการฝากส่ง
+                </button>
+                <button onclick="closeCargoModal()" style="background: #e2e8f0; color: #475569; padding: 11px 24px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; font-size: 14px; display: flex; align-items: center; gap: 6px;">
+                    ยกเลิก
+                </button>
+                <button id="cargo-submit-btn" onclick="saveCargoBooking()" style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 11px 24px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25); transition: 0.2s; font-size: 14px; display: flex; align-items: center; gap: 6px;">
+                    💾 บันทึกส่งของ
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Print Modal Removed - Now using New Tab for stability -->
 
     <!-- ✅ Loading Indicator -->
@@ -2239,7 +2483,24 @@
         let isPhuketBooking = false; // New: Flag for Phuket Admin booking
         let activeSeatBranch = 'hatyai'; // New: To track branch of the seat being edited
 
+        // ══ สถานะที่นั่งที่ถือว่า "มีคนนั่ง" (ใช้ร่วมกันทั่วทั้งสคริปต์) ══
+        const ALL_BOOKED_STATUSES = [
+            'confirmed',       // หาดใหญ่จ่ายแล้ว (ปกติ)
+            'PAID_HATYAI',     // หาดใหญ่จ่ายแล้ว (cross-branch)
+            'WAITING_HATYAI',  // หาดใหญ่จองแล้ว ยังไม่จ่าย
+            'PAID_PHUKET',     // ภูเก็ตจ่ายแล้ว
+            'WAITING_PHUKET',  // ภูเก็ตจองแล้ว ยังไม่จ่าย
+            'locked',          // ล็อคชั่วคราว (สาขาตัวเอง)
+            'locked_phuket',   // ล็อคโดยภูเก็ต
+            'locked_hatyai',   // ล็อคโดยหาดใหญ่
+            'prebooked'        // กรอกชื่อในผังเอง
+        ];
+        const PAID_STATUSES = ['confirmed', 'PAID_HATYAI', 'PAID_PHUKET'];
+        const WAITING_STATUSES = ['WAITING_PHUKET', 'WAITING_HATYAI'];
+        const LOCKED_STATUSES = ['locked', 'locked_phuket', 'locked_hatyai'];
+
         document.addEventListener('DOMContentLoaded', () => {
+            document.body.className = currentStation + '-theme';
             document.getElementById('target-date').valueAsDate = new Date();
             // โหลดชื่อผู้ขายที่เคยใช้ล่าสุด
             const lastSeller = localStorage.getItem('lastSeller');
@@ -2350,6 +2611,9 @@
 
         function switchStation(s) {
             currentStation = s;
+            // ✅ เปลี่ยนธีมสีตามสถานีที่เลือก
+            document.body.className = s + '-theme';
+
             document.getElementById('btn-hatyai').classList.toggle('active', s === 'hatyai');
             document.getElementById('btn-phuket').classList.toggle('active', s === 'phuket');
 
@@ -2400,7 +2664,8 @@
                     html += `
                     <div class="tab ${i === currentSlotIdx ? 'active' : ''} ${isExtra ? 'extra' : ''}" onclick="selectSlot(${i})" id="tab-${i}">
                         <button class="mini-btn-print" onclick="preparePrint(${i}, event)">🖨️</button>
-                        <div class="tab-time">${s.time}</div>
+                        <div class="tab-time">${s.slotLabel || s.time}</div>
+                        ${s.slotLabel ? `<div style="font-size: 11px; opacity: 0.8; margin-top: -4px; font-weight: 600;">(เวลา ${s.time})</div>` : ''}
                         <div class="tab-stats">ยืนยัน: ${s.confirmed} | ว่าง: ${s.vacant}</div>
                     </div>
                     `;
@@ -2419,7 +2684,7 @@
                         </div>
                     `;
                 }
-                if (hCount > 6) {
+                if (hCount > 5) {
                     html += `
                         <div class="tab tab-add" onclick="handleRemoveSpecificTrip()" style="min-height:unset; width:80px; padding:10px; border-color:#fee2e2; color:#ef4444; border-style: solid;">
                             <div style="font-size: 18px; margin-bottom: 4px;">🗑️</div>
@@ -2477,12 +2742,20 @@
                     const date = document.getElementById('extra-date').value;
                     const time = document.getElementById('extra-time').value;
                     const pin = document.getElementById('extra-pin').value;
-                    
+
                     if (!date) return Swal.showValidationMessage('กรุณาเลือกวันที่ครับ');
                     if (!pin) return Swal.showValidationMessage('กรุณาใส่รหัส PIN ครับ');
-                    if (pin !== '1234') return Swal.showValidationMessage('❌ รหัส PIN ไม่ถูกต้อง');
-                    
-                    return { date, time, pin };
+
+                    return new Promise((resolve) => {
+                        google.script.run.withSuccessHandler(correctPin => {
+                            if (pin !== correctPin) {
+                                Swal.showValidationMessage('❌ รหัส PIN ไม่ถูกต้อง');
+                                resolve(false);
+                            } else {
+                                resolve({ date, time, pin });
+                            }
+                        }).getAdminPin(currentStation);
+                    });
                 }
             });
 
@@ -2564,60 +2837,67 @@
          */
         function handleAdminPinSubmit() {
             const pinVal = document.getElementById('admin-pin-input').value;
-            if (pinVal !== '1234') return showToast("❌ รหัส PIN ไม่ถูกต้อง", "error");
+            
+            showLoading(true, "กำลังตรวจสอบรหัสผ่าน...");
+            google.script.run.withSuccessHandler(correctPin => {
+                showLoading(false);
+                if (pinVal !== correctPin) {
+                    return showToast("❌ รหัส PIN ไม่ถูกต้อง", "error");
+                }
 
-            const modal = document.getElementById('pin-modal');
-            modal.style.display = 'none';
+                const modal = document.getElementById('pin-modal');
+                modal.style.display = 'none';
 
-            if (pinMode === 'toggleCutWin') {
-                const isNowCut = !!currentData.header.isCut;
-                const action = isNowCut ? 'open' : 'cut';
-                const msg = isNowCut ? 'กำลังปลดล็อกวิน...' : 'กำลังดำเนินการตัดวิน...';
+                if (pinMode === 'toggleCutWin') {
+                    const isNowCut = !!currentData.header.isCut;
+                    const action = isNowCut ? 'open' : 'cut';
+                    const msg = isNowCut ? 'กำลังปลดล็อกวิน...' : 'กำลังดำเนินการตัดวิน...';
 
-                showLoading(true, msg);
-                const dateVal = document.getElementById('target-date').value;
-                const [y, m, d] = dateVal.split('-').map(Number);
+                    showLoading(true, msg);
+                    const dateVal = document.getElementById('target-date').value;
+                    const [y, m, d] = dateVal.split('-').map(Number);
 
-                google.script.run.withSuccessHandler(res => {
-                    showLoading(false);
-                    if (res.success) {
-                        showToast(isNowCut ? "🔓 ปลดล็อกเรียบร้อย" : "✂️ ตัดวินเรียบร้อย", "success");
-                        loadFleetData();
-                    } else {
-                        showToast("❌ " + res.error, "error");
-                    }
-                }).toggleCutWinStatus({
-                    station: currentStation,
-                    slotIndex: currentSlotIdx,
-                    day: d, month: m, year: y,
-                    action: action
-                });
+                    google.script.run.withSuccessHandler(res => {
+                        showLoading(false);
+                        if (res.success) {
+                            showToast(isNowCut ? "🔓 ปลดล็อกเรียบร้อย" : "✂️ ตัดวินเรียบร้อย", "success");
+                            loadFleetData();
+                        } else {
+                            showToast("❌ " + res.error, "error");
+                        }
+                    }).toggleCutWinStatus({
+                        station: currentStation,
+                        slotIndex: currentSlotIdx,
+                        day: d, month: m, year: y,
+                        action: action
+                    });
 
-            } else if (pinMode === 'addExtra') {
-                const dateStr = document.getElementById('target-date').value;
-                google.script.run.withSuccessHandler(res => {
-                    showLoading(false);
-                    if (res.success) {
-                        showToast("✅ เพิ่มรอบเสริมเรียบร้อยแล้ว!", "success");
-                        setTimeout(() => loadFleetData(), 500);
-                    } else {
-                        showToast("❌ " + res.error, "error");
-                    }
-                }).runSetupFromWeb(pinVal, dateStr, currentStation);
+                } else if (pinMode === 'addExtra') {
+                    const dateStr = document.getElementById('target-date').value;
+                    google.script.run.withSuccessHandler(res => {
+                        showLoading(false);
+                        if (res.success) {
+                            showToast("✅ เพิ่มรอบเสริมเรียบร้อยแล้ว!", "success");
+                            setTimeout(() => loadFleetData(), 500);
+                        } else {
+                            showToast("❌ " + res.error, "error");
+                        }
+                    }).runSetupFromWeb(pinVal, dateStr, currentStation);
 
-            } else if (pinMode === 'removeExtra') {
-                const dateStr = document.getElementById('target-date').value;
-                showLoading(true, "กำลังตรวจสอบและลบรอบเสริม...");
-                google.script.run.withSuccessHandler(res => {
-                    showLoading(false);
-                    if (res.success) {
-                        showToast("✅ " + (res.msg || "ลบรอบเสริมเรียบร้อยแล้ว!"), "success");
-                        setTimeout(() => loadFleetData(), 500);
-                    } else {
-                        showToast("❌ " + res.error, "error");
-                    }
-                }).runRemoveFromWeb(pinVal, dateStr, currentStation, currentSlotIdx);
-            }
+                } else if (pinMode === 'removeExtra') {
+                    const dateStr = document.getElementById('target-date').value;
+                    showLoading(true, "กำลังตรวจสอบและลบรอบเสริม...");
+                    google.script.run.withSuccessHandler(res => {
+                        showLoading(false);
+                        if (res.success) {
+                            showToast("✅ " + (res.msg || "ลบรอบเสริมเรียบร้อยแล้ว!"), "success");
+                            setTimeout(() => loadFleetData(), 500);
+                        } else {
+                            showToast("❌ " + res.error, "error");
+                        }
+                    }).runRemoveFromWeb(pinVal, dateStr, currentStation, currentSlotIdx);
+                }
+            }).getAdminPin(currentStation);
         }
 
 
@@ -2727,7 +3007,7 @@
                         const isBooked = (seat.status !== 'vacant' && seat.status !== 'stair' && seat.status !== 'aisle');
                         if (isBooked) {
                             // แสดงไอคอนเงิน ถ้าจ่ายแล้ว
-                            const isPaid = (seat.status === 'PAID_HATYAI' || seat.status === 'PAID_PHUKET' || seat.status === 'confirmed');
+                            const isPaid = PAID_STATUSES.includes(seat.status);
                             if (isPaid) {
                                 const paidBadge = document.createElement('div');
                                 paidBadge.className = 'paid-badge';
@@ -2783,17 +3063,20 @@
                     grid.appendChild(div);
                 });
             });
+            
+            // Load cargo slots visually on the dashboard
+            loadIndexCargo();
         }
 
         function handleSeatClick(sId, seat) {
             if (seat.status === 'stair' || seat.status === 'aisle') return;
 
-            const isNewBooked = (seat.status === 'PAID_HATYAI' || seat.status === 'WAITING_HATYAI' || seat.status === 'PAID_PHUKET' || seat.status === 'WAITING_PHUKET' || seat.status === 'confirmed' || seat.status === 'locked' || seat.status === 'locked_phuket' || seat.status === 'locked_hatyai' || seat.status === 'prebooked');
+            const isNewBooked = ALL_BOOKED_STATUSES.includes(seat.status);
 
             if (selectedSeats.length > 0) {
                 const firstSeatId = selectedSeats[0];
                 const firstSeat = currentData.seats[firstSeatId] || { status: 'vacant' };
-                const isFirstBooked = (firstSeat.status !== 'vacant' && firstSeat.status !== 'stair' && firstSeat.status !== 'aisle');
+                const isFirstBooked = ALL_BOOKED_STATUSES.includes(firstSeat.status);
 
                 // ✨ ถ้าคลิกคนละประเภท -> ล้างของเก่าทิ้ง แล้วเริ่มเลือกประเภทใหม่ทันที (Smart Switch)
                 if (isFirstBooked !== isNewBooked) {
@@ -2921,12 +3204,14 @@
                 btnCancel.onclick = () => multiCancelBooking(bookedSeats);
                 container.appendChild(btnCancel);
 
-                // ✅ ตรวจสอบว่าเป็นยอด ภก ที่ยังไม่จ่ายหรือไม่ (เฉพาะเลือก 1 ที่นั่งเพื่อความชัวร์)
+                // ✅ ตรวจสอบว่าเป็นสถานะรอรับเงิน WAITING ของทั้งสองฝั่ง
                 if (bookedSeats.length === 1) {
                     const seat = currentData.seats[bookedSeats[0]] || {};
-                    if (seat.status === 'WAITING_PHUKET') {
+                    const isWaiting = (seat.status === 'WAITING_PHUKET' || seat.status === 'WAITING_HATYAI');
+                    if (isWaiting) {
                         const btnPaid = document.createElement('button');
-                        btnPaid.innerHTML = `💰 จ่ายตังแล้ว`;
+                        const waitLabel = seat.status === 'WAITING_PHUKET' ? '💰 จ่ายตังแล้ว (ภก)' : '💰 จ่ายตังแล้ว (หญ)';
+                        btnPaid.innerHTML = waitLabel;
                         btnPaid.style = `
                             background: #dcfce7; color: #15803d; padding: 12px 24px;
                             border-radius: 50px; font-weight: 800; border: 1px solid #86efac; cursor: pointer;
@@ -3044,6 +3329,9 @@
                         showToast(res.error, 'error');
                     }
                 }).confirmSeatBooking(params);
+            } else {
+                // ✅ ผู้ใช้กด Cancel — reset flag เสมอ เพื่อไม่ให้ค้างข้ามการคลิกครั้งถัดไป
+                isPhuketBooking = false;
             }
         }
 
@@ -3068,13 +3356,18 @@
                 const checkSeat = currentData?.seats?.[checkId];
 
                 if (isEdit && checkSeat) {
-                    if (checkSeat.status === 'WAITING_PHUKET' || checkSeat.status === 'PAID_PHUKET' || checkSeat.status === 'locked_phuket') {
+                    const s = checkSeat.status;
+                    // 🔍 เช็คอย่างละเอียด: ใครเป็นเจ้าของที่นั่งนี้?
+                    if (s === 'WAITING_PHUKET' || s === 'PAID_PHUKET' || s === 'locked_phuket') {
                         seatBranch = 'phuket';
-                    } else if (checkSeat.status === 'WAITING_HATYAI' || checkSeat.status === 'PAID_HATYAI' || checkSeat.status === 'confirmed' || checkSeat.status === 'locked_hatyai') {
+                    } else if (s === 'WAITING_HATYAI' || s === 'PAID_HATYAI' || s === 'locked_hatyai') {
                         seatBranch = 'hatyai';
+                    } else if (s === 'confirmed' || s === 'EDITED' || s === 'LOCKED') {
+                        // ✅ ถ้าเป็นสถานะปกติ ให้ถือว่าเป็นของสาขาที่เปิดอยู่ตอนนี้
+                        seatBranch = currentStation;
                     }
                 } else if (!isEdit && isPhuketBooking) {
-                    // ✅ ถ้ามาจากปุ่ม "จองจาก [อีกสาขา]" ให้ตั้งเป็นสถานีตรงข้ามกับที่เปิดอยู่
+                    // ✅ ถ้ามาจากปุ่ม "จองจาก [อีกสาขา]" ให้ตั้งเป็นสถานีตรงข้าม
                     seatBranch = (currentStation === 'hatyai' ? 'phuket' : 'hatyai');
                 }
 
@@ -3135,6 +3428,14 @@
                         switcher.style.display = 'flex';
                         switcher.innerHTML = '';
                         originalSeatList.forEach(seatId => {
+                            // 🔄 เช็คโหมดจองข้ามฝั่ง (เฉพาะกรณีที่เราเป็นคนจองให้สาขาอื่น)
+                            if (currentStation === 'phuket') {
+                                // ถ้าอยู่ภูเก็ต โหมดจองข้ามฝั่งจะทำงานเมื่อสถานะคือจองให้หาดใหญ่ (WAITING_HATYAI)
+                                isPhuketBooking = (initialMeta.status === 'WAITING_HATYAI' || initialMeta.status === 'PAID_HATYAI' || initialMeta.status === 'LOCKED_HATYAI');
+                            } else {
+                                // ถ้าอยู่หาดใหญ่ โหมดจองข้ามฝั่งจะทำงานเมื่อสถานะคือจองให้ภูเก็ต (WAITING_PHUKET)
+                                isPhuketBooking = (initialMeta.status === 'WAITING_PHUKET' || initialMeta.status === 'PAID_PHUKET' || initialMeta.status === 'LOCKED_PHUKET');
+                            }
                             const btn = document.createElement('button');
                             btn.textContent = seatId;
                             const isActive = (seatId === seatKey);
@@ -3182,30 +3483,18 @@
                 document.getElementById('m-name').classList.remove('invalid');
                 document.getElementById('m-issued-by').classList.remove('invalid');
 
-                // Update Branch Badge
-                const badgeText = document.getElementById('branch-text-display');
-                if (badgeText) {
-                    if (seatBranch === 'phuket') {
-                        badgeText.textContent = 'ภูเก็ต (ม่วง)';
-                        badgeText.style.background = '#f5f3ff';
-                        badgeText.style.color = '#9333ea';
-                        badgeText.style.border = '1px solid #ddd6fe';
-                    } else {
-                        badgeText.textContent = 'หาดใหญ่ (ส้ม)';
-                        badgeText.style.background = '#fff7ed';
-                        badgeText.style.color = '#d97706';
-                        badgeText.style.border = '1px solid #fed7aa';
-                    }
-                }
 
                 // อัปเดต flag เพื่อใช้ในการบันทึก
                 isPhuketBooking = (seatBranch !== currentStation);
 
                 // Payment Method Toggle (cash / qr)
                 if (isEdit) {
-                    setPayMethod(meta.isQR ? 'qr' : 'cash');
+                    // ถ้าแก้ไข → ดึงค่าเดิมมาแสดง
+                    setPayMethod(meta.isQR ? 'qr' : (meta.isCash ? 'cash' : ''));
                 } else {
-                    setPayMethod('cash');
+                    // ✅ จองใหม่ → ยังไม่ได้เลือกวิธีชำระเงิน → ตั้งเป็นว่าง
+                    // (isCash จะ false จนกว่าผู้ใช้จะกดปุ่ม 💵 หรือ 📱)
+                    setPayMethod('');
                 }
 
                 // Ticket Type Dropdown
@@ -3271,21 +3560,12 @@
                 updateGenderUI();
 
                 // Determine if inputs should be locked
-                // Lock if: editing AND (metadata says it's booked OR the seat itself is confirmed/prebooked)
+                // Lock if: editing AND seat has any active booking status (EXCEPT LOCKED statuses)
+                const LOCKED_META_STATUSES = ['ACTIVE', 'CONFIRMED', 'EDITED', 'WAITING_PHUKET', 'WAITING_HATYAI', 'PAID_PHUKET', 'PAID_HATYAI'];
+                const LOCKED_SEAT_STATUSES = ['confirmed', 'prebooked', 'WAITING_PHUKET', 'WAITING_HATYAI', 'PAID_HATYAI', 'PAID_PHUKET'];
                 const isActuallyBooked = isEdit && (
-                    meta.status === 'ACTIVE' ||
-                    meta.status === 'EDITED' ||
-                    meta.status === 'CONFIRMED' ||
-                    meta.status === 'LOCKED' ||
-                    meta.status === 'LOCKED_PHUKET' ||
-                    meta.status === 'LOCKED_HATYAI' ||
-                    meta.status === 'WAITING_PHUKET' ||
-                    seatStatus === 'confirmed' ||
-                    seatStatus === 'locked' ||
-                    seatStatus === 'locked_phuket' ||
-                    seatStatus === 'locked_hatyai' ||
-                    seatStatus === 'prebooked' ||
-                    seatStatus === 'WAITING_PHUKET'
+                    LOCKED_META_STATUSES.includes((meta.status || '').toUpperCase()) ||
+                    LOCKED_SEAT_STATUSES.includes(seatStatus)
                 );
 
                 // Ensure all inputs are enabled/disabled based on state
@@ -3351,14 +3631,16 @@
                     }
                 }
 
-                document.getElementById('btn-edit-booking').style.display = isEdit ? 'block' : 'none';
-                document.getElementById('btn-print-booking').style.display = isEdit ? 'block' : 'none';
-                document.getElementById('btn-print-all-booking').style.display = (isEdit && originalSeatList.length > 1) ? 'block' : 'none';
-                
-                // ✅ ปุ่มยืนยันต้องไม่โชว์ถ้าตัดวินไปแล้ว (แม้จะไม่ใช่โหมดแก้ไข)
-                const canConfirm = !isEdit && !res.header.isCut;
+                const isLockedStatus = ['locked', 'locked_phuket', 'locked_hatyai'].includes(seatStatus);
+                document.getElementById('btn-edit-booking').style.display = (isEdit && !isLockedStatus) ? 'block' : 'none';
+                const isPrintable = isEdit && !isLockedStatus;
+                document.getElementById('btn-print-booking').style.display = isPrintable ? 'block' : 'none';
+                document.getElementById('btn-print-all-booking').style.display = (isPrintable && originalSeatList.length > 1) ? 'block' : 'none';
+
+                // ✅ ปุ่มยืนยันต้องโชว์ถ้า: (จองใหม่ และ วินยังไม่ตัด) หรือ (เป็นสถานะล็อคที่ยังไม่คอนเฟิร์ม)
+                const canConfirm = (!isEdit && !currentData.header.isCut) || (isEdit && isLockedStatus);
                 document.getElementById('btn-confirm-booking').style.display = canConfirm ? 'block' : 'none';
-                
+
                 document.getElementById('btn-cancel-booking').style.display = isEdit ? 'block' : 'none';
 
                 // ✅ เพิ่มปุ่มยืนยันรับเงิน (ถ้าสถานะเป็น WAITING)
@@ -3405,7 +3687,7 @@
                         <input type="text" list="dest-list" class="premium-input group-seat-select" style="padding:6px 10px; font-size:13px;" data-seat="${s}" placeholder="ปลายทาง" oninput="updateGroupPrice()" onchange="updateGroupPrice()">
                     </div>
                     <div>
-                        <input type="text" class="premium-input group-seat-price" style="padding:6px 10px; font-size:13px; text-align:center;" value="0" data-seat="${s}" oninput="calculateTotalOnly()">
+                        <input type="text" class="premium-input group-seat-price" style="padding:6px 10px; font-size:13px; text-align:center;" value="0" data-seat="${s}" data-manual="false" data-last-dest="" oninput="this.dataset.manual='true'; calculateTotalOnly()">
                     </div>
                     ${isEditMode ? `
                     <button onclick="cancelSingleSeatFromGroup('${s}')" style="background:#fee2e2; color:#ef4444; border:none; padding:8px; border-radius:8px; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="คืนที่นั่งนี้">
@@ -3458,20 +3740,21 @@
                     loadPricesWithCallback(() => {
                         datalist.innerHTML = buildDestOptions();
                         updateModalPrice(updatePrice); // ✅ ส่งค่าตามพารามิเตอร์
-                        updateGroupPrice();
+                        updateGroupPrice(updatePrice);
                     });
                 } else {
                     datalist.innerHTML = buildDestOptions();
                     updateModalPrice(updatePrice); // ✅ ส่งค่าตามพารามิเตอร์
-                    updateGroupPrice();
+                    updateGroupPrice(updatePrice);
                 }
             } else {
                 updateModalPrice(updatePrice); // ✅ ส่งค่าตามพารามิเตอร์
-                updateGroupPrice();
+                updateGroupPrice(updatePrice);
             }
         }
 
         function setPayMethod(method) {
+            console.log('💳 setPayMethod called with:', method);
             document.getElementById('m-pay-method').value = method;
             const cashBtn = document.getElementById('pay-btn-cash');
             const qrBtn = document.getElementById('pay-btn-qr');
@@ -3484,8 +3767,10 @@
         }
 
         function getAgentStatus() {
-            const method = document.getElementById('m-pay-method').value; // 'cash' or 'qr'
+            const method = document.getElementById('m-pay-method').value; // '' | 'cash' | 'qr'
             const type = document.getElementById('m-pay-type-selector').value;
+            // ✅ isCash/isQR จะ true เฉพาะเมื่อผู้ใช้กดปุ่มเลือกวิธีชำระเงินแล้วเท่านั้น
+            // ถ้า method ว่าง (ยังไม่ได้เลือก) = ยังไม่จ่าย → isPaid จะเป็น false ที่ Backend
             const isCash = method === 'cash';
             const isQR = method === 'qr';
             const isAgent = type === 'Agent';
@@ -3494,11 +3779,12 @@
 
             return {
                 isCash, isQR, isAgent, isCard, isInspector: isInsp,
-                name: type
+                name: type,
+                isPaid: isCash || isQR || isAgent || isCard || isInsp
             };
         }
 
-        function updateGroupPrice() {
+        function updateGroupPrice(forceUpdate = false) {
             const selects = document.querySelectorAll('.group-seat-select');
             const prices = document.querySelectorAll('.group-seat-price');
             const status = getAgentStatus();
@@ -3512,6 +3798,21 @@
                 if (!dest) return;
                 if (dest.includes(' (')) dest = dest.split(' (')[0];
 
+                const priceInp = prices[idx];
+                const lastDest = priceInp.dataset.lastDest || '';
+                const destChanged = dest !== lastDest && lastDest !== '';
+
+                // ✅ ถ้าเปลี่ยนปลายทางของที่นั่งนี้ หรือเป็น forceUpdate (เปลี่ยนประเภทตั๋ว) ให้รีเซ็ต flag พิมพ์เอง
+                if (destChanged || forceUpdate) {
+                    priceInp.dataset.manual = 'false';
+                }
+                priceInp.dataset.lastDest = dest;
+
+                // ✅ ถ้าพิมพ์เองแล้ว และไม่ใช่กรณีบังคับอัปเดต ให้ข้ามไป
+                if (priceInp.dataset.manual === 'true' && !forceUpdate && !destChanged) {
+                    return;
+                }
+
                 const route = priceList.find(p => {
                     const pOrigin = p.origin ? p.origin.toString().trim() : '';
                     const pOriginClean = pOrigin.split(' (')[0].trim();
@@ -3523,10 +3824,7 @@
                     if (isInsp && route.inspectorPrice) p = Number(route.inspectorPrice);
                     else if (isCard && route.cardPrice) p = Number(route.cardPrice);
 
-                    // อัปเดตราคาเฉพาะกรณีที่ยังเป็น 0 หรือว่างอยู่ (ไม่ทับที่ผู้ใช้พิมพ์เอง)
-                    if (!prices[idx].value || prices[idx].value === "0") {
-                        prices[idx].value = p;
-                    }
+                    priceInp.value = p;
                 }
             });
             calculateTotalOnly();
@@ -3660,6 +3958,8 @@
         function closeBookingModal() {
             const modal = document.getElementById('booking-modal');
             if (modal) modal.style.display = 'none';
+            // ✅ รีเซ็ต Flag ทุกครั้งที่ปิดเพื่อความปลอดภัย
+            isPhuketBooking = false;
             // ✨ แสดงแถบปุ่มด้านล่างกลับมา
             const btmContainer = document.getElementById('booking-button-container');
             if (btmContainer) btmContainer.style.display = 'flex';
@@ -3690,6 +3990,7 @@
             const isGroup = seatArr.length > 1;
 
             const status = getAgentStatus();
+            console.log('💳 confirmBooking Status:', status);
             let originFull = document.getElementById('m-origin').value;
             let originClean = originFull;
             if (originClean.includes(' (')) originClean = originClean.split(' (')[0];
@@ -3782,6 +4083,19 @@
             localStorage.setItem('lastSeller', commonData.issuedBy);
 
             let params = {};
+            // 🔍 DEBUG: ดูค่าจริงก่อนส่งไป Backend
+            const _dbgStatus = getAgentStatus();
+            console.warn('🔍 FRONTEND PAYMENT DEBUG:', {
+                'method (m-pay-method)': document.getElementById('m-pay-method').value,
+                'type (m-pay-type-selector)': document.getElementById('m-pay-type-selector').value,
+                isCash: _dbgStatus.isCash,
+                isQR: _dbgStatus.isQR,
+                isAgent: _dbgStatus.isAgent,
+                isCard: _dbgStatus.isCard,
+                isInspector: _dbgStatus.isInspector,
+                isPaid: _dbgStatus.isPaid,
+                isPhuketBooking
+            });
             console.log('🚀 Sending booking request:', { commonData, isPhuketBooking });
             if (isGroup) {
                 const bookings = [];
@@ -3892,9 +4206,17 @@
             }
 
             if (editTicketId) {
-                checkAdminPin(() => {
+                // 🔓 ถ้าที่นั่งเดิมเป็นสถานะ "ล็อค" (LOCKED) ไม่ต้องถามรหัส PIN ให้เสียเวลา
+                const currentStatus = currentData.seats[activeSeatId] ? currentData.seats[activeSeatId].status : '';
+                const isLockingCase = ['locked', 'locked_phuket', 'locked_hatyai'].includes(currentStatus);
+
+                if (isLockingCase) {
                     executeConfirmBooking(params, isGroup);
-                });
+                } else {
+                    checkAdminPin(() => {
+                        executeConfirmBooking(params, isGroup);
+                    });
+                }
             } else {
                 executeConfirmBooking(params, isGroup);
             }
@@ -4010,7 +4332,13 @@
                     if (isGroup) {
                         params.bookings.forEach(b => {
                             if (currentData.seats[b.seatId]) {
-                                currentData.seats[b.seatId].status = b.isPhuketBooking ? 'WAITING_PHUKET' : 'confirmed';
+                                // คำนวณสถานะที่แสดงผลให้ถูกต้อง: ขึ้นกับว่าใครเป็นคนจอง
+                                let newStatus = 'confirmed';
+                                if (b.isPhuketBooking) {
+                                    const bookingBranch = (b.activeStation === 'phuket') ? 'hatyai' : 'phuket';
+                                    newStatus = (bookingBranch === 'phuket') ? 'WAITING_PHUKET' : 'WAITING_HATYAI';
+                                }
+                                currentData.seats[b.seatId].status = newStatus;
                                 currentData.seats[b.seatId].name = b.passengerName;
                                 currentData.seats[b.seatId].metadata = {
                                     ...currentData.seats[b.seatId].metadata,
@@ -4031,7 +4359,24 @@
                         });
                     } else {
                         if (currentData.seats[activeSeatId]) {
-                            currentData.seats[activeSeatId].status = params.isPhuketBooking ? 'WAITING_PHUKET' : 'confirmed';
+                            // คำนวณสถานะที่แสดงผลให้ถูกต้อง
+                            let newStatus = 'confirmed';
+                            let newMetaStatus = 'CONFIRMED';
+                            if (params.isPhuketBooking) {
+                                const bookingBranch = (params.activeStation === 'phuket') ? 'hatyai' : 'phuket';
+                                newStatus = (bookingBranch === 'phuket') ? 'WAITING_PHUKET' : 'WAITING_HATYAI';
+                                newMetaStatus = newStatus;
+                            }
+                            
+                            // 📝 ถ้าเป็นการแก้ไขตั๋วเดิม (ไม่ใช่การยืนยันจากสถานะล็อค) ให้เป็น EDITED
+                            if (editTicketId) {
+                                const oldStatus = (currentData.seats[activeSeatId] && currentData.seats[activeSeatId].status) || '';
+                                const isLocked = ['locked', 'locked_phuket', 'locked_hatyai'].includes(oldStatus);
+                                if (!isLocked) {
+                                    newMetaStatus = 'EDITED';
+                                }
+                            }
+                            currentData.seats[activeSeatId].status = newStatus;
                             currentData.seats[activeSeatId].name = params.passengerName;
                             currentData.seats[activeSeatId].metadata = {
                                 ...currentData.seats[activeSeatId].metadata,
@@ -4046,7 +4391,7 @@
                                 issuedBy: params.issuedBy,
                                 gender: params.gender,
                                 ticketId: res.ticketId || editTicketId,
-                                status: params.isPhuketBooking ? 'WAITING_PHUKET' : 'CONFIRMED'
+                                status: newMetaStatus
                             };
                         }
                     }
@@ -4055,9 +4400,17 @@
                     isPhuketBooking = false;
                     selectedSeats = [];
                     updateBookingButtonUI();
-                    
+
                     if (editTicketId) {
-                        closeBookingModal();
+                        // ✅ ถ้ามีหลายที่นั่งที่เลือกมา (Manage Multiple) อย่าเพิ่งปิด Modal
+                        if (originalSeatList.length > 1) {
+                            renderSeating(currentData);
+                            // Refresh Modal เพื่อให้เห็นสถานะล่าสุด (เช่น ติด Lock)
+                            openBookingModal(activeSeatId, true, editTicketId, originalSeatList);
+                            showToast(`✅ บันทึกที่นั่ง ${seatLabel} แล้ว สามารถเลือกที่นั่งอื่นต่อได้ครับ`, 'success');
+                        } else {
+                            closeBookingModal();
+                        }
                         return; // บันทึกเสร็จแล้ว จบงาน
                     }
 
@@ -4119,7 +4472,14 @@
                             showToast('💰 บันทึกการชำระเงินเรียบร้อย', 'success');
                             // อัปเดตในเครื่อง
                             if (currentData.seats[seatId]) {
-                                currentData.seats[seatId].status = 'confirmed';
+                                const oldStatus = currentData.seats[seatId].status;
+                                if (oldStatus === 'WAITING_PHUKET') {
+                                    currentData.seats[seatId].status = 'PAID_PHUKET';
+                                } else if (oldStatus === 'WAITING_HATYAI') {
+                                    currentData.seats[seatId].status = 'PAID_HATYAI';
+                                } else {
+                                    currentData.seats[seatId].status = 'confirmed';
+                                }
                                 if (currentData.seats[seatId].metadata) {
                                     currentData.seats[seatId].metadata.status = 'CONFIRMED';
                                 }
@@ -4155,7 +4515,15 @@
                         });
                         renderSeating(currentData);
 
-                        closeBookingModal();
+                        // ✅ ถ้าเหลือที่นั่งอื่นที่เลือกมาด้วย ให้สลับไปที่นั่งถัดไปแทนการปิด Modal
+                        const remaining = originalSeatList.filter(s => !seatList.includes(s));
+                        if (remaining.length > 0) {
+                            originalSeatList = remaining;
+                            openBookingModal(originalSeatList[0], true, null, originalSeatList);
+                            showToast('คืนที่นั่งสำเร็จ และสลับไปยังที่นั่งที่เหลือให้แล้วครับ');
+                        } else {
+                            closeBookingModal();
+                        }
                         silentRefresh();
                     } else {
                         showToast(res.error, 'error');
@@ -4184,13 +4552,38 @@
                         showLoading(false);
                         if (res.success) {
                             showToast("ยืนยันรับเงินเรียบร้อยแล้ว", "success");
+                            // อัปเดต local state ทันที
+                            const seatList = activeSeatId.toString().split(/[\s,]+/).filter(s => s.trim() !== '');
+                            seatList.forEach(sId => {
+                                if (currentData.seats[sId]) {
+                                    // ถ้ายืนยันการชำระเงิน ให้เปลี่ยน WAITING เป็น PAID ของสาขานั้นๆ หรือเปลี่ยนเป็น confirmed ถ้ารูปแบบเก่า
+                                    const oldStatus = currentData.seats[sId].status;
+                                    if (oldStatus === 'WAITING_PHUKET') {
+                                        currentData.seats[sId].status = 'PAID_PHUKET';
+                                    } else if (oldStatus === 'WAITING_HATYAI') {
+                                        currentData.seats[sId].status = 'PAID_HATYAI';
+                                    } else {
+                                        currentData.seats[sId].status = 'confirmed';
+                                    }
+                                    if (currentData.seats[sId].metadata) {
+                                        currentData.seats[sId].metadata.status = 'CONFIRMED';
+                                    }
+                                }
+                            });
+                            renderSeating(currentData);
                             closeBookingModal();
                             silentRefresh();
                         } else {
                             showToast(res.error, "error");
                         }
                     }).confirmPhuketPayment({
-                        ticketId: editTicketId
+                        ticketId: editTicketId,
+                        seatId: activeSeatId,
+                        day: currentData.header.day,
+                        month: currentData.header.month,
+                        year: currentData.header.year,
+                        station: currentData.header.station,
+                        slotIndex: currentData.header.slotIndex
                     });
                 }
             );
@@ -4312,16 +4705,25 @@
             let totalAgentFee = 0;
             let count = 0;
 
+            // สถานะที่นับว่า "มีคน" (booked)
+            const BOOKED_STATUSES = ['confirmed', 'PAID_HATYAI', 'PAID_PHUKET', 'WAITING_HATYAI', 'WAITING_PHUKET', 'prebooked'];
+            // สถานะที่นับ "ยอดเงิน" (ต้องชำระแล้วเท่านั้น)
+            const PAID_STATUSES = ['confirmed', 'PAID_HATYAI', 'PAID_PHUKET', 'prebooked'];
+
             Object.values(currentData.seats).forEach(seat => {
-                if (seat.status === 'confirmed' && seat.metadata) {
+                if (BOOKED_STATUSES.includes(seat.status) && seat.metadata) {
                     count++;
-                    const p = Number(seat.metadata.price) || 0;
-                    const c = Number(seat.metadata.commission) || 0;
-                    gross += p;
-                    if (c > 0) {
-                        totalAgentFee += c;
-                    } else if (seat.metadata.isAgent || (seat.metadata.paymentType || '').toLowerCase() === 'agent') {
-                        totalAgentFee += Math.round(p * 0.15);
+                    
+                    // นับยอดเงินเฉพาะสถานะที่จ่ายแล้วเท่านั้น (ข้าม WAITING)
+                    if (PAID_STATUSES.includes(seat.status)) {
+                        const p = Number(seat.metadata.price) || 0;
+                        const c = Number(seat.metadata.commission) || 0;
+                        gross += p;
+                        if (c > 0) {
+                            totalAgentFee += c;
+                        } else if (seat.metadata.isAgent || (seat.metadata.paymentType || '').toLowerCase() === 'agent') {
+                            totalAgentFee += Math.round(p * 0.15);
+                        }
                     }
                 }
             });
@@ -4413,7 +4815,8 @@
             renderHistory(filtered);
         }
 
-        function checkAdminPin(callback) {
+        function checkAdminPin(callback, stationOverride = null) {
+            const activeStation = stationOverride || currentStation;
             google.script.run.withSuccessHandler(correctPin => {
                 Swal.fire({
                     title: 'ยืนยันรหัสผ่าน',
@@ -4436,7 +4839,7 @@
                         callback();
                     }
                 });
-            }).getAdminPin();
+            }).getAdminPin(activeStation);
         }
 
         function renderHistory(data) {
@@ -4716,9 +5119,374 @@
                 });
             }, 100);
         }
+
+        // ════════════════════════════════════════════════════════════
+        //  CARGO & LUGGAGE INTERACTION — ระบบจัดส่งพัสดุและสัตว์เลี้ยง
+        // ════════════════════════════════════════════════════════════
+        
+        let cargoState = {
+            motorcycle: false,
+            cat: false
+        };
+        let selectedCargoSlotId = '';
+        let currentCargoList = [];
+        let isSavingCargo = false;
+
+        function toggleCargoChip(type) {
+            cargoState[type] = !cargoState[type];
+            const chip = document.getElementById(`chip-${type}`);
+            if (chip) {
+                chip.classList.toggle('active', cargoState[type]);
+            }
+        }
+
+        function openCargoModal() {
+            if (!currentData || !currentData.header) {
+                showToast('กรุณาโหลดรอบรถก่อนทำการบันทึกฝากของครับ', 'warning');
+                return;
+            }
+            // ค้นหาสล็อตที่ว่างถัดไปโดยอัตโนมัติ
+            let nextVacantSlot = '';
+            for (let i = 1; i <= 5; i++) {
+                const sId = 'M' + i;
+                const isBooked = currentCargoList.some(item => item.slotId === sId);
+                if (!isBooked) {
+                    nextVacantSlot = sId;
+                    break;
+                }
+            }
+            
+            if (!nextVacantSlot) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'ช่องเก็บสัมภาระเต็ม',
+                    text: 'ขออภัยครับ โควตาช่องฝากของรอบรถนี้เต็ม 5 ช่องแล้วครับ!',
+                    confirmButtonColor: '#3b82f6',
+                    confirmButtonText: 'ตกลง'
+                });
+                return;
+            }
+            
+            openCargoModalForSlot(nextVacantSlot);
+        }
+
+        function openCargoModalForSlot(slotId) {
+            if (!currentData || !currentData.header) {
+                showToast('กรุณาโหลดรอบรถก่อนทำการบันทึกฝากของครับ', 'warning');
+                return;
+            }
+            
+            selectedCargoSlotId = slotId;
+            const existingItem = currentCargoList.find(x => x.slotId === slotId);
+            
+            const chipMc = document.getElementById('chip-motorcycle');
+            const chipCat = document.getElementById('chip-cat');
+            const deleteBtn = document.getElementById('cargo-delete-btn');
+            const submitBtn = document.getElementById('cargo-submit-btn');
+            const headerTitle = document.querySelector('#cargo-modal h2 span:last-child');
+            
+            if (existingItem) {
+                // 🔄 โหมดแก้ไข: ดึงข้อมูลที่ฝากเดิมมาใส่ในฟอร์มทันที
+                cargoState.motorcycle = existingItem.motorcycle;
+                cargoState.cat = existingItem.cat;
+                
+                if (chipMc) chipMc.classList.toggle('active', cargoState.motorcycle);
+                if (chipCat) chipCat.classList.toggle('active', cargoState.cat);
+                
+                document.getElementById('cargo-other').value = existingItem.otherCargo || '';
+                document.getElementById('cargo-remarks').value = existingItem.remarks || '';
+                
+                if (deleteBtn) deleteBtn.style.display = 'flex';
+                if (submitBtn) submitBtn.innerHTML = '💾 บันทึกการแก้ไข';
+                if (headerTitle) headerTitle.textContent = 'แก้ไขช่องฝากของ ' + slotId;
+            } else {
+                // 🆕 โหมดจองใหม่
+                cargoState.motorcycle = false;
+                cargoState.cat = false;
+                
+                if (chipMc) chipMc.classList.remove('active');
+                if (chipCat) chipCat.classList.remove('active');
+                
+                document.getElementById('cargo-other').value = '';
+                document.getElementById('cargo-remarks').value = '';
+                
+                if (deleteBtn) deleteBtn.style.display = 'none';
+                if (submitBtn) submitBtn.innerHTML = '💾 บันทึกส่งของ';
+                if (headerTitle) headerTitle.textContent = 'บันทึกฝากของช่อง ' + slotId;
+            }
+            
+            // ใส่ข้อมูลรอบรถใน Trip Context
+            const dateStr = document.getElementById('target-date').value;
+            const timeSlot = currentData.header.slotLabel || currentData.header.time || '';
+            let originVal = currentStation === 'hatyai' ? 'หาดใหญ่' : 'ภูเก็ต';
+            if (currentData.header.station) {
+                const st = currentData.header.station.toLowerCase();
+                if (st === 'hatyai' || st.includes('หาดใหญ่')) originVal = 'หาดใหญ่';
+                else if (st === 'phuket' || st.includes('ภูเก็ต')) originVal = 'ภูเก็ต';
+                else originVal = currentData.header.station;
+            }
+            
+            document.getElementById('cargo-meta-date').textContent = dateStr;
+            document.getElementById('cargo-meta-time').textContent = timeSlot;
+            document.getElementById('cargo-meta-origin').textContent = originVal;
+            
+            // แสดงผล Modal
+            document.getElementById('cargo-modal').style.display = 'flex';
+        }
+
+        function closeCargoModal() {
+            document.getElementById('cargo-modal').style.display = 'none';
+        }
+
+        function loadIndexCargo() {
+            if (!currentData || !currentData.header) return;
+            
+            const dateStr = document.getElementById('target-date').value;
+            const timeSlot = currentData.header.slotLabel || currentData.header.time || '';
+            const originVal = currentStation === 'hatyai' ? 'หาดใหญ่' : 'ภูเก็ต';
+            
+            const countBadge = document.getElementById('index-cargo-count-badge');
+            const gridContainer = document.getElementById('index-cargo-grid');
+            
+            if (!gridContainer) return;
+            
+            // Render loading placeholders for 5 slots
+            gridContainer.innerHTML = Array(5).fill(0).map((_, i) => `
+                <div style="width: 120px; border: 2px dashed #cbd5e1; background: #fff; border-radius: 16px; height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.5;">
+                    <div style="font-size: 13px; font-weight: 800; color: #94a3b8;">M${i+1}</div>
+                    <div style="font-size: 9px; color: #cbd5e1; margin-top: 4px;">กำลังโหลด...</div>
+                </div>
+            `).join('');
+            
+            google.script.run.withSuccessHandler(list => {
+                currentCargoList = list || [];
+                
+                const slotMap = {};
+                currentCargoList.forEach(item => {
+                    if (item.slotId) {
+                        slotMap[item.slotId] = item;
+                    }
+                });
+                
+                let bookedCount = 0;
+                let html = '';
+                
+                for (let i = 1; i <= 5; i++) {
+                    const slotId = 'M' + i;
+                    const item = slotMap[slotId];
+                    
+                    if (item) {
+                        bookedCount++;
+                        
+                        // ✅ ระบบแสดงผลแบบพรีเมียมรองรับการเลือกพร้อมกันหลายประเภท
+                        const emojis = [];
+                        const descs = [];
+                        
+                        if (item.motorcycle) {
+                            emojis.push('🏍️');
+                            descs.push('จยย.');
+                        }
+                        if (item.cat) {
+                            emojis.push('🐱');
+                            descs.push('สัตว์เลี้ยง');
+                        }
+                        if (item.otherCargo) {
+                            emojis.push('📦');
+                            descs.push(item.otherCargo);
+                        }
+                        
+                        if (emojis.length === 0) {
+                            emojis.push('📦');
+                            descs.push('สัมภาระทั่วไป');
+                        }
+                        
+                        const emojiStr = emojis.join(' ');
+                        const emojiSize = emojis.length > 2 ? '18px' : (emojis.length > 1 ? '22px' : '26px');
+                        const descText = descs.join(' + ');
+                        
+                        html += `
+                            <div onclick="openCargoModalForSlot('${slotId}')" style="width: 120px; border: 2px solid #f59e0b; background: #fffbeb; border-radius: 16px; padding: 10px; min-height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; position: relative; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.1);">
+                                <span style="position: absolute; top: 6px; left: 8px; font-size: 9px; font-weight: 800; color: #d97706; background: #fef3c7; padding: 2px 6px; border-radius: 4px;">${slotId}</span>
+                                <span style="font-size: ${emojiSize}; margin-bottom: 2px; margin-top: 8px; letter-spacing: 1px;">${emojiStr}</span>
+                                <div style="font-size: 11px; font-weight: 800; color: #854d0e; text-align: center; max-width: 90%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${descText}">${descText}</div>
+                                <div style="font-size: 9px; color: #b45309; text-align: center; max-width: 90%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;" title="${item.remarks || '-'}">${item.remarks ? '💬 ' + item.remarks : '-'}</div>
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div onclick="openCargoModalForSlot('${slotId}')" style="width: 120px; border: 2px dashed #cbd5e1; background: #fff; border-radius: 16px; height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease;" class="index-vacant-cargo-slot">
+                                <span style="font-size: 22px; color: #8b5cf6; font-weight: bold; margin-bottom: 2px;">+</span>
+                                <div style="font-size: 13px; font-weight: 800; color: #475569;">${slotId}</div>
+                                <span style="background: #f1f5f9; color: #64748b; font-size: 9px; font-weight: 700; padding: 2px 8px; border-radius: 50px; margin-top: 2px;">ว่าง</span>
+                            </div>
+                        `;
+                    }
+                }
+                
+                gridContainer.innerHTML = html;
+                if (countBadge) {
+                    countBadge.textContent = 'ฝากแล้ว ' + bookedCount + ' ช่อง';
+                }
+            }).getCargoList(dateStr, originVal, timeSlot);
+        }
+
+        function saveCargoBooking() {
+            if (isSavingCargo) return; // 🛡️ ป้องกันการกดซ้ำซ้อน
+            
+            if (!selectedCargoSlotId) {
+                showToast('กรุณาเลือกช่องฝากของก่อนบันทึกครับ', 'error');
+                return;
+            }
+            
+            const hasMotorcycle = cargoState.motorcycle;
+            const hasCat = cargoState.cat;
+            const otherCargoVal = document.getElementById('cargo-other').value.trim();
+            
+            if (!hasMotorcycle && !hasCat && !otherCargoVal) {
+                return Swal.fire({
+                    icon: 'warning',
+                    title: 'กรุณาเลือกหรือระบุสัมภาระ',
+                    text: 'กรุณาเลือก มอเตอร์ไซค์, สัตว์เลี้ยง หรือระบุสัมภาระอื่นๆ ที่ต้องการฝากส่งอย่างน้อย 1 รายการครับ',
+                    confirmButtonColor: '#3b82f6',
+                    confirmButtonText: 'ตกลง'
+                });
+            }
+            
+            const customRemarks = document.getElementById('cargo-remarks').value.trim();
+            const dateStr = document.getElementById('cargo-meta-date').textContent;
+            const timeSlot = document.getElementById('cargo-meta-time').textContent;
+            const originVal = document.getElementById('cargo-meta-origin').textContent;
+            
+            const params = {
+                travelDate: dateStr,
+                timeSlot: timeSlot,
+                origin: originVal,
+                motorcycle: hasMotorcycle,
+                cat: hasCat,
+                otherCargo: otherCargoVal,
+                remarks: customRemarks,
+                issuer: "",
+                slotId: selectedCargoSlotId
+            };
+            
+            // 🛡️ ตั้งสถานะกำลังบันทึก และปิดการทำงานของปุ่มทันที
+            isSavingCargo = true;
+            const submitBtn = document.getElementById('cargo-submit-btn');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '⏳ กำลังบันทึก...';
+            }
+            
+            showLoading(true, 'กำลังบันทึกข้อมูลสัมภาระ...');
+            google.script.run.withSuccessHandler(res => {
+                showLoading(false);
+                isSavingCargo = false; // 🔓 ปลดล็อกสถานะ
+                
+                // คืนค่ารูปแบบปุ่ม
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    const existingItem = currentCargoList.find(x => x.slotId === selectedCargoSlotId);
+                    submitBtn.innerHTML = existingItem ? '💾 บันทึกการแก้ไข' : '💾 บันทึกส่งของ';
+                }
+                
+                if (res.success) {
+                    closeCargoModal();
+                    Swal.fire({
+                        icon: 'success',
+                        title: '🎉 บันทึกสัมภาระสำเร็จ!',
+                        html: `สัมภาระบันทึกลงช่อง <strong style="color: #3b82f6;">${selectedCargoSlotId}</strong> เรียบร้อยแล้ว`,
+                        confirmButtonColor: '#10b981',
+                        confirmButtonText: 'ตกลง'
+                    }).then(() => {
+                        loadIndexCargo();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาด',
+                        text: res.error || 'ไม่สามารถบันทึกข้อมูลได้',
+                        confirmButtonColor: '#ef4444',
+                        confirmButtonText: 'ตกลง'
+                    });
+                }
+            }).withFailureHandler(err => {
+                showLoading(false);
+                isSavingCargo = false; // 🔓 ปลดล็อกสถานะ
+                
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    const existingItem = currentCargoList.find(x => x.slotId === selectedCargoSlotId);
+                    submitBtn.innerHTML = existingItem ? '💾 บันทึกการแก้ไข' : '💾 บันทึกส่งของ';
+                }
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'ระบบขัดข้อง',
+                    text: err.toString() || 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้',
+                    confirmButtonColor: '#ef4444',
+                    confirmButtonText: 'ตกลง'
+                });
+            }).saveCargoBooking(params);
+        }
+
+        function deleteCargoFromModal() {
+            const existingItem = currentCargoList.find(x => x.slotId === selectedCargoSlotId);
+            if (!existingItem) {
+                showToast('ไม่พบข้อมูลสัมภาระในคิว', 'error');
+                return;
+            }
+            
+            const originVal = document.getElementById('cargo-meta-origin').textContent;
+            const cargoStation = (originVal === 'ภูเก็ต' || originVal.includes('ภูเก็ต')) ? 'phuket' : 'hatyai';
+            
+            checkAdminPin(() => {
+                Swal.fire({
+                    title: 'กำลังดำเนินการ...',
+                    text: 'กรุณารอสักครู่ขณะระบบกำลังลบการฝากสัมภาระ',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                
+                const travelDate = document.getElementById('cargo-meta-date').textContent;
+                const timeSlot = document.getElementById('cargo-meta-time').textContent;
+                const origin = document.getElementById('cargo-meta-origin').textContent;
+                
+                google.script.run.withSuccessHandler(res => {
+                    if (res && res.success) {
+                        closeCargoModal();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'สำเร็จ!',
+                            text: 'ยกเลิกและลบการฝากสัมภาระช่อง ' + selectedCargoSlotId + ' เรียบร้อยแล้ว',
+                            confirmButtonColor: '#10b981',
+                            confirmButtonText: 'ตกลง'
+                        }).then(() => {
+                            loadIndexCargo();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'เกิดข้อผิดพลาด',
+                            text: (res && res.error) || 'ไม่สามารถลบข้อมูลได้',
+                            confirmButtonColor: '#ef4444',
+                            confirmButtonText: 'ตกลง'
+                        });
+                    }
+                }).withFailureHandler(err => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'เกิดข้อผิดพลาด',
+                        text: err.toString(),
+                        confirmButtonColor: '#ef4444',
+                        confirmButtonText: 'ตกลง'
+                    });
+                }).cancelCargoBooking(travelDate, origin, timeSlot, selectedCargoSlotId);
+            });
+        }
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- Admin PIN Modal -->
     <div id="pin-modal"
         style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.6); z-index:99999; align-items:center; justify-content:center;">
         <div
@@ -4726,11 +5494,10 @@
             <div style="font-size:32px; margin-bottom:15px;">🔐</div>
             <h3 id="pin-title-text" style="margin:0 0 10px; font-size:18px; font-weight:800; color:#0f172a;">
                 ใส่รหัสผ่านเพื่อดำเนินการ</h3>
-            <p id="pin-desc-text" style="margin:0 0 25px; font-size:13px; color:#64748b; line-height:1.5;">กรุณาใส่รหัส
-                PIN Admin 4 หลัก</p>
+            <p id="pin-desc-text" style="margin:0 0 25px; font-size:13px; color:#64748b; line-height:1.5;">กรุณาใส่รหัสผ่าน Admin</p>
 
-            <input type="password" id="admin-pin-input" maxlength="4" placeholder="••••"
-                style="width:140px; height:60px; text-align:center; font-size:32px; letter-spacing:10px; border:2px solid #e2e8f0; border-radius:16px; background:#f8fafc; color:#1e293b; outline:none; margin-bottom:30px; transition:0.2s;">
+            <input type="password" id="admin-pin-input" maxlength="30" placeholder="••••"
+                style="width:100%; max-width:260px; height:60px; text-align:center; font-size:28px; letter-spacing:4px; border:2px solid #e2e8f0; border-radius:16px; background:#f8fafc; color:#1e293b; outline:none; margin-bottom:30px; transition:0.2s; padding:0 15px;">
 
             <div style="display:flex; gap:12px;">
                 <button onclick="closePinModal()"

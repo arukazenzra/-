@@ -65,7 +65,10 @@ const SHEET_SEAT_PLAN = "ผังที่นั่ง";
 const SHEET_CONFIG    = "Config_ราคา";
 const SHEET_TRIPS     = "รายการเที่ยว";
 const SHEET_CUST      = "ข้อมูลลูกค้า";
-const ADMIN_PIN       = "1234"; // รหัสผ่านสำหรับแก้ไขหรือยกเลิก (เปลี่ยนได้ที่นี่)
+const SHEET_CARGO     = "ข้อมูลฝากของ";
+const ADMIN_PIN       = "1234"; // รหัสผ่านหลักและสำหรับแผ่นงาน (Bypass)
+const PIN_HATYAI      = "1234"; // รหัสผ่านสำหรับระบบหลังบ้านฝั่งหาดใหญ่
+const PIN_PHUKET      = "5678"; // รหัสผ่านสำหรับระบบหลังบ้านฝั่งภูเก็ต
 
 // ── Constants ──────────────────────────────────────────────
 const PLAN_HEADER_ROWS = 2;         // แถว Header (Row 1-2) ก่อนเริ่มข้อมูลวัน
@@ -430,8 +433,10 @@ function getSlotSummary(day, month, year, station) {
       const firstSeatVal = dayValues[2][relColStart]; // OFF_SEATS_START (row 2), col 0
       const hasData = (firstSeatVal !== "");
 
+      const slotLabel = (i >= 5) ? ("คันที่ " + (i - 4)) : "";
       results.push({
         slotIndex: i,
+        slotLabel: slotLabel,
         time:      timeInSheet || times[i], 
         busNo:     busNo || '-',
         vacant, prebooked, confirmed,
@@ -759,33 +764,7 @@ function _processSingleBooking(ss, params) {
                .setValue(s).setBackground(COLOR_VACANT).setFontColor('#94a3b8').setFontWeight('normal');
         }
       });
-    } else {
-      // ✅ คำนวณว่าใครเป็นเจ้าของที่นั่ง (Phuket หรือ Hatyai)
-      let bookingBranch = params.activeStation;
-      const isOtherBranch = (params.isPhuketBooking === true || params.isPhuketBooking === "true");
-      if (isOtherBranch) {
-        bookingBranch = (params.activeStation === 'phuket') ? 'hatyai' : 'phuket';
-      }
-      
-      // เช็คว่ามีการชำระเงินหรือยัง
-      const isPaid = (isCash || isQR || isAgent || isCard || isInsp);
-
-      seatList.forEach(s => {
-        const pos = _getSeatCellPos(s, startRow, startCol);
-        if (pos) {
-          let color = COLOR_CONFIRM; // เริ่มต้นที่หาดใหญ่จ่ายแล้ว
-          if (bookingBranch === 'phuket') {
-             color = isPaid ? COLOR_PHUKET_PAID : COLOR_PHUKET_PENDING;
-          } else {
-             color = isPaid ? COLOR_CONFIRM : COLOR_HATYAI_PENDING;
-          }
-          
-          sheet.getRange(pos.row, pos.col).clearDataValidations()
-               .setValue(passengerName).setBackground(color).setFontColor('#ffffff').setFontWeight('bold');
-        }
-      });
     }
-    SpreadsheetApp.flush(); // เร่งการอัปเดตสีผังที่นั่งให้เห็นผลทันที
     
     // [2] อัปเดตฐานข้อมูลลูกค้า
     const custSheet = ss.getSheetByName(SHEET_CUST);
@@ -899,34 +878,46 @@ function _processSingleBooking(ss, params) {
     const originLabel = origin || (station === 'phuket' ? 'ภูเก็ต (Phuket)' : 'หาดใหญ่ (Hatyai)');
     const normalizedDest = normalizeLocation(destination);
 
-    // ✅ กำหนดสถานะเริ่มต้นตามฝั่งที่ทำรายการ
+    // ✅ กำหนดสถานะตามฝั่งที่ทำรายการ
     let finalStatus = "CONFIRMED";
     const isOtherBranch = (params.isPhuketBooking === true || params.isPhuketBooking === "true");
     const isPaid = (params.isCash || params.isQR || params.isAgent || params.isCard || params.isInspector);
 
-    // ตรวจสอบว่า "ใคร" เป็นคนจอง (ถ้าจองข้ามฝั่ง ให้ถือว่าเป็นของอีกฝั่ง)
     let bookingBranch = params.activeStation;
     if (isOtherBranch) {
       bookingBranch = (params.activeStation === 'phuket') ? 'hatyai' : 'phuket';
     }
 
-    if (bookingBranch === 'phuket') finalStatus = "PAID_PHUKET";
-    else if (bookingBranch === 'hatyai') finalStatus = "PAID_HATYAI";
+    // ดึงสถานะเดิมมาเตรียมไว้สำหรับตรวจสอบเงื่อนไข
+    let oldStatus = "";
+    if (targetRow > 0) {
+      oldStatus = custSheet.getRange(targetRow, 22).getValue().toString().trim().toUpperCase();
+    }
 
-    if (params.isLock) {
-      if (isOtherBranch) {
+    if (isOtherBranch) {
+      // กรณีจองข้ามฝั่ง (เช่น หาดใหญ่จองให้ภูเก็ต หรือ ภูเก็ตจองให้หาดใหญ่)
+      if (params.isLock) {
         finalStatus = (bookingBranch === 'phuket') ? "LOCKED_PHUKET" : "LOCKED_HATYAI";
       } else {
-        finalStatus = "LOCKED";
+        // ⚠️ กฎเหล็ก: จองหรือแก้ไขข้ามฝั่ง ถ้ากดผ่านฟอร์มนี้ บังคับเป็น WAITING ก่อนเสมอ! 
+        // (การเปลี่ยนเป็น PAID_... จะเกิดขึ้นเมื่อกดปุ่ม "ยืนยันชำระเงิน" ที่เรียกฟังก์ชัน confirmPhuketPayment เท่านั้น)
+        finalStatus = (bookingBranch === 'phuket') ? "WAITING_PHUKET" : "WAITING_HATYAI";
       }
-    } else if (isOtherBranch && !isPaid) {
-      // ✅ ถ้าจองข้ามฝั่งและยังไม่จ่าย ให้ขึ้น WAITING ของฝั่งที่เป็นเจ้าของที่นั่งนั้น
-      finalStatus = (bookingBranch === 'phuket') ? "WAITING_PHUKET" : "WAITING_HATYAI";
-    } else if (isOtherBranch && isPaid) {
-      // ✅ ถ้าจองข้ามฝั่งและจ่ายแล้ว ให้ขึ้น PAID ตามฝั่งที่จอง
-      finalStatus = (bookingBranch === 'phuket') ? "PAID_PHUKET" : "PAID_HATYAI";
-    } else if (targetRow > 0) {
-      finalStatus = "EDITED";
+    } else {
+      // ✅ จองปกติ (สาขาตัวเอง) - ยืนยันเป็น CONFIRMED เลยโดยไม่ต้องเช็คการจ่ายเงิน!
+      finalStatus = params.isLock ? "LOCKED" : "CONFIRMED";
+    }
+
+    // 📝 ตรวจสอบการแก้ไขข้อมูล (Edit Case)
+    if (targetRow > 0 && !params.isLock) {
+      // เก็บสถานะที่ห้ามถูกทับด้วย EDITED (ล็อค หรือ ข้ามสาขาที่รอจ่ายเงิน)
+      const PRESERVE_STATUSES = ["LOCKED", "LOCKED_PHUKET", "LOCKED_HATYAI", "WAITING_HATYAI", "WAITING_PHUKET"];
+      
+      // ถ้าของเดิมไม่ใช่กลุ่มล็อค/รอจ่าย (คือเคยเป็น CONFIRMED หรือ PAID มาก่อน)
+      // ให้เปลี่ยนสถานะเป็น EDITED เพื่อให้รู้ว่ามีการแก้ไขข้อมูล
+      if (!PRESERVE_STATUSES.includes(oldStatus) && oldStatus !== "" && oldStatus !== "VACANT") {
+        finalStatus = "EDITED";
+      }
     }
 
     // มีทั้งหมด 23 คอลัมน์ ไม่รวม AgentName แล้ว
@@ -946,24 +937,51 @@ function _processSingleBooking(ss, params) {
       custSheet.getRange(targetRow, 1, 1, rowData.length).setValues([rowData]);
     }
 
-    if (params.isLock) {
+    // ✅ อัปเดตสีผังที่นั่งตาม finalStatus ตรงๆ เลยเพื่อป้องกันสีเพี้ยน
+    if (passengerName && passengerName.trim() !== "") {
       const startRowLoc = getDayStartRow(day);
       const startColLoc = getSlotStartCol(station, slotIndex);
-      const planSheetObj = sheet; 
       
       seatList.forEach(s => {
         const seatPos = _getSeatCellPos(s, startRowLoc, startColLoc);
         if (seatPos) {
-          let lockColor = COLOR_LOCKED;
-          if (isOtherBranch) {
-            lockColor = (bookingBranch === 'phuket') ? COLOR_LOCKED_PHUKET : COLOR_LOCKED_HATYAI;
+          let bgColor = COLOR_CONFIRM;
+          let fontColor = '#ffffff';
+          let displayText = passengerName || 'ล็อคชั่วคราว';
+
+          switch(finalStatus) {
+              case "CONFIRMED":
+              case "EDITED":
+              case "PAID_HATYAI":
+                  bgColor = COLOR_CONFIRM;
+                  break;
+              case "PAID_PHUKET":
+                  bgColor = COLOR_PHUKET_PAID;
+                  break;
+              case "WAITING_HATYAI":
+                  bgColor = COLOR_HATYAI_PENDING;
+                  break;
+              case "WAITING_PHUKET":
+                  bgColor = COLOR_PHUKET_PENDING;
+                  break;
+              case "LOCKED":
+                  bgColor = COLOR_LOCKED;
+                  break;
+              case "LOCKED_HATYAI":
+                  bgColor = COLOR_LOCKED_HATYAI;
+                  fontColor = '#1e293b'; 
+                  break;
+              case "LOCKED_PHUKET":
+                  bgColor = COLOR_LOCKED_PHUKET;
+                  fontColor = '#1e293b'; 
+                  break;
           }
-          const fontColor = (isOtherBranch) ? '#1e293b' : '#ffffff';
-          planSheetObj.getRange(seatPos.row, seatPos.col)
-            .setBackground(lockColor)
+
+          sheet.getRange(seatPos.row, seatPos.col).clearDataValidations()
+            .setBackground(bgColor)
             .setFontColor(fontColor)
             .setFontWeight('bold')
-            .setValue(passengerName || 'ล็อคชั่วคราว');
+            .setValue(displayText);
         }
       });
     }
@@ -1475,7 +1493,12 @@ function setupNewPaymentColumns() {
   }
 }
 
-function getAdminPin() { return ADMIN_PIN; }
+function getAdminPin(station) {
+  if (station === 'phuket') {
+    return PIN_PHUKET;
+  }
+  return PIN_HATYAI;
+}
 
 /**
  * ฟังก์ชันพิเศษสำหรับขยายตารางใน Sheet เป็น 10 Slots ต่อฝั่ง
@@ -1654,7 +1677,8 @@ function _resetSeatDataOnly(sheet, startRow, insertPos) {
  * ฟังก์ชันรับคำสั่งจากหน้าเว็บ Dashboard เพื่อรัน Setup
  */
 function runSetupFromWeb(pin, dateString, station = 'hatyai', timeLabel = '') {
-  if (pin !== ADMIN_PIN) return { success: false, error: "รหัส PIN ไม่ถูกต้อง" };
+  const correctPin = (station === 'phuket') ? PIN_PHUKET : PIN_HATYAI;
+  if (pin !== correctPin && pin !== ADMIN_PIN) return { success: false, error: "รหัส PIN ไม่ถูกต้อง" };
   
   try {
     const [y, m, d] = dateString.split('-').map(Number);
@@ -1823,7 +1847,8 @@ function removeExtraSlotsLogic(station) {
  * ฟังก์ชันหลักสำหรับลบแบบอัจฉริยะ (ใช้ร่วมกันทั้งเว็บและชีต)
  */
 function smartRemoveSlotLogic(pin, dateString, station, slotIndex) {
-  if (pin !== ADMIN_PIN) return { success: false, error: "รหัส PIN ไม่ถูกต้อง" };
+  const correctPin = (station === 'phuket') ? PIN_PHUKET : PIN_HATYAI;
+  if (pin !== correctPin && pin !== ADMIN_PIN) return { success: false, error: "รหัส PIN ไม่ถูกต้อง" };
   
   try {
     const [y, m, d] = dateString.split('-').map(Number);
@@ -2069,8 +2094,334 @@ function toggleCutWinStatus(params) {
       }
     }
 
+
     return { success: true, isCut: (action === 'cut') };
   } catch (e) {
     return { success: false, error: e.toString() };
+  }
+}
+
+/**
+ * ดึงรายการราคาเส้นทางทั้งหมดจาก Sheet Config_ราคา
+ * Frontend เรียกผ่าน google.script.run.getPrices()
+ */
+function getPrices() {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName("Config_ราคา");
+    if (!sheet) return [];
+    const data = sheet.getDataRange().getValues();
+    const result = [];
+    // สมมติ: Row 1 = Header, แต่ละแถว = [origin, destination, fullPrice, discountPrice, ...]
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      if (!row[0] && !row[1]) continue; // ข้ามแถวว่าง
+      result.push({
+        origin:        row[0] ? row[0].toString().trim() : '',
+        destination:   row[1] ? row[1].toString().trim() : '',
+        fullPrice:     parseFloat(row[2]) || 0,
+        discountPrice: parseFloat(row[3]) || 0,
+        notes:         row[4] ? row[4].toString().trim() : ''
+      });
+    }
+    return result;
+  } catch (e) {
+    console.error('getPrices error: ' + e.toString());
+    return [];
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  CARGO SYSTEM — ระบบจัดส่งพัสดุและสัตว์เลี้ยง (ฝากของหลังรถ)
+// ════════════════════════════════════════════════════════════
+
+function normalizeDate(dateInput) {
+  if (!dateInput) return "";
+  if (dateInput instanceof Date) {
+    try {
+      const tz = SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone() || "GMT+7";
+      return Utilities.formatDate(dateInput, tz, "dd/MM/yyyy");
+    } catch (e) {
+      const dd = dateInput.getDate().toString().padStart(2, '0');
+      const mm = (dateInput.getMonth() + 1).toString().padStart(2, '0');
+      const yyyy = dateInput.getFullYear();
+      return `${dd}/${mm}/${yyyy}`;
+    }
+  }
+  
+  let dateStr = dateInput.toString().trim();
+  
+  // If it's in YYYY-MM-DD format (includes '-')
+  if (dateStr.includes("-")) {
+    const parts = dateStr.split("-");
+    if (parts.length === 3) {
+      const yyyy = parts[0];
+      const mm = parts[1].padStart(2, '0');
+      const dd = parts[2].padStart(2, '0');
+      return `${dd}/${mm}/${yyyy}`;
+    }
+  }
+  
+  // If it's in DD/MM/YYYY format
+  if (dateStr.includes("/")) {
+    const parts = dateStr.split("/");
+    if (parts.length === 3) {
+      const dd = parts[0].padStart(2, '0');
+      const mm = parts[1].padStart(2, '0');
+      const yyyy = parts[2];
+      return `${dd}/${mm}/${yyyy}`;
+    }
+  }
+  
+  return dateStr;
+}
+
+function migrateCargoSheetIfNeeded(sheet) {
+  if (!sheet) return;
+  const lastRow = sheet.getLastRow();
+  
+  // หากเป็นชีทว่างเปล่า (ไม่มีข้อมูลเลย) ให้สร้าง Header ทันที
+  if (lastRow === 0 || (lastRow === 1 && sheet.getRange("A1").getValue().toString().trim() === "")) {
+    const newHeaders = [
+      "วันที่บันทึก",
+      "วันเดินทาง",
+      "รอบเวลา",
+      "ต้นทาง",
+      "รถจักรยานยนต์",
+      "แมว/สัตว์เลี้ยง",
+      "สัมภาระอื่นๆ",
+      "หมายเหตุ",
+      "สล็อต"
+    ];
+    sheet.getRange(1, 1, 1, 9).setValues([newHeaders]).setBackground("#1e293b").setFontColor("#ffffff").setFontWeight("bold");
+    sheet.setFrozenRows(1);
+    SpreadsheetApp.flush();
+    return;
+  }
+
+  const firstCell = sheet.getRange("A1").getValue().toString().trim();
+  if (firstCell === "รหัสพัสดุ" || firstCell === "รหัสสัมภาระ") {
+    const maxCols = sheet.getLastColumn();
+    const headers = sheet.getRange(1, 1, 1, maxCols).getValues()[0].map(h => h.toString().trim());
+    
+    const idxIssuer = headers.indexOf("ผู้บันทึก") + 1;
+    const idxPrice = headers.indexOf("ค่าบริการ") + 1;
+    const idxDest = headers.indexOf("ปลายทาง") + 1;
+    const idxId = (headers.indexOf("รหัสพัสดุ") !== -1 ? headers.indexOf("รหัสพัสดุ") : headers.indexOf("รหัสสัมภาระ")) + 1;
+    
+    const deleteIndexes = [idxIssuer, idxPrice, idxDest, idxId].filter(idx => idx > 0).sort((a, b) => b - a);
+    deleteIndexes.forEach(idx => sheet.deleteColumn(idx));
+    
+    sheet.getRange(1, 9).setValue("สล็อต");
+    
+    const newHeaders = [
+      "วันที่บันทึก",
+      "วันเดินทาง",
+      "รอบเวลา",
+      "ต้นทาง",
+      "รถจักรยานยนต์",
+      "แมว/สัตว์เลี้ยง",
+      "สัมภาระอื่นๆ",
+      "หมายเหตุ",
+      "สล็อต"
+    ];
+    sheet.getRange(1, 1, 1, 9).setValues([newHeaders]).setBackground("#1e293b").setFontColor("#ffffff").setFontWeight("bold");
+    SpreadsheetApp.flush();
+  }
+}
+
+function getStandardStationName(name) {
+  if (!name) return "";
+  const clean = name.toString().replace(/\u00a0/g, " ").trim().toLowerCase();
+  if (clean.indexOf("hatyai") !== -1 || clean.indexOf("หาดใหญ่") !== -1) {
+    return "หาดใหญ่";
+  }
+  if (clean.indexOf("phuket") !== -1 || clean.indexOf("ภูเก็ต") !== -1) {
+    return "ภูเก็ต";
+  }
+  return name.toString().replace(/\u00a0/g, " ").trim();
+}
+
+function getStandardTime(timeInput) {
+  if (!timeInput) return "";
+  let t = "";
+  if (timeInput instanceof Date) {
+    try {
+      const tz = SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone() || "GMT+7";
+      t = Utilities.formatDate(timeInput, tz, "H:mm");
+    } catch (e) {
+      const hh = timeInput.getHours();
+      const mm = timeInput.getMinutes().toString().padStart(2, '0');
+      t = `${hh}:${mm}`;
+    }
+  } else {
+    t = timeInput.toString().replace(/\u00a0/g, " ").trim();
+  }
+  // นำ " (เวลาต้นทาง)" หรือ " (เวลาต้นทาง)" ออก
+  t = t.replace(/\s*\(เวลาต้นทาง\)\s*/gi, "");
+  // แปลงจุดเป็นทวิภาค (เช่น 09.00 -> 09:00)
+  t = t.replace(/\./g, ":");
+  // ตัดเลข 0 นำหน้าในหลักชั่วโมง (เช่น 09:00 -> 9:00)
+  t = t.replace(/^0/, "");
+  return t;
+}
+
+function getCargoList(travelDate, origin, timeSlot) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sheet = ss.getSheetByName(SHEET_CARGO);
+    if (!sheet) return [];
+    
+    migrateCargoSheetIfNeeded(sheet);
+
+    const data = sheet.getDataRange().getValues();
+    const results = [];
+    if (data.length <= 1) return [];
+
+    const targetTravelDate = normalizeDate(travelDate);
+    const targetOrigin = getStandardStationName(origin);
+    const targetTimeSlot = getStandardTime(timeSlot);
+
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      const rowDate = normalizeDate(row[1]);
+      const rowTime = getStandardTime(row[2]);
+      const rowOrigin = getStandardStationName(row[3]);
+
+      if (rowDate === targetTravelDate && rowOrigin === targetOrigin && rowTime === targetTimeSlot) {
+        results.push({
+          timestamp: row[0] ? row[0].toString() : "",
+          travelDate: rowDate,
+          timeSlot: rowTime,
+          origin: rowOrigin,
+          motorcycle: row[4] === true || row[4].toString().toLowerCase() === 'true',
+          cat: row[5] === true || row[5].toString().toLowerCase() === 'true',
+          otherCargo: row[6] || "",
+          remarks: row[7] || "",
+          slotId: row[8] || ""
+        });
+      }
+    }
+    // ลบแผ่นงาน DEBUG_CARGO ออกหากระบบทำงานถูกต้องแล้ว เพื่อความสะอาดตาของชีท
+    let debugSheet = ss.getSheetByName("DEBUG_CARGO");
+    if (debugSheet) {
+      ss.deleteSheet(debugSheet);
+    }
+    return results;
+  } catch (err) {
+    console.error("getCargoList error: " + err.toString());
+    return [];
+  }
+}
+
+function saveCargoBooking(params) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sheet = ss.getSheetByName(SHEET_CARGO);
+    
+    if (!sheet) {
+      sheet = ss.insertSheet(SHEET_CARGO);
+      sheet.appendRow([
+        "วันที่บันทึก",
+        "วันเดินทาง",
+        "รอบเวลา",
+        "ต้นทาง",
+        "รถจักรยานยนต์",
+        "แมว/สัตว์เลี้ยง",
+        "สัมภาระอื่นๆ",
+        "หมายเหตุ",
+        "สล็อต"
+      ]);
+      sheet.getRange("A1:I1").setBackground("#1e293b").setFontColor("#ffffff").setFontWeight("bold");
+    } else {
+      migrateCargoSheetIfNeeded(sheet);
+    }
+
+    const travelDate = normalizeDate(params.travelDate);
+    const timeSlot = params.timeSlot;
+    const origin = getStandardStationName(params.origin);
+    const slotId = params.slotId || "";
+
+    const existingList = getCargoList(travelDate, origin, timeSlot);
+    
+    let existingRowIndex = -1;
+    const dataRangeValues = sheet.getDataRange().getValues();
+    for (let i = 1; i < dataRangeValues.length; i++) {
+      const row = dataRangeValues[i];
+      const rDate = normalizeDate(row[1]);
+      const rTime = getStandardTime(row[2]);
+      const rOrigin = getStandardStationName(row[3]);
+      const rSlot = row[8] ? row[8].toString().trim() : "";
+      if (rDate === travelDate && rOrigin === origin && rTime === getStandardTime(timeSlot) && rSlot === slotId) {
+        existingRowIndex = i + 1;
+        break;
+      }
+    }
+
+    if (existingRowIndex !== -1) {
+      sheet.getRange(existingRowIndex, 5).setValue(params.motorcycle ? true : false);
+      sheet.getRange(existingRowIndex, 6).setValue(params.cat ? true : false);
+      sheet.getRange(existingRowIndex, 7).setValue(params.otherCargo || "");
+      sheet.getRange(existingRowIndex, 8).setValue(params.remarks || "");
+      return { success: true, updated: true };
+    } else {
+      if (existingList.length >= 5) {
+        return { success: false, error: "ขออภัยครับ รอบรถนี้เต็มโควตาฝากของ 5 ที่แล้ว!" };
+      }
+      
+      const newRow = [
+        new Date(),
+        travelDate,
+        timeSlot,
+        origin,
+        params.motorcycle ? true : false,
+        params.cat ? true : false,
+        params.otherCargo || "",
+        params.remarks || "",
+        slotId
+      ];
+
+      sheet.appendRow(newRow);
+      const addedRow = sheet.getLastRow();
+      
+      sheet.getRange(addedRow, 5).insertCheckboxes();
+      sheet.getRange(addedRow, 6).insertCheckboxes();
+
+      return { success: true, updated: false };
+    }
+  } catch (err) {
+    return { success: false, error: err.toString() };
+  }
+}
+
+function cancelCargoBooking(travelDate, origin, timeSlot, slotId) {
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(SHEET_CARGO);
+    if (!sheet) return { success: false, error: "ไม่พบฐานข้อมูลฝากของ" };
+    
+    migrateCargoSheetIfNeeded(sheet);
+
+    const lastRow = sheet.getLastRow();
+    if (lastRow <= 1) return { success: false, error: "ไม่มีข้อมูลสัมภาระในระบบ" };
+    
+    const targetTravelDate = normalizeDate(travelDate);
+    const targetOrigin = getStandardStationName(origin);
+    const targetTimeSlot = getStandardTime(timeSlot);
+    const data = sheet.getDataRange().getValues();
+    for (let i = 1; i < data.length; i++) {
+      const row = data[i];
+      const rDate = normalizeDate(row[1]);
+      const rTime = getStandardTime(row[2]);
+      const rOrigin = getStandardStationName(row[3]);
+      const rSlot = row[8] ? row[8].toString().trim() : "";
+      if (rDate === targetTravelDate && rOrigin === targetOrigin && rTime === targetTimeSlot && rSlot === slotId) {
+        sheet.deleteRow(i + 1);
+        return { success: true };
+      }
+    }
+    return { success: false, error: "ไม่พบข้อมูลสัมภาระช่อง: " + slotId };
+  } catch (err) {
+    return { success: false, error: err.toString() };
   }
 }

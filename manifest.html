@@ -762,7 +762,13 @@
             const buildCell = (r, col) => {
                 const sId = r + col;
                 const s = seats[sId] || { status: 'vacant', name: '' };
-                const isConf = (s.status === 'confirmed' || s.status === 'prebooked');
+                
+                // เช็คสถานะที่ถือว่ามีการจองแล้ว (รวมพวก WAITING)
+                const isBooked = ['confirmed', 'prebooked', 'PAID_HATYAI', 'PAID_PHUKET', 'WAITING_HATYAI', 'WAITING_PHUKET'].includes(s.status);
+                // เช็คสถานะที่จ่ายเงินแล้ว (ไม่รวม WAITING)
+                const isActuallyPaid = ['confirmed', 'prebooked', 'PAID_HATYAI', 'PAID_PHUKET'].includes(s.status);
+                
+                const isConf = isBooked;
 
                 let qty = isConf ? '1' : '';
                 let name = s.name || '';
@@ -777,7 +783,11 @@
                 if (isConf && s.metadata) {
                     countPax++;
                     priceNum = parseFloat(s.metadata.price) || 0;
-                    sumGross += priceNum;
+                    
+                    // คำนวณเงินเฉพาะยอดที่จ่ายแล้ว
+                    if (isActuallyPaid) {
+                        sumGross += priceNum;
+                    }
 
                     phone = s.metadata.phone || '';
                     dest = (s.metadata.dest && s.metadata.dest.split(' ')[0]) || '';
@@ -789,7 +799,10 @@
                     if (isAgent && comm === 0) {
                         comm = Math.round(priceNum * 0.15);
                     }
-                    totalAgentFee += comm;
+                    
+                    if (isActuallyPaid) {
+                        totalAgentFee += comm;
+                    }
                 }
 
                 const nameColor = isConf ? '#1e3a8a' : '#cbd5e1';
